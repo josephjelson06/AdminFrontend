@@ -29,11 +29,8 @@ const COLORS = {
 
 const PIE_COLORS = ['#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'];
 
-interface ChartDataPoint {
-    name: string;
-    value: number;
-    [key: string]: string | number;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ChartDataPoint = Record<string, any>;
 
 interface AreaChartProps {
     data: ChartDataPoint[];
@@ -240,7 +237,7 @@ export function DonutChartComponent({
                         borderRadius: '8px',
                         fontSize: '12px',
                     }}
-                    formatter={(value: number) => [`${value} (${((value / total) * 100).toFixed(1)}%)`, '']}
+                    formatter={(value) => [`${value} (${((Number(value) / total) * 100).toFixed(1)}%)`, '']}
                 />
             </PieChart>
         </ResponsiveContainer>
