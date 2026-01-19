@@ -1,215 +1,199 @@
 'use client';
 
 import { useState } from 'react';
-import { Users, UserPlus, Mail, Calendar, MoreVertical } from 'lucide-react';
-import { AddUserModal } from '@/components/modals/AddUserModal';
-import { ConfirmModal } from '@/components/modals/ConfirmModal';
+import {
+    UserPlus,
+    MoreHorizontal,
+    Edit2,
+    Key,
+    Trash2,
+    Clock,
+    Mail,
+    Search,
+} from 'lucide-react';
+import { MOCK_USERS, MOCK_ROLES, getRoleName, SystemUser } from '@/lib/rbac-data';
+import { DataTable, Column, TableBadge } from '@/components/ui/DataTable';
 import { Dropdown, DropdownItem } from '@/components/ui/Dropdown';
+import { AddUserSlideOver } from '@/components/modals/AddUserSlideOver';
+import { ConfirmModal } from '@/components/modals/ConfirmModal';
 import { useToast } from '@/components/ui/Toast';
 
-// Mock ATC staff data
-const MOCK_USERS = [
-    {
-        id: 'u-001',
-        name: 'Rahul Sharma',
-        email: 'rahul@atc.in',
-        role: 'Super Admin',
-        status: 'active',
-        lastLogin: '2026-01-19T10:30:00Z',
-    },
-    {
-        id: 'u-002',
-        name: 'Priya Menon',
-        email: 'priya@atc.in',
-        role: 'Operations',
-        status: 'active',
-        lastLogin: '2026-01-19T09:15:00Z',
-    },
-    {
-        id: 'u-003',
-        name: 'Amit Patel',
-        email: 'amit@atc.in',
-        role: 'Finance',
-        status: 'active',
-        lastLogin: '2026-01-18T16:45:00Z',
-    },
-    {
-        id: 'u-004',
-        name: 'Sneha Reddy',
-        email: 'sneha@atc.in',
-        role: 'Support',
-        status: 'inactive',
-        lastLogin: '2026-01-10T11:00:00Z',
-    },
-];
-
-function RoleBadge({ role }: { role: string }) {
-    const styles: Record<string, string> = {
-        'Super Admin': 'bg-purple-100 text-purple-700 border-purple-200',
-        'Operations': 'bg-blue-100 text-blue-700 border-blue-200',
-        'Finance': 'bg-emerald-100 text-emerald-700 border-emerald-200',
-        'Support': 'bg-amber-100 text-amber-700 border-amber-200',
-    };
-
-    return (
-        <span className={`px-2 py-0.5 rounded text-xs font-medium border ${styles[role] || 'bg-slate-100 text-slate-600'}`}>
-            {role}
-        </span>
-    );
+function StatusBadge({ status }: { status: string }) {
+    const variant = status === 'active' ? 'success' : status === 'invited' ? 'warning' : 'default';
+    return <TableBadge variant={variant}>{status}</TableBadge>;
 }
 
 export default function UsersPage() {
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [confirmModal, setConfirmModal] = useState<{
-        isOpen: boolean;
-        userId: string;
-        userName: string;
-    }>({ isOpen: false, userId: '', userName: '' });
-
     const { addToast } = useToast();
-    const activeUsers = MOCK_USERS.filter((u) => u.status === 'active').length;
+    const [showAddUser, setShowAddUser] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<SystemUser | null>(null);
 
-    const handleDeactivate = () => {
-        addToast('success', 'User Deactivated', `${confirmModal.userName} has been deactivated.`);
-        setConfirmModal({ isOpen: false, userId: '', userName: '' });
+    const handleDelete = () => {
+        addToast('success', 'User Deleted', `"${selectedUser?.username}" has been removed.`);
+        setShowDeleteModal(false);
+        setSelectedUser(null);
     };
 
-    const handleResetPassword = (userName: string) => {
-        addToast('info', 'Password Reset', `Password reset email sent to ${userName}.`);
+    const handleExport = (format: 'pdf' | 'excel') => {
+        addToast('info', 'Export Started', `Exporting users to ${format.toUpperCase()}...`);
     };
+
+    // Define columns for DataTable
+    const columns: Column<SystemUser>[] = [
+        {
+            id: 'index',
+            header: '#',
+            accessor: (row) => {
+                const index = MOCK_USERS.findIndex((u) => u.id === row.id);
+                return <span className="text-sm text-slate-500 dark:text-slate-400">{index + 1}</span>;
+            },
+            className: 'w-12',
+        },
+        {
+            id: 'user',
+            header: 'User',
+            accessor: (user) => (
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center">
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                            {user.username.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        </span>
+                    </div>
+                    <div>
+                        <div className="text-sm font-medium text-slate-900 dark:text-white">
+                            {user.username}
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 md:hidden flex items-center gap-1">
+                            <Mail className="w-3 h-3" />
+                            {user.email}
+                        </div>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            id: 'email',
+            header: 'Email',
+            accessor: (user) => (
+                <span className="text-sm text-slate-600 dark:text-slate-400">
+                    {user.email}
+                </span>
+            ),
+            hideOnMobile: true,
+        },
+        {
+            id: 'role',
+            header: 'Role',
+            accessor: (user) => (
+                <TableBadge>{getRoleName(user.roleId)}</TableBadge>
+            ),
+        },
+        {
+            id: 'status',
+            header: 'Status',
+            accessor: (user) => <StatusBadge status={user.status} />,
+            hideOnMobile: true,
+        },
+        {
+            id: 'lastLogin',
+            header: 'Last Login',
+            accessor: (user) => (
+                <span className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    {user.lastLogin || 'Never'}
+                </span>
+            ),
+            hideOnMobile: true,
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            accessor: (user) => (
+                <div className="flex justify-end">
+                    <Dropdown
+                        trigger={
+                            <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
+                                <MoreHorizontal className="w-4 h-4 text-slate-500" />
+                            </button>
+                        }
+                        align="right"
+                    >
+                        <DropdownItem onClick={() => addToast('info', 'Edit User', 'Edit feature coming soon')}>
+                            <Edit2 className="w-4 h-4" />
+                            Edit User
+                        </DropdownItem>
+                        <DropdownItem onClick={() => addToast('info', 'Reset Password', 'Password reset email sent')}>
+                            <Key className="w-4 h-4" />
+                            Reset Password
+                        </DropdownItem>
+                        <DropdownItem
+                            onClick={() => {
+                                setSelectedUser(user);
+                                setShowDeleteModal(true);
+                            }}
+                            className="text-rose-600 dark:text-rose-400"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                            Delete User
+                        </DropdownItem>
+                    </Dropdown>
+                </div>
+            ),
+            className: 'w-24 text-right',
+        },
+    ];
 
     return (
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
             {/* Page Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900">User Access</h1>
-                    <p className="text-sm text-slate-500">Manage ATC staff accounts and permissions</p>
+                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Team & Users</h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        Manage user accounts and access
+                    </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <div className="text-sm text-slate-500">
-                        <span className="font-medium text-slate-900">{activeUsers}</span> active users
-                    </div>
-                    <button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-md hover:bg-slate-800 transition-colors"
-                    >
-                        <UserPlus className="w-4 h-4" />
-                        Add User
-                    </button>
-                </div>
+                <button
+                    onClick={() => setShowAddUser(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-medium rounded-lg hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+                >
+                    <UserPlus className="w-4 h-4" />
+                    Add User
+                </button>
             </div>
 
-            {/* Users Table */}
-            <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
-                <table className="w-full">
-                    <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200">
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                                User
-                            </th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                                Role
-                            </th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                                Status
-                            </th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                                Last Login
-                            </th>
-                            <th className="text-center px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {MOCK_USERS.map((user) => (
-                            <tr key={user.id} className="hover:bg-slate-50">
-                                <td className="px-4 py-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center">
-                                            <span className="text-sm font-medium text-slate-600">
-                                                {user.name.split(' ').map(n => n[0]).join('')}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <div className="text-sm font-medium text-slate-900">{user.name}</div>
-                                            <div className="text-xs text-slate-500 flex items-center gap-1">
-                                                <Mail className="w-3 h-3" />
-                                                {user.email}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-4 py-3">
-                                    <RoleBadge role={user.role} />
-                                </td>
-                                <td className="px-4 py-3">
-                                    <span className={`inline-flex items-center gap-1.5 text-sm ${user.status === 'active' ? 'text-emerald-600' : 'text-slate-400'
-                                        }`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'active' ? 'bg-emerald-500' : 'bg-slate-300'
-                                            }`} />
-                                        {user.status === 'active' ? 'Active' : 'Inactive'}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3">
-                                    <div className="flex items-center gap-1.5 text-sm text-slate-600">
-                                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                                        {new Date(user.lastLogin).toLocaleDateString('en-IN', {
-                                            day: 'numeric',
-                                            month: 'short',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}
-                                    </div>
-                                </td>
-                                <td className="px-4 py-3 text-center">
-                                    <Dropdown
-                                        trigger={
-                                            <button className="p-1.5 hover:bg-slate-100 rounded-md transition-colors">
-                                                <MoreVertical className="w-4 h-4 text-slate-400" />
-                                            </button>
-                                        }
-                                        align="right"
-                                    >
-                                        <DropdownItem onClick={() => addToast('info', 'Edit User', 'Opening edit form...')}>
-                                            Edit User
-                                        </DropdownItem>
-                                        <DropdownItem onClick={() => handleResetPassword(user.name)}>
-                                            Reset Password
-                                        </DropdownItem>
-                                        <DropdownItem
-                                            variant="danger"
-                                            onClick={() => setConfirmModal({
-                                                isOpen: true,
-                                                userId: user.id,
-                                                userName: user.name,
-                                            })}
-                                        >
-                                            Deactivate
-                                        </DropdownItem>
-                                    </Dropdown>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Add User Modal */}
-            <AddUserModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
+            {/* Data Table */}
+            <DataTable
+                data={MOCK_USERS}
+                columns={columns}
+                searchPlaceholder="Search by name or email..."
+                searchKeys={['username', 'email'] as (keyof SystemUser)[]}
+                showExport={true}
+                onExport={handleExport}
+                getRowKey={(user) => user.id}
+                emptyIcon={<Search className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto" />}
+                emptyTitle="No users found"
+                emptyDescription="Try adjusting your search or filters"
             />
 
-            {/* Confirm Deactivate Modal */}
+            {/* Add User SlideOver */}
+            <AddUserSlideOver
+                isOpen={showAddUser}
+                onClose={() => setShowAddUser(false)}
+            />
+
+            {/* Delete Confirmation */}
             <ConfirmModal
-                isOpen={confirmModal.isOpen}
-                onClose={() => setConfirmModal({ isOpen: false, userId: '', userName: '' })}
-                onConfirm={handleDeactivate}
-                title="Deactivate User"
-                message={`Are you sure you want to deactivate ${confirmModal.userName}? They will no longer be able to access the admin panel.`}
-                confirmLabel="Deactivate"
+                isOpen={showDeleteModal}
+                onClose={() => {
+                    setShowDeleteModal(false);
+                    setSelectedUser(null);
+                }}
+                onConfirm={handleDelete}
+                title="Delete User"
+                message={`Are you sure you want to delete "${selectedUser?.username}"? This action cannot be undone.`}
+                confirmText="Delete"
                 variant="danger"
             />
         </div>

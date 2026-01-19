@@ -20,14 +20,45 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
     hasPermission: (permission: string) => boolean;
+    canAccessPage: (pageId: string) => boolean;
 }
 
-// Role-based permissions
+// Page permissions mapped to roles
+// Each role can access specific pages
+const ROLE_PAGE_ACCESS: Record<UserRole, string[]> = {
+    super_admin: ['*'], // All pages
+    operations: [
+        'dashboard',
+        'hotels',
+        'fleet',
+        'reports',
+        'audit',
+        'settings',
+        'profile',
+    ],
+    finance: [
+        'dashboard',
+        'hotels', // view only
+        'finance',
+        'invoices',
+        'reports',
+        'profile',
+    ],
+    support: [
+        'dashboard',
+        'hotels', // view only
+        'fleet', // view only
+        'reports',
+        'profile',
+    ],
+};
+
+// Role permissions for actions (view, add, edit, delete)
 const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     super_admin: ['*'], // All permissions
     operations: ['hotels', 'fleet', 'reports', 'audit'],
     finance: ['finance', 'invoices', 'reports'],
-    support: ['hotels', 'fleet', 'users'],
+    support: ['hotels.view', 'fleet.view', 'reports.view'],
 };
 
 // Mock users for demo
@@ -57,6 +88,15 @@ const MOCK_USERS: Record<string, { password: string; user: User }> = {
             name: 'Amit Patel',
             email: 'finance@atc.in',
             role: 'finance',
+        },
+    },
+    'support@atc.in': {
+        password: 'support123',
+        user: {
+            id: 'u-004',
+            name: 'Sneha Gupta',
+            email: 'support@atc.in',
+            role: 'support',
         },
     },
 };
@@ -106,6 +146,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return permissions.includes('*') || permissions.includes(permission);
     };
 
+    const canAccessPage = (pageId: string): boolean => {
+        if (!user) return false;
+        const pages = ROLE_PAGE_ACCESS[user.role];
+        return pages.includes('*') || pages.includes(pageId);
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -115,6 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 login,
                 logout,
                 hasPermission,
+                canAccessPage,
             }}
         >
             {children}
@@ -129,3 +176,6 @@ export function useAuth() {
     }
     return context;
 }
+
+// Export for sidebar usage
+export { ROLE_PAGE_ACCESS };
