@@ -1,153 +1,175 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard,
     Building2,
     Cpu,
-    Users,
-    CreditCard,
+    IndianRupee,
     FileText,
     BarChart3,
-    Shield,
+    Users,
+    ScrollText,
     Settings,
-    ChevronDown
+    ChevronDown,
+    ChevronRight,
+    X,
 } from 'lucide-react';
-import { useState } from 'react';
 
 interface NavItem {
+    name: string;
     href: string;
-    label: string;
-    icon: typeof LayoutDashboard;
+    icon: React.ElementType;
 }
 
-interface NavSection {
+interface NavGroup {
     title: string;
     items: NavItem[];
-    collapsible?: boolean;
 }
 
-const navSections: NavSection[] = [
-    {
-        title: '',
-        items: [
-            { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-        ],
-    },
+const NAV_GROUPS: NavGroup[] = [
     {
         title: 'Operations',
-        collapsible: true,
         items: [
-            { href: '/hotels', label: 'Hotels', icon: Building2 },
-            { href: '/fleet', label: 'Kiosk Fleet', icon: Cpu },
-            { href: '/users', label: 'User Access', icon: Users },
+            { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+            { name: 'Hotels', href: '/hotels', icon: Building2 },
+            { name: 'Kiosk Fleet', href: '/fleet', icon: Cpu },
         ],
     },
     {
         title: 'Business & Finance',
-        collapsible: true,
         items: [
-            { href: '/finance', label: 'Subscriptions', icon: CreditCard },
-            { href: '/invoices', label: 'Invoicing', icon: FileText },
-            { href: '/reports', label: 'Reports', icon: BarChart3 },
+            { name: 'Subscriptions', href: '/finance', icon: IndianRupee },
+            { name: 'Invoicing', href: '/invoices', icon: FileText },
+            { name: 'Reports', href: '/reports', icon: BarChart3 },
         ],
     },
     {
         title: 'System',
-        collapsible: true,
         items: [
-            { href: '/audit', label: 'Audit Logs', icon: Shield },
-            { href: '/settings', label: 'Settings', icon: Settings },
+            { name: 'User Access', href: '/users', icon: Users },
+            { name: 'Audit Logs', href: '/audit', icon: ScrollText },
+            { name: 'Settings', href: '/settings', icon: Settings },
         ],
     },
 ];
 
-function NavSection({ section }: { section: NavSection }) {
-    const pathname = usePathname();
-    const [isExpanded, setIsExpanded] = useState(true);
-
-    const hasActiveItem = section.items.some(
-        (item) => pathname === item.href ||
-            (item.href !== '/' && pathname.startsWith(item.href))
-    );
-
-    return (
-        <div className="mb-1">
-            {section.title && (
-                <button
-                    onClick={() => section.collapsible && setIsExpanded(!isExpanded)}
-                    className={`
-            w-full flex items-center justify-between px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider
-            ${hasActiveItem ? 'text-slate-300' : 'text-slate-500'}
-            ${section.collapsible ? 'hover:text-slate-300 cursor-pointer' : 'cursor-default'}
-          `}
-                >
-                    {section.title}
-                    {section.collapsible && (
-                        <ChevronDown
-                            className={`w-3 h-3 transition-transform ${isExpanded ? '' : '-rotate-90'}`}
-                        />
-                    )}
-                </button>
-            )}
-
-            {isExpanded && (
-                <div className="space-y-0.5">
-                    {section.items.map((item) => {
-                        const isActive = pathname === item.href ||
-                            (item.href !== '/' && pathname.startsWith(item.href));
-                        const Icon = item.icon;
-
-                        return (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={`
-                  flex items-center gap-2.5 px-3 py-2 mx-2 rounded-md text-sm font-medium transition-colors
-                  ${isActive
-                                        ? 'bg-slate-800 text-white'
-                                        : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
-                                    }
-                `}
-                            >
-                                <Icon className="w-4 h-4" />
-                                {item.label}
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
-        </div>
-    );
+interface SidebarProps {
+    isOpen?: boolean;
+    onClose?: () => void;
 }
 
-export function Sidebar() {
+export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+    const pathname = usePathname();
+    const [expandedGroups, setExpandedGroups] = useState<string[]>(
+        NAV_GROUPS.map((g) => g.title)
+    );
+
+    const toggleGroup = (title: string) => {
+        setExpandedGroups((prev) =>
+            prev.includes(title)
+                ? prev.filter((t) => t !== title)
+                : [...prev, title]
+        );
+    };
+
+    const handleLinkClick = () => {
+        // Close sidebar on mobile when link is clicked
+        if (onClose) {
+            onClose();
+        }
+    };
+
     return (
-        <aside className="fixed left-0 top-0 z-40 h-screen w-56 bg-slate-900 border-r border-slate-800 flex flex-col">
-            {/* Logo */}
-            <div className="h-14 flex items-center px-4 border-b border-slate-800 flex-shrink-0">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">ATC</span>
-                    </div>
-                    <span className="text-white font-semibold text-sm">Super Admin</span>
-                </div>
-            </div>
+        <>
+            {/* Mobile Overlay */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+                    onClick={onClose}
+                />
+            )}
 
-            {/* Navigation */}
-            <nav className="flex-1 py-3 overflow-y-auto">
-                {navSections.map((section, idx) => (
-                    <NavSection key={idx} section={section} />
-                ))}
-            </nav>
-
-            {/* Footer */}
-            <div className="flex-shrink-0 p-4 border-t border-slate-800">
-                <div className="text-xs text-slate-500">
-                    ATC Admin v1.0.0
+            {/* Sidebar */}
+            <aside
+                className={`
+          fixed top-0 left-0 z-50 h-screen w-64 
+          bg-white dark:bg-slate-900 
+          border-r border-slate-200 dark:border-slate-800
+          transform transition-transform duration-200 ease-in-out
+          lg:translate-x-0
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+            >
+                {/* Logo */}
+                <div className="h-14 flex items-center justify-between px-4 border-b border-slate-200 dark:border-slate-800">
+                    <Link href="/" className="flex items-center gap-2" onClick={handleLinkClick}>
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                            <Cpu className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-sm font-bold text-slate-900 dark:text-white">ATC Admin</span>
+                    </Link>
+                    {/* Close button - mobile only */}
+                    <button
+                        onClick={onClose}
+                        className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md lg:hidden"
+                    >
+                        <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                    </button>
                 </div>
-            </div>
-        </aside>
+
+                {/* Nav Groups */}
+                <nav className="p-3 space-y-4 overflow-y-auto h-[calc(100vh-3.5rem)]">
+                    {NAV_GROUPS.map((group) => {
+                        const isExpanded = expandedGroups.includes(group.title);
+
+                        return (
+                            <div key={group.title}>
+                                <button
+                                    onClick={() => toggleGroup(group.title)}
+                                    className="w-full flex items-center justify-between px-2 py-1.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider hover:text-slate-600 dark:hover:text-slate-400"
+                                >
+                                    {group.title}
+                                    {isExpanded ? (
+                                        <ChevronDown className="w-3.5 h-3.5" />
+                                    ) : (
+                                        <ChevronRight className="w-3.5 h-3.5" />
+                                    )}
+                                </button>
+
+                                {isExpanded && (
+                                    <div className="mt-1 space-y-0.5">
+                                        {group.items.map((item) => {
+                                            const isActive = pathname === item.href;
+                                            const Icon = item.icon;
+
+                                            return (
+                                                <Link
+                                                    key={item.href}
+                                                    href={item.href}
+                                                    onClick={handleLinkClick}
+                                                    className={`
+                            flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors
+                            ${isActive
+                                                            ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
+                                                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
+                                                        }
+                          `}
+                                                >
+                                                    <Icon className="w-4 h-4" />
+                                                    {item.name}
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </nav>
+            </aside>
+        </>
     );
 }
