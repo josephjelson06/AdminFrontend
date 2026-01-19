@@ -44,16 +44,17 @@ interface DropdownItemProps {
     onClick?: () => void;
     children: ReactNode;
     variant?: 'default' | 'danger';
+    className?: string;
 }
 
-export function DropdownItem({ onClick, children, variant = 'default' }: DropdownItemProps) {
+export function DropdownItem({ onClick, children, variant = 'default', className }: DropdownItemProps) {
     return (
         <button
             onClick={onClick}
-            className={`w-full text-left px-3 py-2 text-sm transition-colors ${variant === 'danger'
-                    ? 'text-rose-600 hover:bg-rose-50'
-                    : 'text-slate-700 hover:bg-slate-50'
-                }`}
+            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center gap-2 ${variant === 'danger'
+                ? 'text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-900/20'
+                : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700'
+                } ${className || ''}`}
         >
             {children}
         </button>
@@ -104,8 +105,8 @@ export function SelectDropdown({ value, options, onChange, placeholder = 'Select
                                 setIsOpen(false);
                             }}
                             className={`w-full text-left px-3 py-2 text-sm transition-colors ${option.value === value
-                                    ? 'bg-slate-100 text-slate-900 font-medium'
-                                    : 'text-slate-700 hover:bg-slate-50'
+                                ? 'bg-slate-100 text-slate-900 font-medium'
+                                : 'text-slate-700 hover:bg-slate-50'
                                 }`}
                         >
                             {option.label}

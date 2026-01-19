@@ -20,7 +20,7 @@ export interface Hotel {
 export interface Kiosk {
     id: string;
     serialNumber: string;
-    model: 'Kiosk-V1' | 'Kiosk-V2-Voice';
+    model: 'Kiosk-V1' | 'Kiosk-V2-Voice' | 'Kiosk-V3-Pro';
     assignedHotelId: string | null; // Null if inventory
     assignedHotelName?: string;
     firmwareVersion: string;

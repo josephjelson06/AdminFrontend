@@ -63,10 +63,16 @@ function NotificationIcon({ type }: { type: string }) {
 }
 
 const ROLE_LABELS: Record<string, { label: string; color: string }> = {
+    // Admin roles
     super_admin: { label: 'Super Admin', color: 'text-purple-600 dark:text-purple-400' },
     operations: { label: 'Operations', color: 'text-blue-600 dark:text-blue-400' },
     finance: { label: 'Finance', color: 'text-emerald-600 dark:text-emerald-400' },
     support: { label: 'Support', color: 'text-amber-600 dark:text-amber-400' },
+    // Hotel roles
+    hotel_manager: { label: 'Hotel Manager', color: 'text-indigo-600 dark:text-indigo-400' },
+    front_desk: { label: 'Front Desk', color: 'text-blue-600 dark:text-blue-400' },
+    housekeeping: { label: 'Housekeeping', color: 'text-amber-600 dark:text-amber-400' },
+    hotel_finance: { label: 'Finance', color: 'text-emerald-600 dark:text-emerald-400' },
 };
 
 interface HeaderProps {

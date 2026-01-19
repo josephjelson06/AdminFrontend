@@ -10,6 +10,7 @@ interface ConfirmModalProps {
     title: string;
     message: string;
     confirmLabel?: string;
+    confirmText?: string; // Alias for confirmLabel
     variant?: 'danger' | 'warning' | 'default';
 }
 
@@ -19,9 +20,11 @@ export function ConfirmModal({
     onConfirm,
     title,
     message,
-    confirmLabel = 'Confirm',
+    confirmLabel,
+    confirmText,
     variant = 'default',
 }: ConfirmModalProps) {
+    const buttonLabel = confirmText || confirmLabel || 'Confirm';
     const handleConfirm = () => {
         onConfirm();
         onClose();
@@ -57,7 +60,7 @@ export function ConfirmModal({
                         onClick={handleConfirm}
                         className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${buttonStyles[variant]}`}
                     >
-                        {confirmLabel}
+                        {buttonLabel}
                     </button>
                 </div>
             </div>

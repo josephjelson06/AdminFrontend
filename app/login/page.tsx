@@ -22,7 +22,9 @@ export default function LoginPage() {
         const success = await login(email, password);
 
         if (success) {
-            router.push('/');
+            // Route hotel users to /hotel, admin users to /
+            const isHotelUser = email.includes('@hotel.in');
+            router.push(isHotelUser ? '/hotel' : '/');
         } else {
             setError('Invalid email or password');
         }
@@ -132,9 +134,9 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    {/* Demo Credentials */}
+                    {/* Demo Credentials - ATC Admin */}
                     <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-                        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-3">Demo Credentials</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-3">ATC Admin Panel</p>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             <button
                                 type="button"
@@ -163,6 +165,41 @@ export default function LoginPage() {
                                 className="px-2 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-md hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                             >
                                 Support
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Demo Credentials - Hotel Panel */}
+                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-3">Hotel Panel (Grand Hyatt Mumbai)</p>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <button
+                                type="button"
+                                onClick={() => { setEmail('manager@hotel.in'); setPassword('manager123'); }}
+                                className="px-2 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-medium rounded-md hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+                            >
+                                Manager
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => { setEmail('frontdesk@hotel.in'); setPassword('frontdesk123'); }}
+                                className="px-2 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                            >
+                                Front Desk
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => { setEmail('hk@hotel.in'); setPassword('hk123'); }}
+                                className="px-2 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-medium rounded-md hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
+                            >
+                                Housekeeping
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => { setEmail('hotelfinance@hotel.in'); setPassword('hotelfinance123'); }}
+                                className="px-2 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium rounded-md hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
+                            >
+                                Finance
                             </button>
                         </div>
                     </div>

@@ -327,3 +327,98 @@ export function getRoleName(roleId: string): string {
 export function getUsersByRole(roleId: string): SystemUser[] {
     return MOCK_USERS.filter(u => u.roleId === roleId);
 }
+
+// ============================================
+// HOTEL ROLES (For Hotel Panel)
+// ============================================
+
+export interface HotelPageAccess {
+    id: string;
+    name: string;
+    description: string;
+    enabled: boolean;
+}
+
+export interface HotelRoleDefinition {
+    id: string;
+    name: string;
+    description: string;
+    color: string;
+    userCount: number;
+    pageAccess: HotelPageAccess[];
+    isSystemRole: boolean; // Cannot be deleted
+    createdAt: string;
+    updatedAt: string;
+}
+
+export const HOTEL_PAGES = [
+    { id: 'dashboard', name: 'Dashboard', description: 'Kiosk health and activity overview' },
+    { id: 'guests', name: 'Guest Log', description: 'Check-in history and guest records' },
+    { id: 'rooms', name: 'Room Status', description: 'Housekeeping and room management' },
+    { id: 'kiosk', name: 'Kiosk Settings', description: 'Kiosk configuration and branding' },
+    { id: 'settings', name: 'My Hotel', description: 'Hotel profile and contact info' },
+    { id: 'team', name: 'Team Access', description: 'Staff accounts and permissions' },
+    { id: 'billing', name: 'Billing', description: 'Subscription and invoices' },
+    { id: 'help', name: 'Help & Support', description: 'FAQs and support contact' },
+];
+
+export const MOCK_HOTEL_ROLES: HotelRoleDefinition[] = [
+    {
+        id: 'hotel-role-001',
+        name: 'Hotel Manager',
+        description: 'Full access to all hotel panel features',
+        color: 'indigo',
+        userCount: 12,
+        pageAccess: HOTEL_PAGES.map(page => ({ ...page, enabled: true })),
+        isSystemRole: true,
+        createdAt: '2024-01-15',
+        updatedAt: '2024-01-15',
+    },
+    {
+        id: 'hotel-role-002',
+        name: 'Front Desk',
+        description: 'Guest check-in operations and room assignments',
+        color: 'blue',
+        userCount: 45,
+        pageAccess: HOTEL_PAGES.map(page => ({
+            ...page,
+            enabled: ['dashboard', 'guests', 'rooms', 'help'].includes(page.id),
+        })),
+        isSystemRole: true,
+        createdAt: '2024-01-15',
+        updatedAt: '2024-02-10',
+    },
+    {
+        id: 'hotel-role-003',
+        name: 'Housekeeping',
+        description: 'Room status updates only',
+        color: 'amber',
+        userCount: 78,
+        pageAccess: HOTEL_PAGES.map(page => ({
+            ...page,
+            enabled: ['rooms', 'help'].includes(page.id),
+        })),
+        isSystemRole: true,
+        createdAt: '2024-01-15',
+        updatedAt: '2024-01-15',
+    },
+    {
+        id: 'hotel-role-004',
+        name: 'Hotel Finance',
+        description: 'Billing and subscription management',
+        color: 'emerald',
+        userCount: 8,
+        pageAccess: HOTEL_PAGES.map(page => ({
+            ...page,
+            enabled: ['dashboard', 'billing', 'help'].includes(page.id),
+        })),
+        isSystemRole: true,
+        createdAt: '2024-01-15',
+        updatedAt: '2024-01-15',
+    },
+];
+
+export function getHotelRoleById(roleId: string): HotelRoleDefinition | undefined {
+    return MOCK_HOTEL_ROLES.find(r => r.id === roleId);
+}
+
