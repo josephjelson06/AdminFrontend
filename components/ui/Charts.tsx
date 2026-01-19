@@ -29,8 +29,10 @@ const COLORS = {
 
 const PIE_COLORS = ['#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ChartDataPoint = Record<string, any>;
+interface ChartDataPoint {
+    name: string;
+    [key: string]: string | number;
+}
 
 interface AreaChartProps {
     data: ChartDataPoint[];
