@@ -171,7 +171,7 @@ export function GlobalSearch() {
             {/* No results */}
             {isOpen && query.length >= 2 && results.length === 0 && (
                 <div className="absolute top-full left-0 mt-1 w-80 bg-white border border-slate-200 rounded-lg shadow-lg p-4 z-50">
-                    <p className="text-sm text-slate-500 text-center">No results found for "{query}"</p>
+                    <p className="text-sm text-slate-500 text-center">No results found for &quot;{query}&quot;</p>
                 </div>
             )}
         </div>
