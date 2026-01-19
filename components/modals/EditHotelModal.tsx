@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { SelectDropdown } from '@/components/ui/Dropdown';
 import { useToast } from '@/components/ui/Toast';
-import type { Hotel, HotelPlan, Status } from '@/types/schema';
+import type { Hotel } from '@/types/schema';
 
 interface EditHotelModalProps {
     isOpen: boolean;
@@ -86,7 +86,7 @@ export function EditHotelModal({ isOpen, onClose, hotel, onSubmit }: EditHotelMo
                         <label className="block text-sm font-medium text-slate-700 mb-1">Plan</label>
                         <SelectDropdown
                             value={formData.plan}
-                            onChange={(value) => setFormData({ ...formData, plan: value as HotelPlan })}
+                            onChange={(value) => setFormData({ ...formData, plan: value })}
                             options={[
                                 { value: 'standard', label: 'Standard' },
                                 { value: 'advanced', label: 'Advanced' },
@@ -98,7 +98,7 @@ export function EditHotelModal({ isOpen, onClose, hotel, onSubmit }: EditHotelMo
                         <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
                         <SelectDropdown
                             value={formData.status}
-                            onChange={(value) => setFormData({ ...formData, status: value as Status })}
+                            onChange={(value) => setFormData({ ...formData, status: value })}
                             options={[
                                 { value: 'active', label: 'Active' },
                                 { value: 'suspended', label: 'Suspended' },

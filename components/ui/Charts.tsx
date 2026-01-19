@@ -31,6 +31,7 @@ const PIE_COLORS = ['#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#647
 
 interface ChartDataPoint {
     name: string;
+    value: number;
     [key: string]: string | number;
 }
 
@@ -239,7 +240,7 @@ export function DonutChartComponent({
                         borderRadius: '8px',
                         fontSize: '12px',
                     }}
-                    formatter={(value) => [`${value} (${((Number(value) / total) * 100).toFixed(1)}%)`, '']}
+                    formatter={(value: number) => [`${value} (${((value / total) * 100).toFixed(1)}%)`, '']}
                 />
             </PieChart>
         </ResponsiveContainer>
