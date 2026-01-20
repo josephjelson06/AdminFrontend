@@ -247,6 +247,61 @@ export function DonutChartComponent({
     );
 }
 
+// Stacked Bar Chart for revenue breakdown
+interface StackedBarChartProps {
+    data: Record<string, string | number>[];
+    bars: { dataKey: string; color: string; name?: string }[];
+    xAxisKey?: string;
+    height?: number;
+    showGrid?: boolean;
+}
+
+export function StackedBarChartComponent({
+    data,
+    bars,
+    xAxisKey = 'name',
+    height = 200,
+    showGrid = true,
+}: StackedBarChartProps) {
+    return (
+        <ResponsiveContainer width="100%" height={height}>
+            <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />}
+                <XAxis
+                    dataKey={xAxisKey}
+                    tick={{ fontSize: 11, fill: '#64748b' }}
+                    axisLine={{ stroke: '#e2e8f0' }}
+                    tickLine={false}
+                />
+                <YAxis
+                    tick={{ fontSize: 11, fill: '#64748b' }}
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={(value) => value >= 100000 ? `${(value / 100000).toFixed(0)}L` : value}
+                />
+                <Tooltip
+                    contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                    }}
+                    formatter={(value) => [`₹${Number(value || 0).toLocaleString('en-IN')}`, '']}
+                />
+                {bars.map((bar) => (
+                    <Bar
+                        key={bar.dataKey}
+                        dataKey={bar.dataKey}
+                        stackId="stack"
+                        fill={bar.color}
+                        name={bar.name || bar.dataKey}
+                    />
+                ))}
+            </BarChart>
+        </ResponsiveContainer>
+    );
+}
+
 // Simple stat with mini sparkline
 interface SparklineProps {
     data: number[];

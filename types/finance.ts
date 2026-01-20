@@ -1,0 +1,88 @@
+// Finance & Billing Types
+export type InvoiceStatus = 'paid' | 'pending' | 'overdue' | 'cancelled';
+export type PaymentMethod = 'auto' | 'manual' | 'bank_transfer' | 'upi' | 'cheque';
+export type PaymentStatus = 'active' | 'failed' | 'grace_period' | 'paused';
+export type RevenueStream = 'subscription' | 'hardware' | 'amc';
+
+export interface Invoice {
+    id: string;
+    hotelId: string;
+    hotelName: string;
+    invoiceNumber: string;
+    amount: number;
+    taxAmount: number;
+    totalAmount: number;
+    status: InvoiceStatus;
+    issueDate: string;
+    dueDate: string;
+    paidDate: string | null;
+    lineItems: InvoiceLineItem[];
+    paymentReference?: string;
+}
+
+export interface InvoiceLineItem {
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    amount: number;
+}
+
+export interface HotelSubscription {
+    hotelId: string;
+    hotelName: string;
+    location: string;
+    plan: 'standard' | 'advanced';
+    status: 'active' | 'suspended' | 'grace_period' | 'cancelled';
+    paymentMethod: PaymentMethod;
+    paymentStatus: PaymentStatus;
+    mrr: number;
+    startDate: string;
+    nextBillingDate: string;
+    contractEndDate: string;
+    cardLast4?: string;
+    cardBrand?: string;
+    failedAttempts?: number;
+    lastFailureReason?: string;
+    gracePeriodDaysRemaining?: number;
+}
+
+export interface RevenueData {
+    name: string;
+    subscription: number;
+    hardware: number;
+    amc: number;
+    total: number;
+    [key: string]: string | number;
+}
+
+export interface CashFlowSummary {
+    collected: number;
+    outstanding: number;
+    overdue: number;
+}
+
+export interface AtRiskItem {
+    id: string;
+    hotelId: string;
+    hotelName: string;
+    type: 'overdue_payment' | 'expiring_contract' | 'payment_failed';
+    severity: 'critical' | 'warning' | 'info';
+    amount: number;
+    message: string;
+    daysOverdue?: number;
+    daysToExpiry?: number;
+    failureCount?: number;
+}
+
+export interface FinancialMetrics {
+    mrr: number;
+    arr: number;
+    mrrGrowthQoQ: number;
+    mrrGrowthYoY: number;
+    totalCollected: number;
+    totalOutstanding: number;
+    totalOverdue: number;
+    activeSubscriptions: number;
+    newSubscriptionsThisMonth: number;
+    churnedThisMonth: number;
+}
