@@ -51,13 +51,13 @@ export function GlobalSearch() {
         MOCK_KIOSKS.forEach((kiosk) => {
             if (
                 kiosk.serialNumber.toLowerCase().includes(lowerQuery) ||
-                kiosk.assignedHotel?.toLowerCase().includes(lowerQuery)
+                kiosk.assignedHotelName?.toLowerCase().includes(lowerQuery)
             ) {
                 searchResults.push({
                     type: 'kiosk',
                     id: kiosk.id,
                     title: kiosk.serialNumber,
-                    subtitle: kiosk.assignedHotel || 'Unassigned',
+                    subtitle: kiosk.assignedHotelName || 'Unassigned',
                     href: `/fleet`,
                 });
             }
