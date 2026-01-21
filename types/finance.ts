@@ -3,6 +3,26 @@ export type InvoiceStatus = 'paid' | 'pending' | 'overdue' | 'cancelled';
 export type PaymentMethod = 'auto' | 'manual' | 'bank_transfer' | 'upi' | 'cheque';
 export type PaymentStatus = 'active' | 'failed' | 'grace_period' | 'paused';
 export type RevenueStream = 'subscription' | 'hardware' | 'amc';
+export type PlanStatus = 'active' | 'deprecated';
+export type PricingModel = 'flat' | 'per-unit' | 'tiered';
+export type BillingFrequency = 'monthly' | 'quarterly' | 'annual';
+
+// Plans - Commercial Configuration (what we sell)
+export interface Plan {
+    id: string;
+    name: string;                       // Standard, Advanced, Enterprise
+    description: string;
+    pricingModel: PricingModel;
+    basePrice: number;                  // Base monthly price
+    includedKiosks: number;             // Kiosks included in base price
+    overageRate?: number;               // Per-kiosk overage rate
+    billingFrequency: BillingFrequency[];
+    status: PlanStatus;
+    features: string[];                 // List of included features
+    effectiveDate: string;              // When this plan version became active
+    version: number;                    // For versioning history
+    subscriberCount?: number;           // Read-only, for display (not editable here)
+}
 
 export interface Invoice {
     id: string;

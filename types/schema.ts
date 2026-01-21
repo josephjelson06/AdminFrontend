@@ -7,13 +7,19 @@ export interface Hotel {
     id: string;
     name: string;
     location: string; // e.g., "Mumbai, MH"
+    city: string;     // Extracted city name
+    state: string;    // Extracted state code
     status: Status;
     plan: HotelPlan;
     kioskCount: number;
-    // Financials
+    // Financials (displayed in Finance module, kept for data)
     mrr: number; // Monthly Recurring Revenue
     contractRenewalDate: string;
+    // Contact & Registry metadata
     contactEmail: string;
+    contactPhone: string;   // Phone for click-to-dial
+    onboardedDate: string;  // ISO date of onboarding
+    lastActivity?: string;  // Optional last activity timestamp
 }
 
 // 2. KIOSK (HARDWARE) ENTITY

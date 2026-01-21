@@ -21,6 +21,7 @@ import {
     User,
     PanelLeftClose,
     PanelLeft,
+    CreditCard,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 
@@ -48,8 +49,9 @@ const NAV_GROUPS: NavGroup[] = [
     {
         title: 'Business & Finance',
         items: [
-            { id: 'finance', name: 'Subscriptions', href: '/finance', icon: IndianRupee },
-            { id: 'invoices', name: 'Invoicing', href: '/invoices', icon: FileText },
+            { id: 'plans', name: 'Plans', href: '/plans', icon: CreditCard },
+            { id: 'subscriptions', name: 'Subscriptions', href: '/subscriptions', icon: IndianRupee },
+            { id: 'invoices', name: 'Invoices', href: '/invoices', icon: FileText },
             { id: 'reports', name: 'Reports', href: '/reports', icon: BarChart3 },
         ],
     },

@@ -1,8 +1,7 @@
 'use client';
 
-import { BarChart3, Globe, Languages, TrendingUp, Download, Calendar, Building2, MapPin } from 'lucide-react';
-import { useToast } from '@/components/ui/Toast';
-import { exportToCSV } from '@/lib/export';
+import Link from 'next/link';
+import { BarChart3, Globe, Languages, TrendingUp, Calendar, Building2, MapPin, ArrowRight, FileText } from 'lucide-react';
 import { IndiaHeatmap } from '@/components/ui/IndiaHeatmap';
 import { AreaChartComponent, BarChartComponent, DonutChartComponent, LineChartComponent } from '@/components/ui/Charts';
 
@@ -58,32 +57,15 @@ const DAILY_DATA = [
 ];
 
 export default function ReportsPage() {
-    const { addToast } = useToast();
     const totalCheckins = MOCK_CHECKIN_DATA.reduce((sum, d) => sum + d.checkins, 0);
     const totalKiosks = MOCK_STATE_DATA.reduce((sum, d) => sum + d.kiosks, 0);
-
-    const handleExport = () => {
-        const exportData = MOCK_TOP_HOTELS.map((hotel) => ({
-            hotel_name: hotel.name,
-            checkins: hotel.checkins,
-            self_checkin_rate: `${hotel.selfCheckInRate}%`,
-        }));
-
-        exportToCSV(exportData, 'atc_reports_export', [
-            { key: 'hotel_name', label: 'Hotel Name' },
-            { key: 'checkins', label: 'Total Check-ins' },
-            { key: 'self_checkin_rate', label: 'Self Check-in Rate' },
-        ]);
-
-        addToast('success', 'Export Complete', 'Reports data downloaded as CSV');
-    };
 
     return (
         <div className="p-6">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Reports & Analytics</h1>
+                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Analytics Overview</h1>
                     <p className="text-sm text-slate-500 dark:text-slate-400">Business intelligence and usage insights</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -91,13 +73,13 @@ export default function ReportsPage() {
                         <Calendar className="w-4 h-4 text-slate-400" />
                         <span className="text-sm text-slate-600 dark:text-slate-300">Last 6 months</span>
                     </div>
-                    <button
-                        onClick={handleExport}
+                    <Link
+                        href="/reports/usage"
                         className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-slate-800 dark:hover:bg-emerald-700 transition-colors"
                     >
-                        <Download className="w-4 h-4" />
-                        Export CSV
-                    </button>
+                        <FileText className="w-4 h-4" />
+                        View Reports
+                    </Link>
                 </div>
             </div>
 
@@ -130,11 +112,16 @@ export default function ReportsPage() {
             {/* Main Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* Check-ins & AI Sessions Trend */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                        <BarChart3 className="w-4 h-4 text-slate-400" />
-                        Check-ins & AI Sessions
-                    </h3>
+                <Link href="/reports/usage" className="block bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors cursor-pointer">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                            <BarChart3 className="w-4 h-4 text-slate-400" />
+                            Check-ins & AI Sessions
+                        </h3>
+                        <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                            View Report <ArrowRight className="w-3 h-3" />
+                        </span>
+                    </div>
                     <LineChartComponent
                         data={MOCK_CHECKIN_DATA}
                         lines={[
@@ -143,7 +130,7 @@ export default function ReportsPage() {
                         ]}
                         height={220}
                     />
-                </div>
+                </Link>
 
                 {/* Weekly Pattern */}
                 <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
@@ -183,14 +170,19 @@ export default function ReportsPage() {
                     </div>
                 </div>
 
-                {/* India Heatmap */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2">
-                        <MapPin className="w-4 h-4 text-slate-400" />
-                        Geographic Coverage
-                    </h3>
+                {/* India Heatmap - Links to Operational */}
+                <Link href="/reports/operational" className="block bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors cursor-pointer">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-slate-400" />
+                            Geographic Coverage
+                        </h3>
+                        <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                            View Report <ArrowRight className="w-3 h-3" />
+                        </span>
+                    </div>
                     <IndiaHeatmap data={MOCK_STATE_DATA} />
-                </div>
+                </Link>
 
                 {/* Top Hotels */}
                 <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
@@ -209,6 +201,36 @@ export default function ReportsPage() {
                         />
                     </div>
                 </div>
+            </div>
+
+            {/* Reports Quick Access */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <Link
+                    href="/reports/usage"
+                    className="flex items-center gap-4 p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors"
+                >
+                    <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                        <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Usage Reports</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">Check-in consumption and session logs</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-slate-400" />
+                </Link>
+                <Link
+                    href="/reports/operational"
+                    className="flex items-center gap-4 p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors"
+                >
+                    <div className="p-3 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                        <BarChart3 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Operational Reports</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">Kiosk usage and deployment data</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-slate-400" />
+                </Link>
             </div>
 
             {/* State-wise Table */}
