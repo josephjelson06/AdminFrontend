@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     Search,
     Calendar,
@@ -22,8 +22,8 @@ import {
     MOCK_GUEST_CHECKINS,
     GuestCheckIn,
     getVerificationColor,
-} from '@/lib/hotel-data';
-import { useToast } from '@/components/ui/Toast';
+} from '@/lib/hotel/hotel-data';
+import { useToast } from '@/components/shared/ui/Toast';
 
 // Date filter options
 const DATE_FILTERS = [

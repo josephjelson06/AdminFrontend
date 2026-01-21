@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     Monitor,
     Upload,
@@ -19,9 +19,9 @@ import {
     MOCK_KIOSK_CONFIG,
     AVAILABLE_LANGUAGES,
     MOCK_HOTEL_PROFILE,
-} from '@/lib/hotel-data';
-import { useToast } from '@/components/ui/Toast';
-import { ConfirmModal } from '@/components/modals/ConfirmModal';
+} from '@/lib/hotel/hotel-data';
+import { useToast } from '@/components/shared/ui/Toast';
+import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
 
 // Preview Modal for Kiosk Display
 function PreviewModal({

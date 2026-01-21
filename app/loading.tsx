@@ -1,4 +1,4 @@
-import { CardGridSkeleton, Skeleton } from '@/components/ui/Skeleton';
+import { CardGridSkeleton, Skeleton } from '@/components/shared/ui/Skeleton';
 
 export default function DashboardLoading() {
     return (

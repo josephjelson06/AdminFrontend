@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     Filter,
     RefreshCw,
@@ -18,9 +18,9 @@ import {
     RoomStatus,
     getRoomStatusColor,
     getRoomStatusLabel,
-} from '@/lib/hotel-data';
-import { useToast } from '@/components/ui/Toast';
-import { ConfirmModal } from '@/components/modals/ConfirmModal';
+} from '@/lib/hotel/hotel-data';
+import { useToast } from '@/components/shared/ui/Toast';
+import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
 
 // Filter options
 const FLOOR_FILTERS = [
@@ -180,9 +180,9 @@ function RoomDetailModal({
                 <div className="p-5">
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Current Status</p>
                     <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl ${room.status === 'ready' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' :
-                            room.status === 'cleaning' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
-                                room.status === 'occupied' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
-                                    'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400'
+                        room.status === 'cleaning' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
+                            room.status === 'occupied' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                                'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400'
                         }`}>
                         <div className={`w-3 h-3 rounded-full ${getRoomStatusColor(room.status)}`} />
                         <span className="font-semibold">{getRoomStatusLabel(room.status)}</span>
@@ -203,12 +203,12 @@ function RoomDetailModal({
                                     }}
                                     disabled={room.status === status}
                                     className={`py-2.5 px-3 text-sm font-medium rounded-xl transition-all ${room.status === status
-                                            ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-                                            : status === 'ready'
-                                                ? 'bg-emerald-500 text-white hover:bg-emerald-600'
-                                                : status === 'cleaning'
-                                                    ? 'bg-amber-500 text-white hover:bg-amber-600'
-                                                    : 'bg-rose-500 text-white hover:bg-rose-600'
+                                        ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
+                                        : status === 'ready'
+                                            ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                                            : status === 'cleaning'
+                                                ? 'bg-amber-500 text-white hover:bg-amber-600'
+                                                : 'bg-rose-500 text-white hover:bg-rose-600'
                                         }`}
                                 >
                                     {getRoomStatusLabel(status)}
@@ -329,8 +329,8 @@ export default function RoomsPage() {
                             key={stat.label}
                             onClick={() => setStatusFilter(statusFilter === stat.label.toLowerCase() ? 'all' : stat.label.toLowerCase())}
                             className={`relative overflow-hidden rounded-xl p-4 text-center transition-all hover:scale-105 ${statusFilter === stat.label.toLowerCase()
-                                    ? `bg-gradient-to-br ${stat.color} text-white shadow-lg`
-                                    : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
+                                ? `bg-gradient-to-br ${stat.color} text-white shadow-lg`
+                                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
                                 }`}
                         >
                             <div className={`text-2xl sm:text-3xl font-bold ${statusFilter === stat.label.toLowerCase() ? 'text-white' : stat.textColor}`}>
@@ -364,8 +364,8 @@ export default function RoomsPage() {
                                     key={filter.id}
                                     onClick={() => setStatusFilter(filter.id)}
                                     className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${statusFilter === filter.id
-                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none'
-                                            : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none'
+                                        : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
                                         }`}
                                 >
                                     <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${filter.color}`} />

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     UserPlus,
     MoreHorizontal,
@@ -20,10 +20,10 @@ import {
     HOTEL_ROLE_LABELS,
     HotelUserRole,
     HotelUser,
-} from '@/lib/hotel-data';
-import { Dropdown, DropdownItem } from '@/components/ui/Dropdown';
-import { useToast } from '@/components/ui/Toast';
-import { ConfirmModal } from '@/components/modals/ConfirmModal';
+} from '@/lib/hotel/hotel-data';
+import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
+import { useToast } from '@/components/shared/ui/Toast';
+import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
 
 const ROLE_OPTIONS: { value: HotelUserRole; label: string; description: string; color: string }[] = [
     { value: 'hotel_manager', label: 'Hotel Manager', description: 'Full access to all features', color: 'bg-indigo-500' },

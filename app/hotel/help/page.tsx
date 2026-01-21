@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     HelpCircle,
     MessageSquare,
@@ -17,7 +17,7 @@ import {
     Loader2,
     ExternalLink,
 } from 'lucide-react';
-import { useToast } from '@/components/ui/Toast';
+import { useToast } from '@/components/shared/ui/Toast';
 
 // FAQ Data
 const FAQ_ITEMS = [
