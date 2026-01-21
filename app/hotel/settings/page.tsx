@@ -16,6 +16,7 @@ import {
     Monitor,
     Sparkles,
     Calendar,
+    X,
 } from 'lucide-react';
 import { MOCK_HOTEL_PROFILE } from '@/lib/hotel-data';
 import { useToast } from '@/components/ui/Toast';
@@ -23,17 +24,60 @@ import { ConfirmModal } from '@/components/modals/ConfirmModal';
 
 export default function HotelSettingsPage() {
     const { addToast } = useToast();
+    const [originalProfile] = useState(MOCK_HOTEL_PROFILE);
     const [profile, setProfile] = useState(MOCK_HOTEL_PROFILE);
     const [hasChanges, setHasChanges] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Validate field
+    const validateField = (field: string, value: string): string => {
+        switch (field) {
+            case 'email':
+                if (!value.includes('@') || !value.includes('.')) return 'Please enter a valid email address';
+                break;
+            case 'phone':
+                if (value.replace(/\D/g, '').length < 10) return 'Please enter a valid phone number';
+                break;
+            case 'pincode':
+                if (!/^\d{6}$/.test(value)) return 'PIN code must be 6 digits';
+                break;
+            case 'name':
+                if (value.length < 3) return 'Hotel name must be at least 3 characters';
+                break;
+        }
+        return '';
+    };
 
     const handleChange = (field: string, value: string) => {
         setProfile(prev => ({ ...prev, [field]: value }));
         setHasChanges(true);
+        const error = validateField(field, value);
+        setErrors(prev => ({ ...prev, [field]: error }));
+    };
+
+    const handleDiscard = () => {
+        setProfile(originalProfile);
+        setHasChanges(false);
+        setErrors({});
+        addToast('info', 'Changes Discarded', 'All changes have been reverted');
     };
 
     const handleSave = () => {
+        // Check for any validation errors
+        const newErrors: Record<string, string> = {};
+        const fieldsToValidate = ['name', 'email', 'phone', 'pincode'];
+        fieldsToValidate.forEach(field => {
+            const error = validateField(field, profile[field as keyof typeof profile] as string);
+            if (error) newErrors[field] = error;
+        });
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            addToast('error', 'Validation Error', 'Please fix the errors before saving');
+            return;
+        }
         setShowConfirm(true);
     };
 
@@ -62,23 +106,34 @@ export default function HotelSettingsPage() {
                             Manage your hotel profile and contact information
                         </p>
                     </div>
-                    <button
-                        onClick={handleSave}
-                        disabled={!hasChanges || isSaving}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 dark:shadow-none transition-all"
-                    >
-                        {isSaving ? (
-                            <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                Saving...
-                            </>
-                        ) : (
-                            <>
-                                <Save className="w-4 h-4" />
-                                Save Changes
-                            </>
+                    <div className="flex items-center gap-3">
+                        {hasChanges && (
+                            <button
+                                onClick={handleDiscard}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
+                            >
+                                <X className="w-4 h-4" />
+                                Discard
+                            </button>
                         )}
-                    </button>
+                        <button
+                            onClick={handleSave}
+                            disabled={!hasChanges || isSaving}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 dark:shadow-none transition-all"
+                        >
+                            {isSaving ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="w-4 h-4" />
+                                    Save Changes
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="space-y-6">
@@ -162,8 +217,9 @@ export default function HotelSettingsPage() {
                                     type="text"
                                     value={profile.name}
                                     onChange={(e) => handleChange('name', e.target.value)}
-                                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
+                                    className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 transition-shadow ${errors.name ? 'border-rose-500 focus:ring-rose-500' : 'border-slate-200 dark:border-slate-600 focus:ring-indigo-500'}`}
                                 />
+                                {errors.name && <p className="mt-1 text-xs text-rose-500">{errors.name}</p>}
                             </div>
 
                             <div className="sm:col-span-2">
@@ -210,8 +266,9 @@ export default function HotelSettingsPage() {
                                     type="text"
                                     value={profile.pincode}
                                     onChange={(e) => handleChange('pincode', e.target.value)}
-                                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
+                                    className={`w-full px-4 py-2.5 border rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 transition-shadow ${errors.pincode ? 'border-rose-500 focus:ring-rose-500' : 'border-slate-200 dark:border-slate-600 focus:ring-indigo-500'}`}
                                 />
+                                {errors.pincode && <p className="mt-1 text-xs text-rose-500">{errors.pincode}</p>}
                             </div>
                         </div>
                     </div>

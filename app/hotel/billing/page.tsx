@@ -242,13 +242,13 @@ export default function BillingPage() {
 
                     {/* Actions */}
                     <div className="flex flex-wrap gap-3">
-                        <button
-                            onClick={() => addToast('info', 'Contact Sales', 'Opening support portal...')}
+                        <a
+                            href={`mailto:sales@atc.in?subject=Plan Upgrade Inquiry - ${MOCK_HOTEL_PROFILE.name}&body=Hotel: ${MOCK_HOTEL_PROFILE.name}%0D%0ACurrent Plan: ${profile.plan}%0D%0A%0D%0AI am interested in upgrading my plan. Please contact me to discuss options.`}
                             className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all hover:shadow-lg"
                         >
                             <ExternalLink className="w-4 h-4" />
                             Contact Sales to Upgrade
-                        </button>
+                        </a>
                     </div>
 
                     {/* Invoice History */}

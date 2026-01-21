@@ -54,15 +54,15 @@ const MOCK_AUDIT_LOGS = [
 
 function CategoryBadge({ category }: { category: string }) {
     const styles: Record<string, string> = {
-        hotel: 'bg-blue-100 text-blue-700',
-        kiosk: 'bg-purple-100 text-purple-700',
-        alert: 'bg-rose-100 text-rose-700',
-        billing: 'bg-emerald-100 text-emerald-700',
-        user: 'bg-amber-100 text-amber-700',
+        hotel: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+        kiosk: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+        alert: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+        billing: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+        user: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
     };
 
     return (
-        <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${styles[category] || 'bg-slate-100 text-slate-600'}`}>
+        <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${styles[category] || 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'}`}>
             {category}
         </span>
     );
@@ -72,17 +72,17 @@ export default function AuditPage() {
     return (
         <div className="p-6">
             {/* Page Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900">Audit Logs</h1>
-                    <p className="text-sm text-slate-500">Security and activity log (read-only)</p>
+                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Audit Logs</h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Security and activity log (read-only)</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 text-sm text-slate-600 rounded-md hover:bg-slate-50 transition-colors">
+                    <button className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                         <Filter className="w-4 h-4" />
                         Filter
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-md hover:bg-slate-800 transition-colors">
+                    <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-slate-800 dark:hover:bg-emerald-700 transition-colors">
                         <Download className="w-4 h-4" />
                         Export
                     </button>
@@ -90,32 +90,32 @@ export default function AuditPage() {
             </div>
 
             {/* Audit Log Table */}
-            <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
+            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
                 <table className="w-full">
                     <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200">
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                        <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
+                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
                                 Timestamp
                             </th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
                                 User
                             </th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
                                 Action
                             </th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
                                 Category
                             </th>
-                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                            <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
                                 Details
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                         {MOCK_AUDIT_LOGS.map((log) => (
-                            <tr key={log.id} className="hover:bg-slate-50">
+                            <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                                 <td className="px-4 py-3">
-                                    <div className="flex items-center gap-1.5 text-sm text-slate-600">
+                                    <div className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
                                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
                                         {new Date(log.timestamp).toLocaleDateString('en-IN', {
                                             day: 'numeric',
@@ -132,17 +132,17 @@ export default function AuditPage() {
                                         ) : (
                                             <User className="w-4 h-4 text-slate-400" />
                                         )}
-                                        <span className="text-sm text-slate-900">{log.user}</span>
+                                        <span className="text-sm text-slate-900 dark:text-white">{log.user}</span>
                                     </div>
                                 </td>
                                 <td className="px-4 py-3">
-                                    <span className="text-sm font-medium text-slate-900">{log.action}</span>
+                                    <span className="text-sm font-medium text-slate-900 dark:text-white">{log.action}</span>
                                 </td>
                                 <td className="px-4 py-3">
                                     <CategoryBadge category={log.category} />
                                 </td>
                                 <td className="px-4 py-3">
-                                    <span className="text-sm text-slate-500">{log.details}</span>
+                                    <span className="text-sm text-slate-500 dark:text-slate-400">{log.details}</span>
                                 </td>
                             </tr>
                         ))}
@@ -151,8 +151,8 @@ export default function AuditPage() {
             </div>
 
             {/* Footer */}
-            <div className="mt-4 text-sm text-slate-500">
-                Showing <span className="font-medium text-slate-700">{MOCK_AUDIT_LOGS.length}</span> recent logs
+            <div className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+                Showing <span className="font-medium text-slate-700 dark:text-slate-300">{MOCK_AUDIT_LOGS.length}</span> recent logs
             </div>
         </div>
     );

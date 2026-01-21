@@ -159,8 +159,8 @@ function AddMemberModal({
                                     type="button"
                                     onClick={() => setRole(option.value)}
                                     className={`p-3 rounded-xl border-2 text-left transition-all ${role === option.value
-                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
-                                            : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500'
+                                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                                        : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500'
                                         }`}
                                 >
                                     <div className="flex items-center gap-2 mb-1">
@@ -220,10 +220,170 @@ function AddMemberModal({
     );
 }
 
+// Edit Team Member Modal
+function EditMemberModal({
+    member,
+    onClose,
+    onSave,
+}: {
+    member: HotelUser | null;
+    onClose: () => void;
+    onSave: (updates: Partial<HotelUser>) => void;
+}) {
+    const [name, setName] = useState(member?.name || '');
+    const [phone, setPhone] = useState(member?.phone || '');
+    const [role, setRole] = useState<HotelUserRole>(member?.role || 'front_desk');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Update form when member changes
+    if (member && name !== member.name && !isSubmitting) {
+        setName(member.name);
+        setPhone(member.phone || '');
+        setRole(member.role);
+    }
+
+    if (!member) return null;
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        await new Promise(resolve => setTimeout(resolve, 600));
+        onSave({ id: member.id, name, phone, role });
+        setIsSubmitting(false);
+        onClose();
+    };
+
+    const isValid = name.length > 0;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose} />
+            <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+                {/* Header */}
+                <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-amber-100 dark:bg-amber-900/50 rounded-xl">
+                            <Edit2 className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Edit Team Member</h2>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Update member details</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    >
+                        <X className="w-5 h-5 text-slate-500" />
+                    </button>
+                </div>
+
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="p-5 space-y-4">
+                    {/* Name */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            Full Name <span className="text-rose-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
+                        />
+                    </div>
+
+                    {/* Email (readonly) */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            Email Address
+                        </label>
+                        <input
+                            type="email"
+                            value={member.email}
+                            disabled
+                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 cursor-not-allowed"
+                        />
+                        <p className="text-xs text-slate-400 mt-1">Email cannot be changed</p>
+                    </div>
+
+                    {/* Phone */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            Phone Number
+                        </label>
+                        <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder="e.g., +91 98765 43210"
+                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
+                        />
+                    </div>
+
+                    {/* Role Selection */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Role <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {ROLE_OPTIONS.map((option) => (
+                                <button
+                                    key={option.value}
+                                    type="button"
+                                    onClick={() => setRole(option.value)}
+                                    className={`p-3 rounded-xl border-2 text-left transition-all ${role === option.value
+                                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                                        : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500'
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <div className={`w-2 h-2 rounded-full ${option.color}`} />
+                                        <span className="text-sm font-medium text-slate-900 dark:text-white">{option.label}</span>
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">{option.description}</p>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </form>
+
+                {/* Footer */}
+                <div className="p-5 border-t border-slate-200 dark:border-slate-700 flex gap-3">
+                    <button
+                        onClick={onClose}
+                        className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={!isValid || isSubmitting}
+                        className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <Check className="w-4 h-4" />
+                                Save Changes
+                            </>
+                        )}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function TeamPage() {
     const { addToast } = useToast();
     const [team, setTeam] = useState(MOCK_HOTEL_TEAM);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [editMember, setEditMember] = useState<HotelUser | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<HotelUser | null>(null);
 
     const handleAddMember = (member: Partial<HotelUser>) => {
@@ -239,6 +399,15 @@ export default function TeamPage() {
         };
         setTeam(prev => [...prev, newMember]);
         addToast('success', 'Invite Sent', `Invitation sent to ${member.email}`);
+    };
+
+    const handleEditMember = (updates: Partial<HotelUser>) => {
+        setTeam(prev => prev.map(m =>
+            m.id === updates.id
+                ? { ...m, name: updates.name || m.name, phone: updates.phone, role: updates.role || m.role }
+                : m
+        ));
+        addToast('success', 'Member Updated', `${updates.name}'s details have been updated`);
     };
 
     const handleDelete = (member: HotelUser) => {
@@ -295,7 +464,7 @@ export default function TeamPage() {
                                     }
                                     align="right"
                                 >
-                                    <DropdownItem onClick={() => addToast('info', 'Edit', 'Edit feature coming soon')}>
+                                    <DropdownItem onClick={() => setEditMember(member)}>
                                         <Edit2 className="w-4 h-4" />
                                         Edit
                                     </DropdownItem>
@@ -395,7 +564,7 @@ export default function TeamPage() {
                                                 }
                                                 align="right"
                                             >
-                                                <DropdownItem onClick={() => addToast('info', 'Edit', 'Edit feature coming soon')}>
+                                                <DropdownItem onClick={() => setEditMember(member)}>
                                                     <Edit2 className="w-4 h-4" />
                                                     Edit
                                                 </DropdownItem>
@@ -437,6 +606,13 @@ export default function TeamPage() {
                 isOpen={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 onAdd={handleAddMember}
+            />
+
+            {/* Edit Member Modal */}
+            <EditMemberModal
+                member={editMember}
+                onClose={() => setEditMember(null)}
+                onSave={handleEditMember}
             />
 
             {/* Delete Confirmation */}

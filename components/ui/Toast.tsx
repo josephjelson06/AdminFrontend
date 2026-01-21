@@ -75,11 +75,27 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
         info: Info,
     };
 
-    const styles: Record<ToastType, { bg: string; icon: string; border: string }> = {
-        success: { bg: 'bg-emerald-50', icon: 'text-emerald-500', border: 'border-emerald-200' },
-        error: { bg: 'bg-rose-50', icon: 'text-rose-500', border: 'border-rose-200' },
-        warning: { bg: 'bg-amber-50', icon: 'text-amber-500', border: 'border-amber-200' },
-        info: { bg: 'bg-blue-50', icon: 'text-blue-500', border: 'border-blue-200' },
+    const styles: Record<ToastType, { bg: string; icon: string; leftBorder: string }> = {
+        success: {
+            bg: 'bg-white dark:bg-slate-800',
+            icon: 'text-emerald-500',
+            leftBorder: 'border-l-emerald-500'
+        },
+        error: {
+            bg: 'bg-white dark:bg-slate-800',
+            icon: 'text-rose-500',
+            leftBorder: 'border-l-rose-500'
+        },
+        warning: {
+            bg: 'bg-white dark:bg-slate-800',
+            icon: 'text-amber-500',
+            leftBorder: 'border-l-amber-500'
+        },
+        info: {
+            bg: 'bg-white dark:bg-slate-800',
+            icon: 'text-blue-500',
+            leftBorder: 'border-l-blue-500'
+        },
     };
 
     const Icon = icons[toast.type];
@@ -87,21 +103,21 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
 
     return (
         <div
-            className={`${style.bg} ${style.border} border rounded-lg shadow-lg p-4 min-w-[300px] max-w-[400px] animate-in slide-in-from-right-5 duration-300`}
+            className={`${style.bg} ${style.leftBorder} border border-slate-200 dark:border-slate-700 border-l-4 rounded-lg shadow-lg p-4 min-w-[300px] max-w-[400px] animate-in slide-in-from-right-5 duration-300`}
         >
             <div className="flex items-start gap-3">
                 <Icon className={`w-5 h-5 ${style.icon} flex-shrink-0 mt-0.5`} />
                 <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900">{toast.title}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">{toast.title}</p>
                     {toast.message && (
-                        <p className="text-xs text-slate-500 mt-0.5">{toast.message}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{toast.message}</p>
                     )}
                 </div>
                 <button
                     onClick={onClose}
-                    className="p-1 hover:bg-white/50 rounded transition-colors"
+                    className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
                 >
-                    <X className="w-4 h-4 text-slate-400" />
+                    <X className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                 </button>
             </div>
         </div>

@@ -77,12 +77,14 @@ const ROLE_LABELS: Record<string, { label: string; color: string }> = {
 
 interface HeaderProps {
     onMenuClick?: () => void;
+    sidebarCollapsed?: boolean;
 }
 
-export function Header({ onMenuClick }: HeaderProps) {
+export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
     const [showNotifications, setShowNotifications] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+    const [notificationFilter, setNotificationFilter] = useState<'all' | 'alert' | 'payment' | 'contract'>('all');
     const { user, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
 
@@ -92,10 +94,14 @@ export function Header({ onMenuClick }: HeaderProps) {
         setNotifications(notifications.map((n) => ({ ...n, read: true })));
     };
 
+    const filteredNotifications = notificationFilter === 'all'
+        ? notifications
+        : notifications.filter(n => n.type === notificationFilter);
+
     const roleInfo = user ? ROLE_LABELS[user.role] : { label: 'User', color: 'text-slate-600' };
 
     return (
-        <header className="fixed top-0 left-0 lg:left-64 right-0 z-30 h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <header className={`fixed top-0 right-0 z-30 h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-all duration-200 ${sidebarCollapsed ? 'left-0 lg:left-16' : 'left-0 lg:left-64'}`}>
             <div className="h-full flex items-center justify-between px-4 lg:px-6">
                 {/* Left side */}
                 <div className="flex items-center gap-3">
@@ -148,41 +154,64 @@ export function Header({ onMenuClick }: HeaderProps) {
                         {/* Notifications Dropdown */}
                         {showNotifications && (
                             <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden">
-                                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Notifications</h3>
-                                    {unreadCount > 0 && (
-                                        <button
-                                            onClick={markAllRead}
-                                            className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-                                        >
-                                            Mark all read
-                                        </button>
-                                    )}
+                                <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Notifications</h3>
+                                        {unreadCount > 0 && (
+                                            <button
+                                                onClick={markAllRead}
+                                                className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                                            >
+                                                Mark all read
+                                            </button>
+                                        )}
+                                    </div>
+                                    {/* Category Filter Tabs */}
+                                    <div className="flex gap-1">
+                                        {(['all', 'alert', 'payment', 'contract'] as const).map((filter) => (
+                                            <button
+                                                key={filter}
+                                                onClick={() => setNotificationFilter(filter)}
+                                                className={`px-2 py-1 text-xs rounded-md transition-colors ${notificationFilter === filter
+                                                        ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
+                                                        : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                    }`}
+                                            >
+                                                {filter === 'all' ? 'All' : filter === 'alert' ? 'Kiosk' : filter === 'payment' ? 'Billing' : 'Contract'}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                                 <div className="max-h-80 overflow-y-auto">
-                                    {notifications.map((notif) => (
-                                        <div
-                                            key={notif.id}
-                                            className={`px-4 py-3 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${!notif.read ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
-                                                }`}
-                                        >
-                                            <div className="flex items-start gap-3">
-                                                <div className="mt-0.5">
-                                                    <NotificationIcon type={notif.type} />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center justify-between">
-                                                        <p className="text-sm font-medium text-slate-900 dark:text-white">{notif.title}</p>
-                                                        {!notif.read && (
-                                                            <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                                                        )}
+                                    {filteredNotifications.length === 0 ? (
+                                        <div className="px-4 py-8 text-center">
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">No notifications</p>
+                                        </div>
+                                    ) : (
+                                        filteredNotifications.map((notif) => (
+                                            <div
+                                                key={notif.id}
+                                                className={`px-4 py-3 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer ${!notif.read ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
+                                                    }`}
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    <div className="mt-0.5">
+                                                        <NotificationIcon type={notif.type} />
                                                     </div>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{notif.message}</p>
-                                                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{notif.time}</p>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center justify-between">
+                                                            <p className="text-sm font-medium text-slate-900 dark:text-white">{notif.title}</p>
+                                                            {!notif.read && (
+                                                                <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                                                            )}
+                                                        </div>
+                                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{notif.message}</p>
+                                                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{notif.time}</p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))
+                                    )}
                                 </div>
                                 <div className="px-4 py-2 border-t border-slate-200 dark:border-slate-700">
                                     <button className="w-full text-center text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">

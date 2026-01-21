@@ -81,19 +81,19 @@ export default function ReportsPage() {
     return (
         <div className="p-6">
             {/* Page Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900">Reports & Analytics</h1>
-                    <p className="text-sm text-slate-500">Business intelligence and usage insights</p>
+                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Reports & Analytics</h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Business intelligence and usage insights</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-md border border-slate-200">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
                         <Calendar className="w-4 h-4 text-slate-400" />
-                        <span className="text-sm text-slate-600">Last 6 months</span>
+                        <span className="text-sm text-slate-600 dark:text-slate-300">Last 6 months</span>
                     </div>
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-md hover:bg-slate-800 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-slate-800 dark:hover:bg-emerald-700 transition-colors"
                     >
                         <Download className="w-4 h-4" />
                         Export CSV
@@ -102,36 +102,36 @@ export default function ReportsPage() {
             </div>
 
             {/* KPI Summary */}
-            <div className="grid grid-cols-4 gap-4 mb-6">
-                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Total Check-ins</p>
-                    <p className="text-2xl font-bold text-slate-900 mt-1">{totalCheckins.toLocaleString()}</p>
-                    <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Total Check-ins</p>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{totalCheckins.toLocaleString()}</p>
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
                         <TrendingUp className="w-3 h-3" /> +23% vs prev period
                     </p>
                 </div>
-                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Deployed Kiosks</p>
-                    <p className="text-2xl font-bold text-emerald-600 mt-1">{totalKiosks}</p>
-                    <p className="text-xs text-slate-500 mt-1">Across {MOCK_STATE_DATA.length} states</p>
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Deployed Kiosks</p>
+                    <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{totalKiosks}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Across {MOCK_STATE_DATA.length} states</p>
                 </div>
-                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Avg Self Check-in Rate</p>
-                    <p className="text-2xl font-bold text-slate-900 mt-1">74%</p>
-                    <p className="text-xs text-slate-500 mt-1">Guests using kiosk vs front desk</p>
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Avg Self Check-in Rate</p>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">74%</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Guests using kiosk vs front desk</p>
                 </div>
-                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Non-English Usage</p>
-                    <p className="text-2xl font-bold text-purple-600 mt-1">72%</p>
-                    <p className="text-xs text-slate-500 mt-1">Regional language interactions</p>
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Non-English Usage</p>
+                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">72%</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Regional language interactions</p>
                 </div>
             </div>
 
             {/* Main Charts Row */}
-            <div className="grid grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* Check-ins & AI Sessions Trend */}
-                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-4">
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
                         <BarChart3 className="w-4 h-4 text-slate-400" />
                         Check-ins & AI Sessions
                     </h3>
@@ -146,8 +146,8 @@ export default function ReportsPage() {
                 </div>
 
                 {/* Weekly Pattern */}
-                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-4">
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
                         <TrendingUp className="w-4 h-4 text-slate-400" />
                         Weekly Check-in Pattern
                     </h3>
@@ -162,10 +162,10 @@ export default function ReportsPage() {
             </div>
 
             {/* Second Row */}
-            <div className="grid grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 {/* Language Distribution */}
-                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-2">
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2">
                         <Languages className="w-4 h-4 text-slate-400" />
                         Language Distribution
                     </h3>
@@ -177,15 +177,15 @@ export default function ReportsPage() {
                                     className="w-2 h-2 rounded-full"
                                     style={{ backgroundColor: ['#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'][idx] }}
                                 />
-                                <span className="text-[10px] text-slate-600 truncate">{lang.name}</span>
+                                <span className="text-[10px] text-slate-600 dark:text-slate-400 truncate">{lang.name}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* India Heatmap */}
-                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-2">
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2">
                         <MapPin className="w-4 h-4 text-slate-400" />
                         Geographic Coverage
                     </h3>
@@ -193,9 +193,9 @@ export default function ReportsPage() {
                 </div>
 
                 {/* Top Hotels */}
-                <div className="bg-white rounded-lg border border-slate-200">
-                    <div className="px-4 py-3 border-b border-slate-200">
-                        <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                             <Building2 className="w-4 h-4 text-slate-400" />
                             Top Performing Hotels
                         </h3>
@@ -212,29 +212,29 @@ export default function ReportsPage() {
             </div>
 
             {/* State-wise Table */}
-            <div className="bg-white rounded-lg border border-slate-200">
-                <div className="px-4 py-3 border-b border-slate-200">
-                    <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                         <Globe className="w-4 h-4 text-slate-400" />
                         State-wise Performance
                     </h3>
                 </div>
                 <table className="w-full">
                     <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200">
-                            <th className="text-left px-4 py-2 text-xs font-semibold text-slate-600 uppercase">State</th>
-                            <th className="text-right px-4 py-2 text-xs font-semibold text-slate-600 uppercase">Kiosks</th>
-                            <th className="text-right px-4 py-2 text-xs font-semibold text-slate-600 uppercase">Check-ins</th>
-                            <th className="text-right px-4 py-2 text-xs font-semibold text-slate-600 uppercase">Avg/Kiosk</th>
+                        <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
+                            <th className="text-left px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">State</th>
+                            <th className="text-right px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Kiosks</th>
+                            <th className="text-right px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Check-ins</th>
+                            <th className="text-right px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Avg/Kiosk</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                         {MOCK_STATE_DATA.slice(0, 6).map((region) => (
-                            <tr key={region.id} className="hover:bg-slate-50">
-                                <td className="px-4 py-2.5 text-sm font-medium text-slate-900">{region.name}</td>
-                                <td className="px-4 py-2.5 text-right text-sm text-slate-700">{region.kiosks}</td>
-                                <td className="px-4 py-2.5 text-right text-sm font-medium text-emerald-600">{region.checkins.toLocaleString()}</td>
-                                <td className="px-4 py-2.5 text-right text-sm text-slate-500">{Math.round(region.checkins / region.kiosks)}</td>
+                            <tr key={region.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                <td className="px-4 py-2.5 text-sm font-medium text-slate-900 dark:text-white">{region.name}</td>
+                                <td className="px-4 py-2.5 text-right text-sm text-slate-700 dark:text-slate-300">{region.kiosks}</td>
+                                <td className="px-4 py-2.5 text-right text-sm font-medium text-emerald-600 dark:text-emerald-400">{region.checkins.toLocaleString()}</td>
+                                <td className="px-4 py-2.5 text-right text-sm text-slate-500 dark:text-slate-400">{Math.round(region.checkins / region.kiosks)}</td>
                             </tr>
                         ))}
                     </tbody>

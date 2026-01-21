@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
@@ -16,6 +16,29 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+    // Sync collapsed state with localStorage (shared with Sidebar)
+    useEffect(() => {
+        const checkCollapsed = () => {
+            const saved = localStorage.getItem('sidebar-collapsed');
+            setSidebarCollapsed(saved === 'true');
+        };
+
+        checkCollapsed();
+
+        // Listen for storage changes (in case sidebar updates)
+        const handleStorage = () => checkCollapsed();
+        window.addEventListener('storage', handleStorage);
+
+        // Also poll for changes since storage event doesn't fire in same tab
+        const interval = setInterval(checkCollapsed, 300);
+
+        return () => {
+            window.removeEventListener('storage', handleStorage);
+            clearInterval(interval);
+        };
+    }, []);
 
     if (isPublicRoute) {
         return (
@@ -35,8 +58,8 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                 <ToastProvider>
                     <ProtectedRoute>
                         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-                        <Header onMenuClick={() => setSidebarOpen(true)} />
-                        <main className="lg:ml-64 mt-14 min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950">
+                        <Header onMenuClick={() => setSidebarOpen(true)} sidebarCollapsed={sidebarCollapsed} />
+                        <main className={`mt-14 min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950 transition-all duration-200 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
                             {children}
                         </main>
                     </ProtectedRoute>
@@ -45,3 +68,4 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         </ThemeProvider>
     );
 }
+

@@ -1,17 +1,31 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Cpu, Wifi, WifiOff, AlertTriangle, Clock, RefreshCw, Search } from 'lucide-react';
+import Link from 'next/link';
+import {
+    Cpu,
+    Wifi,
+    WifiOff,
+    AlertTriangle,
+    Clock,
+    RefreshCw,
+    Search,
+    Eye,
+    Building2,
+    Settings,
+    MoreVertical,
+    Plus,
+} from 'lucide-react';
 import { MOCK_KIOSKS, MOCK_HOTELS } from '@/lib/mock-data';
-import type { KioskStatus } from '@/types/schema';
+import type { KioskStatus, Kiosk } from '@/types/schema';
 import { FilterChips, SearchFilter } from '@/components/ui/Filters';
 import { Pagination } from '@/components/ui/Pagination';
 
 function StatusIcon({ status }: { status: KioskStatus }) {
     const config: Record<KioskStatus, { icon: typeof Wifi; color: string; bg: string }> = {
-        online: { icon: Wifi, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-        offline: { icon: WifiOff, color: 'text-rose-600', bg: 'bg-rose-100' },
-        warning: { icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-100' },
+        online: { icon: Wifi, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
+        offline: { icon: WifiOff, color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-100 dark:bg-rose-900/30' },
+        warning: { icon: AlertTriangle, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-100 dark:bg-amber-900/30' },
     };
 
     const { icon: Icon, color, bg } = config[status];
@@ -24,9 +38,9 @@ function StatusIcon({ status }: { status: KioskStatus }) {
 
 function StatusBadge({ status }: { status: KioskStatus }) {
     const styles: Record<KioskStatus, string> = {
-        online: 'bg-emerald-100 text-emerald-700',
-        offline: 'bg-rose-100 text-rose-700',
-        warning: 'bg-amber-100 text-amber-700',
+        online: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+        offline: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+        warning: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
     };
 
     return (
@@ -34,6 +48,21 @@ function StatusBadge({ status }: { status: KioskStatus }) {
             {status}
         </span>
     );
+}
+
+// Parse heartbeat time and determine urgency
+function getHeartbeatUrgency(heartbeat: string) {
+    // Parse "X min ago" or "X hr ago" format
+    const minMatch = heartbeat.match(/(\d+)\s*min/);
+    const hrMatch = heartbeat.match(/(\d+)\s*hr/);
+
+    let minutes = 0;
+    if (minMatch) minutes = parseInt(minMatch[1]);
+    if (hrMatch) minutes = parseInt(hrMatch[1]) * 60;
+
+    if (minutes > 60) return { class: 'text-rose-600 dark:text-rose-400', urgent: true };
+    if (minutes > 30) return { class: 'text-amber-600 dark:text-amber-400', urgent: true };
+    return { class: 'text-slate-500 dark:text-slate-400', urgent: false };
 }
 
 const ITEMS_PER_PAGE = 6;
@@ -114,35 +143,49 @@ export default function FleetPage() {
     // Stats
     const onlineCount = MOCK_KIOSKS.filter((k) => k.status === 'online').length;
     const offlineCount = MOCK_KIOSKS.filter((k) => k.status === 'offline').length;
+    const warningCount = MOCK_KIOSKS.filter((k) => k.status === 'warning').length;
 
     return (
         <div className="p-6">
-            {/* Page Header */}
-            <div className="flex items-center justify-between mb-6">
+            {/* Page Header - Enhanced */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900">Kiosk Fleet</h1>
-                    <p className="text-sm text-slate-500">Manage and monitor all deployed kiosks</p>
+                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Kiosk Fleet</h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        Manage and monitor all deployed kiosks • {MOCK_KIOSKS.length} total
+                    </p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-3 text-sm">
-                        <span className="flex items-center gap-1.5 text-emerald-600">
+                    {/* Status Stats Bar */}
+                    <div className="flex items-center gap-3 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm">
+                        <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
                             <Wifi className="w-4 h-4" />
-                            {onlineCount} online
+                            <span className="font-medium">{onlineCount}</span>
                         </span>
-                        <span className="flex items-center gap-1.5 text-rose-500">
+                        <span className="w-px h-4 bg-slate-300 dark:bg-slate-600" />
+                        <span className="flex items-center gap-1.5 text-rose-500 dark:text-rose-400">
                             <WifiOff className="w-4 h-4" />
-                            {offlineCount} offline
+                            <span className="font-medium">{offlineCount}</span>
+                        </span>
+                        <span className="w-px h-4 bg-slate-300 dark:bg-slate-600" />
+                        <span className="flex items-center gap-1.5 text-amber-500 dark:text-amber-400">
+                            <AlertTriangle className="w-4 h-4" />
+                            <span className="font-medium">{warningCount}</span>
                         </span>
                     </div>
-                    <button className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-200 transition-colors">
+                    <button className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                         <RefreshCw className="w-4 h-4" />
                         Refresh
+                    </button>
+                    <button className="flex items-center gap-2 px-4 py-1.5 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-slate-800 dark:hover:bg-emerald-700 transition-colors">
+                        <Plus className="w-4 h-4" />
+                        Register Kiosk
                     </button>
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="bg-white rounded-lg border border-slate-200 p-4 mb-4">
+            {/* Filters - Updated with dark mode */}
+            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-4">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                     <div className="flex items-center gap-4">
                         <SearchFilter
@@ -166,13 +209,13 @@ export default function FleetPage() {
                 </div>
 
                 {hasActiveFilters && (
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-                        <span className="text-sm text-slate-500">
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+                        <span className="text-sm text-slate-500 dark:text-slate-400">
                             Showing {filteredKiosks.length} of {MOCK_KIOSKS.length} kiosks
                         </span>
                         <button
                             onClick={clearAllFilters}
-                            className="text-sm text-slate-500 hover:text-slate-700 underline"
+                            className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 underline"
                         >
                             Clear all filters
                         </button>
@@ -180,59 +223,82 @@ export default function FleetPage() {
                 )}
             </div>
 
-            {/* Kiosk Grid */}
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            {/* Kiosk Grid - Enhanced */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                 {paginatedKiosks.map((kiosk) => {
                     const hotel = MOCK_HOTELS.find((h) => h.id === kiosk.assignedHotelId);
+                    const heartbeatUrgency = getHeartbeatUrgency(kiosk.lastHeartbeat);
 
                     return (
                         <div
                             key={kiosk.id}
-                            className="bg-white rounded-lg border border-slate-200 p-4 hover:shadow-md transition-shadow"
+                            className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-600 transition-all cursor-pointer group"
                         >
                             <div className="flex items-start justify-between mb-3">
                                 <StatusIcon status={kiosk.status} />
-                                <StatusBadge status={kiosk.status} />
+                                <div className="flex items-center gap-2">
+                                    <StatusBadge status={kiosk.status} />
+                                    <button
+                                        className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <MoreVertical className="w-4 h-4 text-slate-400" />
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="mb-3">
                                 <div className="flex items-center gap-2 mb-1">
                                     <Cpu className="w-4 h-4 text-slate-400" />
-                                    <span className="text-sm font-semibold text-slate-900">{kiosk.serialNumber}</span>
+                                    <span className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                        {kiosk.serialNumber}
+                                    </span>
                                 </div>
-                                <p className="text-xs text-slate-500">{kiosk.model}</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">{kiosk.model}</p>
                             </div>
 
                             {hotel && (
-                                <div className="text-xs text-slate-600 mb-3 py-2 px-2 bg-slate-50 rounded">
-                                    📍 {hotel.name}
-                                </div>
+                                <Link
+                                    href={`/hotels/${hotel.id}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 mb-3 py-2 px-2 bg-slate-50 dark:bg-slate-700/50 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                >
+                                    <Building2 className="w-3.5 h-3.5" />
+                                    {hotel.name}
+                                </Link>
                             )}
 
-                            <div className="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100">
-                                <span className="flex items-center gap-1">
+                            <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100 dark:border-slate-700">
+                                <span className={`flex items-center gap-1 ${heartbeatUrgency.class}`}>
                                     <Clock className="w-3 h-3" />
                                     {kiosk.lastHeartbeat}
+                                    {heartbeatUrgency.urgent && <AlertTriangle className="w-3 h-3" />}
                                 </span>
-                                <span className="font-mono text-slate-400">v{kiosk.firmwareVersion}</span>
+                                <span className="font-mono text-slate-400 dark:text-slate-500">v{kiosk.firmwareVersion}</span>
                             </div>
                         </div>
                     );
                 })}
             </div>
 
-            {/* Empty State */}
+            {/* Empty State - Dark mode */}
             {filteredKiosks.length === 0 && (
-                <div className="bg-white rounded-lg border border-slate-200 p-8 text-center">
-                    <Search className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-1">No kiosks found</h3>
-                    <p className="text-sm text-slate-500">Try adjusting your search or filters</p>
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-8 text-center">
+                    <Cpu className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                    <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-1">No kiosks found</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Try adjusting your search or filters</p>
+                    <button
+                        onClick={clearAllFilters}
+                        className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline"
+                    >
+                        Clear all filters
+                    </button>
                 </div>
             )}
 
-            {/* Pagination */}
+            {/* Pagination - Dark mode */}
             {filteredKiosks.length > 0 && (
-                <div className="bg-white rounded-lg border border-slate-200">
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                     <Pagination
                         currentPage={currentPage}
                         totalPages={totalPages}

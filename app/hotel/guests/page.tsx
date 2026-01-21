@@ -175,6 +175,24 @@ export default function GuestsPage() {
     const [selectedGuest, setSelectedGuest] = useState<GuestCheckIn | null>(null);
     const [isExporting, setIsExporting] = useState(false);
 
+    // Date filter logic based on checkInTime relative text
+    const getDateMatch = (checkInTime: string, filter: string): boolean => {
+        if (filter === 'today') {
+            // Match recent times: "X mins ago", "X hour/hours ago" but not days
+            return checkInTime.includes('min') ||
+                checkInTime.includes('hour') ||
+                checkInTime === 'Just now';
+        }
+        if (filter === 'yesterday') {
+            return checkInTime.includes('yesterday') || checkInTime.includes('1 day ago');
+        }
+        if (filter === 'week') {
+            // Week includes today and any days
+            return true;
+        }
+        return true; // 'custom' or any other shows all
+    };
+
     // Filter guests
     const filteredGuests = MOCK_GUEST_CHECKINS.filter((guest) => {
         const matchesSearch =
@@ -183,8 +201,9 @@ export default function GuestsPage() {
             guest.roomNumber.includes(searchQuery);
 
         const matchesStatus = statusFilter === 'all' || guest.verification === statusFilter;
+        const matchesDate = getDateMatch(guest.checkInTime, dateFilter);
 
-        return matchesSearch && matchesStatus;
+        return matchesSearch && matchesStatus && matchesDate;
     });
 
     const handleExport = async () => {
@@ -237,8 +256,8 @@ export default function GuestsPage() {
                     <button
                         onClick={() => setStatusFilter('all')}
                         className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'all'
-                                ? 'bg-indigo-600 text-white shadow-lg'
-                                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
+                            ? 'bg-indigo-600 text-white shadow-lg'
+                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
                             }`}
                     >
                         <div className={`text-xl font-bold ${statusFilter === 'all' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{stats.total}</div>
@@ -247,8 +266,8 @@ export default function GuestsPage() {
                     <button
                         onClick={() => setStatusFilter('verified')}
                         className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'verified'
-                                ? 'bg-emerald-500 text-white shadow-lg'
-                                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
+                            ? 'bg-emerald-500 text-white shadow-lg'
+                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
                             }`}
                     >
                         <div className={`text-xl font-bold ${statusFilter === 'verified' ? 'text-white' : 'text-emerald-600 dark:text-emerald-400'}`}>{stats.verified}</div>
@@ -257,8 +276,8 @@ export default function GuestsPage() {
                     <button
                         onClick={() => setStatusFilter('manual')}
                         className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'manual'
-                                ? 'bg-amber-500 text-white shadow-lg'
-                                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
+                            ? 'bg-amber-500 text-white shadow-lg'
+                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
                             }`}
                     >
                         <div className={`text-xl font-bold ${statusFilter === 'manual' ? 'text-white' : 'text-amber-600 dark:text-amber-400'}`}>{stats.manual}</div>
@@ -267,8 +286,8 @@ export default function GuestsPage() {
                     <button
                         onClick={() => setStatusFilter('failed')}
                         className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'failed'
-                                ? 'bg-rose-500 text-white shadow-lg'
-                                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
+                            ? 'bg-rose-500 text-white shadow-lg'
+                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
                             }`}
                     >
                         <div className={`text-xl font-bold ${statusFilter === 'failed' ? 'text-white' : 'text-rose-600 dark:text-rose-400'}`}>{stats.failed}</div>

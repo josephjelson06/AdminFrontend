@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { HotelLayout } from '@/components/layout/HotelLayout';
 import {
     Monitor,
@@ -212,7 +213,10 @@ function KioskDetailModal({
                     >
                         Close
                     </button>
-                    <button className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors">
+                    <button
+                        onClick={() => window.location.href = '/hotel/kiosk'}
+                        className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+                    >
                         View Full Details
                     </button>
                 </div>
@@ -222,9 +226,11 @@ function KioskDetailModal({
 }
 
 export default function HotelDashboard() {
+    const router = useRouter();
     const { addToast } = useToast();
     const [selectedKiosk, setSelectedKiosk] = useState<HotelKiosk | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const kioskSectionRef = useRef<HTMLDivElement>(null);
 
     // Calculate stats
     const totalCheckIns = MOCK_GUEST_CHECKINS.length;
@@ -276,7 +282,10 @@ export default function HotelDashboard() {
                                 One or more kiosks need attention. Tap to view details.
                             </p>
                         </div>
-                        <button className="px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-900/50 rounded-lg hover:bg-rose-200 dark:hover:bg-rose-900 transition-colors">
+                        <button
+                            onClick={() => kioskSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                            className="px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-900/50 rounded-lg hover:bg-rose-200 dark:hover:bg-rose-900 transition-colors"
+                        >
                             View
                         </button>
                     </div>
@@ -290,14 +299,14 @@ export default function HotelDashboard() {
                         icon={UserCheck}
                         color="bg-emerald-500"
                         trend={{ value: 12, positive: true }}
-                        onClick={() => addToast('info', 'Check-ins', 'Navigating to guest log...')}
+                        onClick={() => router.push('/hotel/guests?date=today')}
                     />
                     <StatCard
                         title="Rooms Assigned"
                         value={totalCheckIns}
                         icon={BedDouble}
                         color="bg-blue-500"
-                        onClick={() => addToast('info', 'Rooms', 'Navigating to room status...')}
+                        onClick={() => router.push('/hotel/rooms?status=occupied')}
                     />
                     <StatCard
                         title="Kiosks Online"
@@ -305,6 +314,7 @@ export default function HotelDashboard() {
                         icon={Monitor}
                         color="bg-indigo-500"
                         subtitle="All systems operational"
+                        onClick={() => kioskSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
                     />
                     <StatCard
                         title="Failed Verifications"
@@ -312,14 +322,14 @@ export default function HotelDashboard() {
                         icon={AlertTriangle}
                         color={failedCheckIns > 0 ? 'bg-rose-500' : 'bg-slate-400'}
                         subtitle={failedCheckIns > 0 ? 'Click to review' : 'All verified'}
-                        onClick={failedCheckIns > 0 ? () => addToast('warning', 'Attention', 'Reviewing failed verifications...') : undefined}
+                        onClick={failedCheckIns > 0 ? () => router.push('/hotel/guests?status=failed') : undefined}
                     />
                 </div>
 
                 {/* Two Column Layout */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Kiosk Status */}
-                    <div>
+                    <div ref={kioskSectionRef}>
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                                 Kiosk Health
@@ -346,7 +356,10 @@ export default function HotelDashboard() {
                             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                                 Recent Activity
                             </h2>
-                            <button className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
+                            <button
+                                onClick={() => router.push('/hotel/guests')}
+                                className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+                            >
                                 View all
                             </button>
                         </div>

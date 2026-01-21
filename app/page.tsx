@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
     Building2,
     Cpu,
@@ -13,11 +15,17 @@ import {
     FileText,
     ChevronRight,
     Wifi,
-    WifiOff
+    WifiOff,
+    RefreshCw,
+    MoreVertical,
+    Eye,
+    Edit,
+    BarChart3,
 } from 'lucide-react';
 import { MOCK_HOTELS, MOCK_METRICS, MOCK_KIOSKS } from '@/lib/mock-data';
 import type { Status, HotelPlan } from '@/types/schema';
 import { AreaChartComponent, BarChartComponent, DonutChartComponent } from '@/components/ui/Charts';
+import { useAuth } from '@/lib/auth';
 
 // Mock 7-day check-in data
 const CHECKIN_TREND = [
@@ -102,8 +110,8 @@ function StatusBadge({ status }: { status: Status }) {
 function PlanBadge({ plan }: { plan: HotelPlan }) {
     return (
         <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${plan === 'advanced'
-                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
-                : 'bg-slate-700 text-white dark:bg-slate-600'
+            ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
+            : 'bg-slate-700 text-white dark:bg-slate-600'
             }`}>
             {plan}
         </span>
@@ -133,87 +141,166 @@ function SeverityDot({ severity }: { severity: string }) {
 }
 
 export default function Dashboard() {
+    const router = useRouter();
+    const { user } = useAuth();
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [alertFilter, setAlertFilter] = useState<'all' | 'offline' | 'payment' | 'contract'>('all');
+    const [chartPeriod, setChartPeriod] = useState<'7D' | '30D' | '90D'>('7D');
+    const [showRowMenu, setShowRowMenu] = useState<string | null>(null);
+
     const totalMRR = MOCK_HOTELS.reduce((sum, h) => sum + h.mrr, 0);
     const onlineKiosks = MOCK_KIOSKS.filter((k) => k.status === 'online').length;
     const offlineKiosks = MOCK_KIOSKS.filter((k) => k.status === 'offline').length;
     const todayCheckins = CHECKIN_TREND[CHECKIN_TREND.length - 1].checkins;
 
+    const filteredAlerts = alertFilter === 'all'
+        ? MOCK_ALERTS
+        : MOCK_ALERTS.filter(a => a.type === alertFilter);
+
+    // Get greeting based on time
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good morning';
+        if (hour < 17) return 'Good afternoon';
+        return 'Good evening';
+    };
+
+    // Format current date
+    const formatDate = () => {
+        return new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
+
+    const handleRefresh = () => {
+        setIsRefreshing(true);
+        setTimeout(() => setIsRefreshing(false), 1000);
+    };
+
+    // KPI Card component for interactivity
+    const KPICard = ({
+        title,
+        value,
+        subtitle,
+        icon: Icon,
+        iconBg,
+        iconColor,
+        href,
+        trend
+    }: {
+        title: string;
+        value: string | number;
+        subtitle: React.ReactNode;
+        icon: React.ElementType;
+        iconBg: string;
+        iconColor: string;
+        href: string;
+        trend?: { value: string; positive: boolean };
+    }) => (
+        <Link
+            href={href}
+            className="group bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer"
+        >
+            <div className="flex items-center justify-between">
+                <div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{title}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{value}</p>
+                </div>
+                <div className={`p-2 rounded-lg ${iconBg} group-hover:scale-110 transition-transform`}>
+                    <Icon className={`w-5 h-5 ${iconColor}`} />
+                </div>
+            </div>
+            <div className="mt-2 flex items-center justify-between">
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                    {subtitle}
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+            {trend && (
+                <div className={`mt-1 text-xs flex items-center gap-1 ${trend.positive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                    <TrendingUp className={`w-3 h-3 ${!trend.positive && 'rotate-180'}`} />
+                    {trend.value}
+                </div>
+            )}
+        </Link>
+    );
+
     return (
         <div className="p-4 sm:p-6">
-            {/* Page Header */}
-            <div className="mb-6">
-                <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Dashboard</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400">System overview and alerts</p>
+            {/* Enhanced Page Header */}
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+                        {getGreeting()}, {user?.name?.split(' ')[0] || 'Admin'}
+                    </h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {formatDate()} • {MOCK_ALERTS.filter(a => a.severity === 'critical').length} critical alerts need attention
+                    </p>
+                </div>
+                <button
+                    onClick={handleRefresh}
+                    disabled={isRefreshing}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+                >
+                    <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                    Refresh
+                </button>
             </div>
 
-            {/* KPI Cards - Responsive Grid */}
+            {/* KPI Cards - Interactive */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Total Hotels</p>
-                            <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{MOCK_METRICS.totalHotels}</p>
-                        </div>
-                        <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                            <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                    </div>
-                    <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                        {MOCK_HOTELS.filter(h => h.status === 'active').length} active
-                    </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Active Kiosks</p>
-                            <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{MOCK_METRICS.activeKiosks}</p>
-                        </div>
-                        <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                            <Cpu className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                        </div>
-                    </div>
-                    <div className="mt-2 flex items-center gap-2 text-xs">
-                        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                            <Wifi className="w-3 h-3" /> {onlineKiosks}
-                        </span>
-                        {offlineKiosks > 0 && (
-                            <span className="flex items-center gap-1 text-rose-500 dark:text-rose-400">
-                                <WifiOff className="w-3 h-3" /> {offlineKiosks}
+                <KPICard
+                    title="Total Hotels"
+                    value={MOCK_METRICS.totalHotels}
+                    subtitle={<span>{MOCK_HOTELS.filter(h => h.status === 'active').length} active</span>}
+                    icon={Building2}
+                    iconBg="bg-blue-100 dark:bg-blue-900/30"
+                    iconColor="text-blue-600 dark:text-blue-400"
+                    href="/hotels"
+                />
+                <KPICard
+                    title="Active Kiosks"
+                    value={MOCK_METRICS.activeKiosks}
+                    subtitle={
+                        <div className="flex items-center gap-2">
+                            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                                <Wifi className="w-3 h-3" /> {onlineKiosks}
                             </span>
-                        )}
-                    </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Revenue MTD</p>
-                            <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{formatCurrency(totalMRR)}</p>
+                            {offlineKiosks > 0 && (
+                                <span className="flex items-center gap-1 text-rose-500 dark:text-rose-400">
+                                    <WifiOff className="w-3 h-3" /> {offlineKiosks}
+                                </span>
+                            )}
                         </div>
-                        <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-                            <IndianRupee className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                        </div>
-                    </div>
-                    <div className="mt-2 text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" /> +12% vs last month
-                    </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Check-ins Today</p>
-                            <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{todayCheckins}</p>
-                        </div>
-                        <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                            <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                        </div>
-                    </div>
-                    <div className="mt-2 text-xs text-purple-600 dark:text-purple-400 flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" /> +8% vs yesterday
-                    </div>
-                </div>
+                    }
+                    icon={Cpu}
+                    iconBg="bg-emerald-100 dark:bg-emerald-900/30"
+                    iconColor="text-emerald-600 dark:text-emerald-400"
+                    href="/fleet"
+                />
+                <KPICard
+                    title="Revenue MTD"
+                    value={formatCurrency(totalMRR)}
+                    subtitle={<span className="text-emerald-600 dark:text-emerald-400">+12% vs last month</span>}
+                    icon={IndianRupee}
+                    iconBg="bg-emerald-100 dark:bg-emerald-900/30"
+                    iconColor="text-emerald-600 dark:text-emerald-400"
+                    href="/finance"
+                    trend={{ value: '+12% vs last month', positive: true }}
+                />
+                <KPICard
+                    title="Check-ins Today"
+                    value={todayCheckins}
+                    subtitle={<span className="text-purple-600 dark:text-purple-400">+8% vs yesterday</span>}
+                    icon={BarChart3}
+                    iconBg="bg-purple-100 dark:bg-purple-900/30"
+                    iconColor="text-purple-600 dark:text-purple-400"
+                    href="/reports"
+                    trend={{ value: '+8% vs yesterday', positive: true }}
+                />
             </div>
 
             {/* Charts Row - Responsive */}
@@ -264,38 +351,66 @@ export default function Dashboard() {
 
             {/* Bottom Row - Responsive */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                {/* Alert Feed */}
+                {/* Alert Feed - Enhanced */}
                 <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4 text-amber-500" />
-                            Critical Alerts
-                        </h3>
-                        <span className="px-1.5 py-0.5 bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 text-xs font-medium rounded">
-                            {MOCK_ALERTS.length}
-                        </span>
+                    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                <AlertTriangle className="w-4 h-4 text-amber-500" />
+                                Critical Alerts
+                            </h3>
+                            <span className="px-1.5 py-0.5 bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 text-xs font-medium rounded">
+                                {filteredAlerts.length}
+                            </span>
+                        </div>
+                        {/* Alert Filter Tabs */}
+                        <div className="flex gap-1">
+                            {(['all', 'offline', 'payment', 'contract'] as const).map((filter) => (
+                                <button
+                                    key={filter}
+                                    onClick={() => setAlertFilter(filter)}
+                                    className={`px-2 py-1 text-xs rounded-md transition-colors ${alertFilter === filter
+                                        ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
+                                        : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                        }`}
+                                >
+                                    {filter === 'all' ? 'All' : filter === 'offline' ? 'Kiosk' : filter === 'payment' ? 'Billing' : 'Contract'}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                    <div className="divide-y divide-slate-100 dark:divide-slate-700">
-                        {MOCK_ALERTS.map((alert) => (
-                            <div key={alert.id} className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                                <div className="flex items-start gap-3">
-                                    <div className="mt-0.5">
-                                        <AlertIcon type={alert.type} />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <SeverityDot severity={alert.severity} />
-                                            <span className="text-sm font-medium text-slate-900 dark:text-white">{alert.title}</span>
-                                        </div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{alert.message}</p>
-                                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 flex items-center gap-1">
-                                            <Clock className="w-3 h-3" />
-                                            {alert.time}
-                                        </p>
-                                    </div>
-                                </div>
+                    <div className="divide-y divide-slate-100 dark:divide-slate-700 max-h-64 overflow-y-auto">
+                        {filteredAlerts.length === 0 ? (
+                            <div className="px-4 py-8 text-center">
+                                <p className="text-sm text-emerald-600 dark:text-emerald-400">✓ All systems operational</p>
                             </div>
-                        ))}
+                        ) : (
+                            filteredAlerts.map((alert) => (
+                                <Link
+                                    key={alert.id}
+                                    href={alert.type === 'offline' ? '/fleet' : alert.type === 'payment' ? '/finance' : '/hotels'}
+                                    className="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer group"
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <div className="mt-0.5">
+                                            <AlertIcon type={alert.type} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <SeverityDot severity={alert.severity} />
+                                                <span className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{alert.title}</span>
+                                            </div>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{alert.message}</p>
+                                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 flex items-center gap-1">
+                                                <Clock className="w-3 h-3" />
+                                                {alert.time}
+                                            </p>
+                                        </div>
+                                        <ChevronRight className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity mt-1" />
+                                    </div>
+                                </Link>
+                            ))
+                        )}
                     </div>
                     <div className="px-4 py-2 border-t border-slate-200 dark:border-slate-700">
                         <Link
@@ -307,7 +422,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Hotels List */}
+                {/* Hotels List - Enhanced */}
                 <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                     <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                         <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Recent Hotels</h3>
@@ -322,7 +437,11 @@ export default function Dashboard() {
                     {/* Mobile view - cards */}
                     <div className="divide-y divide-slate-100 dark:divide-slate-700 sm:hidden">
                         {MOCK_HOTELS.slice(0, 4).map((hotel) => (
-                            <div key={hotel.id} className="p-4">
+                            <Link
+                                key={hotel.id}
+                                href={`/hotels/${hotel.id}`}
+                                className="block p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                            >
                                 <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-2">
                                         <Building2 className="w-4 h-4 text-slate-400" />
@@ -338,7 +457,7 @@ export default function Dashboard() {
                                         {hotel.mrr > 0 ? formatCurrency(hotel.mrr) : '—'}
                                     </span>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
 
@@ -351,16 +470,21 @@ export default function Dashboard() {
                                 <th className="text-left px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Plan</th>
                                 <th className="text-center px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Kiosks</th>
                                 <th className="text-right px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">MRR</th>
+                                <th className="w-10"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                             {MOCK_HOTELS.slice(0, 4).map((hotel) => (
-                                <tr key={hotel.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <tr
+                                    key={hotel.id}
+                                    className="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer group"
+                                    onClick={() => router.push(`/hotels/${hotel.id}`)}
+                                >
                                     <td className="px-4 py-2.5">
                                         <div className="flex items-center gap-2">
                                             <Building2 className="w-4 h-4 text-slate-400" />
                                             <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{hotel.name}</div>
+                                                <div className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{hotel.name}</div>
                                                 <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                                                     <MapPin className="w-3 h-3" />
                                                     {hotel.location}
@@ -382,6 +506,42 @@ export default function Dashboard() {
                                             {hotel.mrr > 0 ? formatCurrency(hotel.mrr) : '—'}
                                         </span>
                                     </td>
+                                    <td className="px-2 py-2.5 relative">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setShowRowMenu(showRowMenu === hotel.id ? null : hotel.id);
+                                            }}
+                                            className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
+                                        >
+                                            <MoreVertical className="w-4 h-4 text-slate-400" />
+                                        </button>
+                                        {showRowMenu === hotel.id && (
+                                            <div className="absolute right-2 top-full mt-1 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md shadow-lg py-1 z-10">
+                                                <Link
+                                                    href={`/hotels/${hotel.id}`}
+                                                    className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <Eye className="w-3.5 h-3.5" /> View Details
+                                                </Link>
+                                                <Link
+                                                    href={`/hotels/${hotel.id}`}
+                                                    className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <Edit className="w-3.5 h-3.5" /> Edit Hotel
+                                                </Link>
+                                                <Link
+                                                    href="/fleet"
+                                                    className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <Cpu className="w-3.5 h-3.5" /> View Kiosks
+                                                </Link>
+                                            </div>
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -391,3 +551,4 @@ export default function Dashboard() {
         </div>
     );
 }
+
