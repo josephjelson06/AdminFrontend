@@ -26,15 +26,15 @@ export function FilterChips({ options, selected, onChange, label }: FilterChipsP
 
     return (
         <div className="flex items-center gap-2">
-            {label && <span className="text-sm text-slate-500">{label}:</span>}
+            {label && <span className="text-sm text-slate-500 dark:text-slate-400">{label}:</span>}
             <div className="flex items-center gap-1.5">
                 {options.map((opt) => (
                     <button
                         key={opt.value}
                         onClick={() => toggle(opt.value)}
                         className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${selected.includes(opt.value)
-                                ? 'bg-slate-900 text-white'
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            ? 'bg-slate-900 dark:bg-emerald-600 text-white'
+                            : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
                             }`}
                     >
                         {opt.label}
@@ -59,18 +59,18 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
 
     return (
         <div className="flex items-center gap-2 py-2">
-            <span className="text-xs text-slate-500">Active filters:</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">Active filters:</span>
             <div className="flex items-center gap-1.5">
                 {filters.map((filter) => (
                     <span
                         key={filter.key}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 rounded-full text-xs text-slate-700"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded-full text-xs text-slate-700 dark:text-slate-300"
                     >
-                        <span className="text-slate-400">{filter.label}:</span>
+                        <span className="text-slate-400 dark:text-slate-500">{filter.label}:</span>
                         {filter.value}
                         <button
                             onClick={() => onRemove(filter.key)}
-                            className="hover:text-slate-900 transition-colors"
+                            className="hover:text-slate-900 dark:hover:text-white transition-colors"
                         >
                             <X className="w-3 h-3" />
                         </button>
@@ -79,7 +79,7 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
             </div>
             <button
                 onClick={onClearAll}
-                className="text-xs text-slate-500 hover:text-slate-700 underline"
+                className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 underline"
             >
                 Clear all
             </button>
@@ -100,7 +100,7 @@ export function SearchFilter({ value, onChange, placeholder = 'Search...' }: Sea
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="px-3 py-1.5 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 w-64"
+            className="px-3 py-1.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white w-64"
         />
     );
 }

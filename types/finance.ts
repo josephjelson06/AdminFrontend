@@ -64,6 +64,8 @@ export interface HotelSubscription {
     failedAttempts?: number;
     lastFailureReason?: string;
     gracePeriodDaysRemaining?: number;
+    kioskUsage: number;
+    kioskLimit: number;
 }
 
 export interface RevenueData {

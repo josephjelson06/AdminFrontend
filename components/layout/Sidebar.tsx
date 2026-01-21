@@ -69,33 +69,62 @@ const NAV_GROUPS: NavGroup[] = [
 interface SidebarProps {
     isOpen?: boolean;
     onClose?: () => void;
+    sidebarWidth: number;
+    setSidebarWidth: (width: number) => void;
+    isCollapsed: boolean;
+    toggleCollapsed: () => void;
 }
 
-export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth, isCollapsed, toggleCollapsed }: SidebarProps) {
     const pathname = usePathname();
     const { user, canAccessPage } = useAuth();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isResizing, setIsResizing] = useState(false);
 
-    // Load collapsed state from localStorage on mount
-    useEffect(() => {
-        const saved = localStorage.getItem('sidebar-collapsed');
-        if (saved !== null) {
-            setIsCollapsed(saved === 'true');
-        }
-    }, []);
-
-    // Save collapsed state to localStorage
-    const toggleCollapsed = () => {
-        const newState = !isCollapsed;
-        setIsCollapsed(newState);
-        localStorage.setItem('sidebar-collapsed', String(newState));
+    // Resizing logic
+    const startResizing = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
     };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isResizing) return;
+            // Limit width between 200px and 450px
+            const newWidth = Math.max(200, Math.min(450, e.clientX));
+            setSidebarWidth(newWidth);
+        };
+
+        const handleMouseUp = () => {
+            if (isResizing) {
+                setIsResizing(false);
+                // We rely on ClientLayout to persist the width, but we trigger the update here
+            }
+        };
+
+        if (isResizing) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            // Disable text selection/etc while resizing
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        } else {
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        };
+    }, [isResizing, setSidebarWidth]);
 
     // Filter nav items based on user permissions
     const filteredNavGroups = NAV_GROUPS.map((group) => ({
         ...group,
         items: group.items.filter((item) => canAccessPage(item.id)),
-    })).filter((group) => group.items.length > 0); // Remove empty groups
+    })).filter((group) => group.items.length > 0);
 
     const handleLinkClick = () => {
         if (onClose) {
@@ -103,7 +132,6 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         }
     };
 
-    // Check if path matches (including nested routes)
     const isActive = (href: string) => {
         if (href === '/') return pathname === '/';
         return pathname === href || pathname.startsWith(href + '/');
@@ -122,26 +150,28 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
             {/* Sidebar */}
             <aside
                 className={`
-          fixed top-0 left-0 z-50 h-screen
-          bg-white dark:bg-slate-900 
-          border-r border-slate-200 dark:border-slate-800
-          transform transition-all duration-200 ease-in-out
-          lg:translate-x-0
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-          ${isCollapsed ? 'lg:w-16' : 'w-64'}
-        `}
+                    fixed top-0 left-0 z-50 h-screen
+                    bg-white dark:bg-slate-900 
+                    border-r border-slate-200 dark:border-slate-800
+                    flex flex-col
+                    transform lg:translate-x-0
+                    ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+                `}
+                style={{
+                    width: isCollapsed ? 80 : sidebarWidth,
+                    transition: isResizing ? 'none' : 'width 200ms ease-in-out, transform 200ms ease-in-out'
+                }}
             >
                 {/* Logo */}
-                <div className={`h-14 flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-between px-4'} border-b border-slate-200 dark:border-slate-800`}>
+                <div className={`h-14 flex-shrink-0 flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-between px-4'} border-b border-slate-200 dark:border-slate-800`}>
                     <Link href="/" className="flex items-center gap-2" onClick={handleLinkClick}>
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center flex-shrink-0">
                             <Cpu className="w-4 h-4 text-white" />
                         </div>
                         {!isCollapsed && (
-                            <span className="text-sm font-bold text-slate-900 dark:text-white">ATC Admin</span>
+                            <span className="text-sm font-bold text-slate-900 dark:text-white truncate">ATC Admin</span>
                         )}
                     </Link>
-                    {/* Close button - mobile only */}
                     {!isCollapsed && (
                         <button
                             onClick={onClose}
@@ -152,40 +182,55 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                     )}
                 </div>
 
-                {/* User Role Badge */}
-                {user && !isCollapsed && (
-                    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-                                <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                {/* User Role Badge & Collapse Toggle */}
+                {user && (
+                    <div className={`flex-shrink-0 ${isCollapsed ? 'py-3' : 'px-4 py-3'} border-b border-slate-200 dark:border-slate-800`}>
+                        {isCollapsed ? (
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center" title={`${user.name} - ${user.role.replace('_', ' ')}`}>
+                                    <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                                </div>
+                                <button
+                                    onClick={toggleCollapsed}
+                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors hidden lg:block"
+                                    title="Expand sidebar"
+                                >
+                                    <PanelLeft className="w-4 h-4" />
+                                </button>
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                                    {user.name}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
-                                    {user.role.replace('_', ' ')}
-                                </p>
+                        ) : (
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+                                        <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                            {user.name}
+                                        </p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">
+                                            {user.role.replace('_', ' ')}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={toggleCollapsed}
+                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors hidden lg:block flex-shrink-0"
+                                    title="Collapse sidebar"
+                                >
+                                    <PanelLeftClose className="w-4 h-4" />
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Collapsed User Avatar */}
-                {user && isCollapsed && (
-                    <div className="py-3 flex justify-center border-b border-slate-200 dark:border-slate-800">
-                        <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center" title={`${user.name} - ${user.role.replace('_', ' ')}`}>
-                            <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                        </div>
+                        )}
                     </div>
                 )}
 
                 {/* Nav Groups */}
-                <nav className={`${isCollapsed ? 'p-2' : 'p-3'} space-y-4 overflow-y-auto h-[calc(100vh-10rem)]`}>
+                <nav className={`${isCollapsed ? 'p-2' : 'p-3'} space-y-4 overflow-y-auto flex-1`}>
                     {filteredNavGroups.map((group) => (
                         <div key={group.title}>
                             {!isCollapsed && (
-                                <div className="px-2 py-1.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                                <div className="px-2 py-1.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">
                                     {group.title}
                                 </div>
                             )}
@@ -209,12 +254,11 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                                                 }
                                             `}
                                         >
-                                            {/* Active Left Border Indicator */}
                                             {active && (
                                                 <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-emerald-500 rounded-r-full" />
                                             )}
                                             <Icon className={`w-4 h-4 ${isCollapsed ? '' : 'flex-shrink-0'}`} />
-                                            {!isCollapsed && item.name}
+                                            {!isCollapsed && <span className="truncate">{item.name}</span>}
                                         </Link>
                                     );
                                 })}
@@ -222,8 +266,8 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                         </div>
                     ))}
 
-                    {/* Profile Link - Always visible */}
-                    <div className={`pt-4 border-t border-slate-200 dark:border-slate-700`}>
+                    {/* Profile Link */}
+                    <div className={`pt-4 border-t border-slate-200 dark:border-slate-700 mt-auto`}>
                         <Link
                             href="/profile"
                             onClick={handleLinkClick}
@@ -236,31 +280,25 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                                 }
                             `}
                         >
-                            {/* Active Left Border Indicator */}
                             {isActive('/profile') && (
                                 <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-emerald-500 rounded-r-full" />
                             )}
-                            <User className="w-4 h-4" />
-                            {!isCollapsed && 'My Profile'}
+                            <User className="w-4 h-4 flex-shrink-0" />
+                            {!isCollapsed && <span className="truncate">My Profile</span>}
                         </Link>
                     </div>
                 </nav>
 
-                {/* Collapse Toggle Button - Desktop only */}
-                <div className="absolute bottom-4 left-0 right-0 px-3 hidden lg:block">
-                    <button
-                        onClick={toggleCollapsed}
-                        className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-3 py-2 text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors`}
-                        title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                {/* Resize Handle - Desktop Only */}
+                {!isCollapsed && (
+                    <div
+                        className="hidden lg:block absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-emerald-500/50 active:bg-emerald-500 transition-colors z-50 group"
+                        onMouseDown={startResizing}
                     >
-                        {!isCollapsed && <span>Collapse</span>}
-                        {isCollapsed ? (
-                            <PanelLeft className="w-4 h-4" />
-                        ) : (
-                            <PanelLeftClose className="w-4 h-4" />
-                        )}
-                    </button>
-                </div>
+                        {/* Visual indicator on hover */}
+                        <div className="absolute top-0 right-0 w-1 h-full bg-transparent group-hover:bg-emerald-500/30"></div>
+                    </div>
+                )}
             </aside>
         </>
     );

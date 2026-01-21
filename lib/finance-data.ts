@@ -56,6 +56,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         contractEndDate: '2025-12-01',
         cardLast4: '4242',
         cardBrand: 'Visa',
+        kioskUsage: 4,
+        kioskLimit: 5,
     },
     {
         hotelId: 'h-002',
@@ -71,6 +73,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         contractEndDate: '2024-03-01',
         failedAttempts: 3,
         lastFailureReason: 'Payment overdue - 9 days',
+        kioskUsage: 2,
+        kioskLimit: 2,
     },
     {
         hotelId: 'h-003',
@@ -86,6 +90,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         contractEndDate: '2026-02-15',
         cardLast4: '1234',
         cardBrand: 'Mastercard',
+        kioskUsage: 1,
+        kioskLimit: 2,
     },
     {
         hotelId: 'h-005',
@@ -101,6 +107,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         contractEndDate: '2026-03-15',
         cardLast4: '5678',
         cardBrand: 'Amex',
+        kioskUsage: 3,
+        kioskLimit: 5,
     },
     {
         hotelId: 'h-006',
@@ -114,6 +122,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         startDate: '2024-02-01',
         nextBillingDate: '2026-02-01',
         contractEndDate: '2026-04-01',
+        kioskUsage: 2,
+        kioskLimit: 5,
     },
     {
         hotelId: 'h-007',
@@ -128,6 +138,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         nextBillingDate: '2026-01-20',
         contractEndDate: '2026-05-20',
         gracePeriodDaysRemaining: 5,
+        kioskUsage: 2,
+        kioskLimit: 3,
     },
     {
         hotelId: 'h-008',
@@ -143,6 +155,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         contractEndDate: '2026-07-10',
         cardLast4: '9012',
         cardBrand: 'Visa',
+        kioskUsage: 4,
+        kioskLimit: 5,
     },
     {
         hotelId: 'h-009',
@@ -156,6 +170,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         startDate: '2024-08-01',
         nextBillingDate: '2026-02-01',
         contractEndDate: '2026-08-01',
+        kioskUsage: 1,
+        kioskLimit: 2,
     },
     {
         hotelId: 'h-010',
@@ -171,6 +187,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         contractEndDate: '2026-09-15',
         cardLast4: '3456',
         cardBrand: 'Visa',
+        kioskUsage: 5,
+        kioskLimit: 8,
     },
     {
         hotelId: 'h-012',
@@ -184,6 +202,8 @@ export const MOCK_SUBSCRIPTIONS: HotelSubscription[] = [
         startDate: '2024-05-20',
         nextBillingDate: '2026-02-20',
         contractEndDate: '2026-11-20',
+        kioskUsage: 2,
+        kioskLimit: 3,
     },
 ];
 

@@ -16,29 +16,40 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-    // Sync collapsed state with localStorage (shared with Sidebar)
+    // Sidebar State
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [sidebarWidth, setSidebarWidth] = useState(256);
+    const [isMounted, setIsMounted] = useState(false);
+
+    // Initial load
     useEffect(() => {
-        const checkCollapsed = () => {
-            const saved = localStorage.getItem('sidebar-collapsed');
-            setSidebarCollapsed(saved === 'true');
-        };
+        setIsMounted(true);
+        const savedCollapsed = localStorage.getItem('sidebar-collapsed');
+        const savedWidth = localStorage.getItem('sidebar-width');
 
-        checkCollapsed();
-
-        // Listen for storage changes (in case sidebar updates)
-        const handleStorage = () => checkCollapsed();
-        window.addEventListener('storage', handleStorage);
-
-        // Also poll for changes since storage event doesn't fire in same tab
-        const interval = setInterval(checkCollapsed, 300);
-
-        return () => {
-            window.removeEventListener('storage', handleStorage);
-            clearInterval(interval);
-        };
+        if (savedCollapsed !== null) {
+            setIsCollapsed(savedCollapsed === 'true');
+        }
+        if (savedWidth !== null) {
+            setSidebarWidth(Number(savedWidth));
+        }
     }, []);
+
+    // Persist sidebar width with debounce
+    useEffect(() => {
+        if (!isMounted) return;
+        const timer = setTimeout(() => {
+            localStorage.setItem('sidebar-width', String(sidebarWidth));
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [sidebarWidth, isMounted]);
+
+    const toggleCollapsed = () => {
+        const newState = !isCollapsed;
+        setIsCollapsed(newState);
+        localStorage.setItem('sidebar-collapsed', String(newState));
+    };
 
     if (isPublicRoute) {
         return (
@@ -52,20 +63,38 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         );
     }
 
+    // Default width prevention before mount (SSR match)
+    const currentSidebarWidth = isMounted ? (isCollapsed ? 80 : sidebarWidth) : 256;
+
     return (
         <ThemeProvider>
             <AuthProvider>
                 <ToastProvider>
                     <ProtectedRoute>
-                        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-                        <Header onMenuClick={() => setSidebarOpen(true)} sidebarCollapsed={sidebarCollapsed} />
-                        <main className={`mt-14 min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950 transition-all duration-200 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
-                            {children}
-                        </main>
+                        <div
+                            style={{
+                                '--sidebar-width': `${currentSidebarWidth}px`
+                            } as React.CSSProperties}
+                        >
+                            <Sidebar
+                                isOpen={sidebarOpen}
+                                onClose={() => setSidebarOpen(false)}
+                                sidebarWidth={sidebarWidth}
+                                setSidebarWidth={setSidebarWidth}
+                                isCollapsed={isCollapsed}
+                                toggleCollapsed={toggleCollapsed}
+                            />
+                            <Header
+                                onMenuClick={() => setSidebarOpen(true)}
+                                sidebarCollapsed={isCollapsed}
+                            />
+                            <main className="mt-14 min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950 transition-all duration-200 lg:ml-[var(--sidebar-width)]">
+                                {children}
+                            </main>
+                        </div>
                     </ProtectedRoute>
                 </ToastProvider>
             </AuthProvider>
         </ThemeProvider>
     );
 }
-

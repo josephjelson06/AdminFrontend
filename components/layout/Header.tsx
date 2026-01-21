@@ -101,7 +101,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
     const roleInfo = user ? ROLE_LABELS[user.role] : { label: 'User', color: 'text-slate-600' };
 
     return (
-        <header className={`fixed top-0 right-0 z-30 h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-all duration-200 ${sidebarCollapsed ? 'left-0 lg:left-16' : 'left-0 lg:left-64'}`}>
+        <header className="fixed top-0 right-0 z-30 h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-all duration-200 left-0 lg:left-[var(--sidebar-width)]">
             <div className="h-full flex items-center justify-between px-4 lg:px-6">
                 {/* Left side */}
                 <div className="flex items-center gap-3">
@@ -173,8 +173,8 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                                 key={filter}
                                                 onClick={() => setNotificationFilter(filter)}
                                                 className={`px-2 py-1 text-xs rounded-md transition-colors ${notificationFilter === filter
-                                                        ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
-                                                        : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
+                                                    : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700'
                                                     }`}
                                             >
                                                 {filter === 'all' ? 'All' : filter === 'alert' ? 'Kiosk' : filter === 'payment' ? 'Billing' : 'Contract'}

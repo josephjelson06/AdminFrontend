@@ -1,28 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Building2,
     CreditCard,
     Wallet,
+    AlertTriangle,
     Clock,
+    ChevronLeft,
     ChevronRight,
+    ChevronDown,
     Search,
     Download,
     CheckCircle,
     XCircle,
-    Plus,
     TrendingUp,
-    Cpu,
-    Pause,
-    Play,
-    ArrowUpCircle,
+    MoreVertical,
+    FileText,
 } from 'lucide-react';
 import { MOCK_SUBSCRIPTIONS, MOCK_FINANCIAL_METRICS } from '@/lib/finance-data';
 import type { HotelSubscription } from '@/types/finance';
-import { Dropdown, DropdownItem } from '@/components/ui/Dropdown';
-import { useToast } from '@/components/ui/Toast';
+
+function formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+    }).format(amount);
+}
 
 function formatDate(dateStr: string): string {
     return new Date(dateStr).toLocaleDateString('en-IN', {
@@ -58,7 +64,7 @@ function PlanBadge({ plan }: { plan: 'standard' | 'advanced' }) {
     );
 }
 
-function PaymentMethodIcon({ method, cardLast4 }: { method: HotelSubscription['paymentMethod']; cardLast4?: string }) {
+function PaymentMethodIcon({ method }: { method: HotelSubscription['paymentMethod'] }) {
     const config = {
         auto: { icon: CreditCard, color: 'text-emerald-500', label: 'Auto-pay' },
         manual: { icon: Wallet, color: 'text-blue-500', label: 'Manual' },
@@ -68,52 +74,171 @@ function PaymentMethodIcon({ method, cardLast4 }: { method: HotelSubscription['p
     };
     const { icon: Icon, color, label } = config[method];
     return (
-        <div className="flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
             <Icon className={`w-3.5 h-3.5 ${color}`} />
-            <span className="text-xs text-slate-600 dark:text-slate-400">
-                {label}
-                {cardLast4 && <span className="text-slate-400"> •••• {cardLast4}</span>}
-            </span>
-        </div>
+            {label}
+        </span>
     );
 }
 
-function PaymentStatusIndicator({ status, failedAttempts, graceDays }: {
-    status: HotelSubscription['paymentStatus'];
-    failedAttempts?: number;
-    graceDays?: number;
-}) {
+function PaymentStatusIndicator({ status }: { status: HotelSubscription['paymentStatus'] }) {
     const config = {
-        active: { icon: CheckCircle, color: 'text-emerald-500', label: '' },
-        failed: { icon: XCircle, color: 'text-rose-500', label: `${failedAttempts || 0} failed` },
-        grace_period: { icon: Clock, color: 'text-amber-500', label: `${graceDays || 0} days left` },
-        paused: { icon: Clock, color: 'text-slate-500', label: 'Paused' },
+        active: { icon: CheckCircle, color: 'text-emerald-500' },
+        failed: { icon: XCircle, color: 'text-rose-500' },
+        grace_period: { icon: Clock, color: 'text-amber-500' },
+        paused: { icon: Clock, color: 'text-slate-500' },
     };
-    const { icon: Icon, color, label } = config[status];
+    const { icon: Icon, color } = config[status];
+    return <Icon className={`w-4 h-4 ${color}`} />;
+}
+
+// Export Dropdown Component
+function ExportDropdown() {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleExport = (format: 'pdf' | 'excel') => {
+        // TODO: Implement actual export logic
+        console.log(`Exporting as ${format}`);
+        setIsOpen(false);
+    };
+
     return (
-        <div className="flex items-center gap-1.5">
-            <Icon className={`w-4 h-4 ${color}`} />
-            {label && <span className={`text-xs ${color}`}>{label}</span>}
+        <div className="relative" ref={dropdownRef}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+            >
+                <Download className="w-4 h-4" />
+                Export
+                <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+                <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md shadow-lg z-50">
+                    <button
+                        onClick={() => handleExport('pdf')}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                        <FileText className="w-4 h-4" />
+                        Export as PDF
+                    </button>
+                    <button
+                        onClick={() => handleExport('excel')}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                        <FileText className="w-4 h-4" />
+                        Export as Excel
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
 
-// Simple usage progress bar component
-function UsageBar({ used, limit }: { used: number; limit: number }) {
-    const percentage = Math.min((used / limit) * 100, 100);
-    const isHigh = percentage >= 80;
+// Row Actions Menu Component
+function RowActionsMenu({ hotelId }: { hotelId: string }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     return (
-        <div className="flex items-center gap-2">
-            <div className="w-20 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div
-                    className={`h-full rounded-full ${isHigh ? 'bg-amber-500' : 'bg-emerald-500'}`}
-                    style={{ width: `${percentage}%` }}
-                />
+        <div className="relative" ref={menuRef}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            >
+                <MoreVertical className="w-4 h-4 text-slate-500" />
+            </button>
+            {isOpen && (
+                <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md shadow-lg z-50">
+                    <Link
+                        href={`/subscriptions/${hotelId}`}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors rounded-md"
+                    >
+                        More Details
+                    </Link>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// Pagination Footer Component
+function PaginationFooter({
+    currentPage,
+    totalPages,
+    rowsPerPage,
+    totalItems,
+    onPageChange,
+    onRowsPerPageChange,
+}: {
+    currentPage: number;
+    totalPages: number;
+    rowsPerPage: number;
+    totalItems: number;
+    onPageChange: (page: number) => void;
+    onRowsPerPageChange: (rows: number) => void;
+}) {
+    const startItem = (currentPage - 1) * rowsPerPage + 1;
+    const endItem = Math.min(currentPage * rowsPerPage, totalItems);
+
+    return (
+        <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Rows per page:</span>
+                <select
+                    value={rowsPerPage}
+                    onChange={(e) => onRowsPerPageChange(Number(e.target.value))}
+                    className="px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                </select>
             </div>
-            <span className={`text-xs font-medium ${isHigh ? 'text-amber-600 dark:text-amber-400' : 'text-slate-600 dark:text-slate-400'}`}>
-                {used}/{limit}
-            </span>
+            <div className="flex items-center gap-4">
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                    {startItem}–{endItem} of {totalItems}
+                </span>
+                <div className="flex items-center gap-1">
+                    <button
+                        onClick={() => onPageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                        <ChevronLeft className="w-4 h-4 text-slate-500" />
+                    </button>
+                    <span className="px-2 text-sm text-slate-700 dark:text-slate-300">
+                        {currentPage} / {totalPages}
+                    </span>
+                    <button
+                        onClick={() => onPageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                        <ChevronRight className="w-4 h-4 text-slate-500" />
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }
@@ -121,30 +246,15 @@ function UsageBar({ used, limit }: { used: number; limit: number }) {
 type TabType = 'all' | 'auto_pay' | 'manual' | 'failed' | 'grace_period';
 
 export default function SubscriptionsPage() {
-    const { addToast } = useToast();
     const [activeTab, setActiveTab] = useState<TabType>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [planFilter, setPlanFilter] = useState<'all' | 'standard' | 'advanced'>('all');
     const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'suspended' | 'grace_period'>('all');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const metrics = MOCK_FINANCIAL_METRICS;
     const allSubscriptions = MOCK_SUBSCRIPTIONS;
-
-    // Add mock kiosk usage data
-    const getKioskUsage = (hotelId: string) => {
-        const mockUsage: Record<string, { used: number; limit: number }> = {
-            'h-001': { used: 4, limit: 5 },
-            'h-002': { used: 2, limit: 2 },
-            'h-003': { used: 1, limit: 2 },
-            'h-005': { used: 3, limit: 5 },
-            'h-006': { used: 2, limit: 5 },
-            'h-007': { used: 2, limit: 2 },
-            'h-008': { used: 3, limit: 5 },
-            'h-009': { used: 1, limit: 2 },
-            'h-010': { used: 2, limit: 5 },
-        };
-        return mockUsage[hotelId] || { used: 0, limit: 2 };
-    };
 
     // Filter by tab
     const getTabFiltered = (subs: HotelSubscription[]) => {
@@ -174,6 +284,18 @@ export default function SubscriptionsPage() {
         .filter(s => planFilter === 'all' || s.plan === planFilter)
         .filter(s => statusFilter === 'all' || s.status === statusFilter);
 
+    // Pagination
+    const totalPages = Math.max(1, Math.ceil(filteredSubscriptions.length / rowsPerPage));
+    const paginatedSubscriptions = filteredSubscriptions.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+    );
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeTab, searchQuery, planFilter, statusFilter, rowsPerPage]);
+
     // Tab counts
     const tabCounts = {
         all: allSubscriptions.length,
@@ -191,41 +313,20 @@ export default function SubscriptionsPage() {
         { id: 'grace_period', label: 'Grace Period', count: tabCounts.grace_period, color: 'text-amber-600' },
     ];
 
-    const handlePause = (sub: HotelSubscription) => {
-        addToast('info', 'Subscription Paused', `${sub.hotelName} subscription has been paused.`);
-    };
-
-    const handleResume = (sub: HotelSubscription) => {
-        addToast('success', 'Subscription Resumed', `${sub.hotelName} subscription has been resumed.`);
-    };
-
-    const handleUpgrade = (sub: HotelSubscription) => {
-        addToast('info', 'Plan Upgrade', `Opening upgrade options for ${sub.hotelName}...`);
-    };
-
     return (
         <div className="p-4 sm:p-6">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Subscription Management</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                        Track entitlements and subscription status
-                    </p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Track entitlements and subscription status</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                        <Download className="w-4 h-4" />
-                        Export
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-slate-800 dark:hover:bg-emerald-700 transition-colors">
-                        <Plus className="w-4 h-4" />
-                        Add Hotel
-                    </button>
+                    <ExportDropdown />
                 </div>
             </div>
 
-            {/* KPI Summary - Entitlement focused, no revenue */}
+            {/* KPI Summary - LOCKED (Do Not Modify) */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
                 <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
                     <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Active</p>
@@ -286,13 +387,13 @@ export default function SubscriptionsPage() {
                             placeholder="Search hotels..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
                         />
                     </div>
                     <select
                         value={planFilter}
                         onChange={(e) => setPlanFilter(e.target.value as typeof planFilter)}
-                        className="px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
                     >
                         <option value="all">All Plans</option>
                         <option value="standard">Standard</option>
@@ -301,7 +402,7 @@ export default function SubscriptionsPage() {
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-                        className="px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
                     >
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
@@ -310,7 +411,7 @@ export default function SubscriptionsPage() {
                     </select>
                 </div>
 
-                {/* Table - NO MRR COLUMN */}
+                {/* Table */}
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
@@ -325,101 +426,83 @@ export default function SubscriptionsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                            {filteredSubscriptions.length === 0 ? (
+                            {paginatedSubscriptions.length === 0 ? (
                                 <tr>
                                     <td colSpan={7} className="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
                                         No subscriptions found matching your filters.
                                     </td>
                                 </tr>
                             ) : (
-                                filteredSubscriptions.map((sub) => {
-                                    const usage = getKioskUsage(sub.hotelId);
-                                    return (
-                                        <tr key={sub.hotelId} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700">
-                                                        <Building2 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-medium text-slate-900 dark:text-white">{sub.hotelName}</p>
-                                                        <p className="text-xs text-slate-500 dark:text-slate-400">{sub.location}</p>
-                                                    </div>
+                                paginatedSubscriptions.map((sub) => (
+                                    <tr key={sub.hotelId} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700">
+                                                    <Building2 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                                                 </div>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <PlanBadge plan={sub.plan} />
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <StatusBadge status={sub.status} />
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <div className="space-y-1">
-                                                    <PaymentMethodIcon method={sub.paymentMethod} cardLast4={sub.cardLast4} />
-                                                    <PaymentStatusIndicator
-                                                        status={sub.paymentStatus}
-                                                        failedAttempts={sub.failedAttempts}
-                                                        graceDays={sub.gracePeriodDaysRemaining}
+                                                <div>
+                                                    <p className="text-sm font-medium text-slate-900 dark:text-white">{sub.hotelName}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400">{sub.location}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <PlanBadge plan={sub.plan} />
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <StatusBadge status={sub.status} />
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <PaymentStatusIndicator status={sub.paymentStatus} />
+                                                <div>
+                                                    <PaymentMethodIcon method={sub.paymentMethod} />
+                                                    {sub.cardLast4 && (
+                                                        <p className="text-xs text-slate-400 dark:text-slate-500">•••• {sub.cardLast4}</p>
+                                                    )}
+                                                    {sub.failedAttempts && sub.failedAttempts > 0 && (
+                                                        <p className="text-xs text-rose-500">{sub.failedAttempts} failed</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-16 bg-slate-100 dark:bg-slate-700 rounded-full h-1.5">
+                                                    <div
+                                                        className="bg-emerald-500 h-1.5 rounded-full"
+                                                        style={{ width: `${(sub.kioskUsage / sub.kioskLimit) * 100}%` }}
                                                     />
                                                 </div>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-2">
-                                                    <Cpu className="w-4 h-4 text-slate-400" />
-                                                    <UsageBar used={usage.used} limit={usage.limit} />
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <span className="text-sm text-slate-700 dark:text-slate-300">
-                                                    {formatDate(sub.nextBillingDate)}
+                                                <span className="text-xs text-slate-600 dark:text-slate-400">
+                                                    {sub.kioskUsage}/{sub.kioskLimit}
                                                 </span>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center justify-center gap-1">
-                                                    <Dropdown
-                                                        trigger={
-                                                            <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md transition-colors">
-                                                                <ChevronRight className="w-4 h-4 text-slate-400" />
-                                                            </button>
-                                                        }
-                                                        align="right"
-                                                    >
-                                                        <DropdownItem onClick={() => handleUpgrade(sub)}>
-                                                            <ArrowUpCircle className="w-4 h-4 mr-2" />
-                                                            Upgrade Plan
-                                                        </DropdownItem>
-                                                        {sub.status === 'active' ? (
-                                                            <DropdownItem onClick={() => handlePause(sub)}>
-                                                                <Pause className="w-4 h-4 mr-2" />
-                                                                Pause Subscription
-                                                            </DropdownItem>
-                                                        ) : (
-                                                            <DropdownItem onClick={() => handleResume(sub)}>
-                                                                <Play className="w-4 h-4 mr-2" />
-                                                                Resume Subscription
-                                                            </DropdownItem>
-                                                        )}
-                                                        <DropdownItem onClick={() => addToast('info', 'Grace Period', 'Opening grace period settings...')}>
-                                                            <Clock className="w-4 h-4 mr-2" />
-                                                            Apply Grace Period
-                                                        </DropdownItem>
-                                                    </Dropdown>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <span className="text-sm text-slate-700 dark:text-slate-300">
+                                                {formatDate(sub.nextBillingDate)}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            <RowActionsMenu hotelId={sub.hotelId} />
+                                        </td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                     </table>
                 </div>
 
-                {/* Footer */}
-                <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                        Showing {filteredSubscriptions.length} of {allSubscriptions.length} subscriptions
-                    </p>
-                </div>
+                {/* Pagination Footer */}
+                <PaginationFooter
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    rowsPerPage={rowsPerPage}
+                    totalItems={filteredSubscriptions.length}
+                    onPageChange={setCurrentPage}
+                    onRowsPerPageChange={setRowsPerPage}
+                />
             </div>
         </div>
     );

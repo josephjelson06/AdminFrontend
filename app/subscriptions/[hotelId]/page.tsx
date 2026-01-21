@@ -77,7 +77,7 @@ export default function HotelFinanceDetailPage({ params }: PageProps) {
                     <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                     <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Hotel not found</h2>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">The requested hotel subscription could not be found.</p>
-                    <Link href="/finance/subscriptions" className="inline-flex items-center gap-2 mt-4 text-sm text-slate-600 hover:text-slate-900">
+                    <Link href="/subscriptions" className="inline-flex items-center gap-2 mt-4 text-sm text-slate-600 hover:text-slate-900">
                         <ChevronLeft className="w-4 h-4" /> Back to Subscriptions
                     </Link>
                 </div>
@@ -116,11 +116,7 @@ export default function HotelFinanceDetailPage({ params }: PageProps) {
         <div className="p-4 sm:p-6">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm mb-4">
-                <Link href="/finance" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
-                    Finance
-                </Link>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-                <Link href="/finance/subscriptions" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
+                <Link href="/subscriptions" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
                     Subscriptions
                 </Link>
                 <ChevronRight className="w-4 h-4 text-slate-400" />

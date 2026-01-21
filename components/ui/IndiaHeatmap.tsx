@@ -48,7 +48,7 @@ export function IndiaHeatmap({ data }: IndiaHeatmapProps) {
         if (intensity > 0.4) return 'fill-emerald-400';
         if (intensity > 0.2) return 'fill-emerald-300';
         if (intensity > 0) return 'fill-emerald-200';
-        return 'fill-slate-100';
+        return 'fill-slate-200 dark:fill-slate-600';
     };
 
     // Create a map for quick lookup
@@ -58,18 +58,18 @@ export function IndiaHeatmap({ data }: IndiaHeatmapProps) {
         <div className="relative">
             <svg viewBox="40 80 280 340" className="w-full h-auto">
                 {/* Background */}
-                <rect x="40" y="80" width="280" height="340" fill="#f8fafc" rx="8" />
+                <rect x="40" y="80" width="280" height="340" className="fill-slate-100 dark:fill-slate-700" rx="8" />
 
                 {/* State paths */}
                 {Object.entries(STATE_PATHS).map(([id, { d, cx, cy }]) => {
                     const stateData = dataMap.get(id);
-                    const colorClass = stateData ? getColor(stateData.kiosks) : 'fill-slate-100';
+                    const colorClass = stateData ? getColor(stateData.kiosks) : 'fill-slate-200 dark:fill-slate-600';
 
                     return (
                         <g key={id}>
                             <path
                                 d={d}
-                                className={`${colorClass} stroke-slate-300 stroke-1 cursor-pointer transition-all hover:stroke-slate-500 hover:stroke-2`}
+                                className={`${colorClass} stroke-slate-300 dark:stroke-slate-500 stroke-1 cursor-pointer transition-all hover:stroke-slate-500 dark:hover:stroke-slate-300 hover:stroke-2`}
                                 onMouseEnter={() => stateData && setHoveredState(stateData)}
                                 onMouseLeave={() => setHoveredState(null)}
                             />
@@ -80,7 +80,7 @@ export function IndiaHeatmap({ data }: IndiaHeatmapProps) {
                                     y={cy}
                                     textAnchor="middle"
                                     dominantBaseline="middle"
-                                    className="text-[10px] font-bold fill-slate-700 pointer-events-none"
+                                    className="text-[10px] font-bold fill-slate-700 dark:fill-white pointer-events-none"
                                 >
                                     {stateData.kiosks}
                                 </text>
@@ -90,23 +90,23 @@ export function IndiaHeatmap({ data }: IndiaHeatmapProps) {
                 })}
 
                 {/* Map title */}
-                <text x="180" y="100" textAnchor="middle" className="text-xs font-semibold fill-slate-600">
+                <text x="180" y="100" textAnchor="middle" className="text-xs font-semibold fill-slate-600 dark:fill-slate-400">
                     Kiosk Distribution
                 </text>
             </svg>
 
             {/* Tooltip */}
             {hoveredState && (
-                <div className="absolute top-4 right-4 bg-white border border-slate-200 rounded-lg shadow-lg p-3 min-w-[140px]">
-                    <p className="text-sm font-semibold text-slate-900">{hoveredState.name}</p>
+                <div className="absolute top-4 right-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-3 min-w-[140px]">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{hoveredState.name}</p>
                     <div className="mt-2 space-y-1">
                         <div className="flex justify-between text-xs">
-                            <span className="text-slate-500">Kiosks</span>
-                            <span className="font-medium text-emerald-600">{hoveredState.kiosks}</span>
+                            <span className="text-slate-500 dark:text-slate-400">Kiosks</span>
+                            <span className="font-medium text-emerald-600 dark:text-emerald-400">{hoveredState.kiosks}</span>
                         </div>
                         <div className="flex justify-between text-xs">
-                            <span className="text-slate-500">Check-ins</span>
-                            <span className="font-medium text-slate-700">{hoveredState.checkins.toLocaleString()}</span>
+                            <span className="text-slate-500 dark:text-slate-400">Check-ins</span>
+                            <span className="font-medium text-slate-700 dark:text-slate-300">{hoveredState.checkins.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
@@ -116,19 +116,19 @@ export function IndiaHeatmap({ data }: IndiaHeatmapProps) {
             <div className="mt-4 flex items-center justify-center gap-4">
                 <div className="flex items-center gap-1">
                     <div className="w-3 h-3 rounded bg-emerald-200" />
-                    <span className="text-xs text-slate-500">1-3</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">1-3</span>
                 </div>
                 <div className="flex items-center gap-1">
                     <div className="w-3 h-3 rounded bg-emerald-300" />
-                    <span className="text-xs text-slate-500">4-6</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">4-6</span>
                 </div>
                 <div className="flex items-center gap-1">
                     <div className="w-3 h-3 rounded bg-emerald-400" />
-                    <span className="text-xs text-slate-500">7-9</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">7-9</span>
                 </div>
                 <div className="flex items-center gap-1">
                     <div className="w-3 h-3 rounded bg-emerald-500" />
-                    <span className="text-xs text-slate-500">10+</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">10+</span>
                 </div>
             </div>
         </div>

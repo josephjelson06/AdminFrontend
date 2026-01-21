@@ -1,19 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
     FileText,
     Calendar,
     IndianRupee,
     Download,
-    Filter,
     CheckCircle,
     Clock,
     AlertCircle,
     Search,
     Plus,
     ChevronRight,
+    ChevronLeft,
+    ChevronDown,
     X,
     Building2,
     CreditCard,
@@ -21,7 +22,7 @@ import {
     Send,
     Check,
 } from 'lucide-react';
-import { MOCK_INVOICES, getAgingBuckets } from '@/lib/finance-data';
+import { MOCK_INVOICES } from '@/lib/finance-data';
 import type { Invoice } from '@/types/finance';
 import { Dropdown, DropdownItem } from '@/components/ui/Dropdown';
 import { useToast } from '@/components/ui/Toast';
@@ -60,14 +61,243 @@ function StatusBadge({ status }: { status: Invoice['status'] }) {
     );
 }
 
+// Export Dropdown Component
+function ExportDropdown() {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const { addToast } = useToast();
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleExport = (format: 'pdf' | 'excel') => {
+        addToast('info', 'Exporting...', `Generating ${format.toUpperCase()} export...`);
+        setIsOpen(false);
+    };
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+            >
+                <Download className="w-4 h-4" />
+                Export
+                <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+                <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md shadow-lg z-50">
+                    <button
+                        onClick={() => handleExport('pdf')}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                        <FileText className="w-4 h-4" />
+                        Export as PDF
+                    </button>
+                    <button
+                        onClick={() => handleExport('excel')}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                        <FileText className="w-4 h-4" />
+                        Export as Excel
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// New Invoice Modal Component
+function NewInvoiceModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: (data: any) => void }) {
+    const [hotelName, setHotelName] = useState('');
+    const [amount, setAmount] = useState('');
+    const [dueDate, setDueDate] = useState('');
+    const [description, setDescription] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSubmit({ hotelName, amount: parseFloat(amount), dueDate, description });
+        onClose();
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+            <div className="absolute inset-0 flex items-center justify-center p-4">
+                <div className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-lg shadow-xl">
+                    {/* Header */}
+                    <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Create New Invoice</h2>
+                        <button
+                            onClick={onClose}
+                            className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        >
+                            <X className="w-5 h-5 text-slate-500" />
+                        </button>
+                    </div>
+
+                    {/* Form */}
+                    <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                Hotel
+                            </label>
+                            <select
+                                value={hotelName}
+                                onChange={(e) => setHotelName(e.target.value)}
+                                required
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                            >
+                                <option value="">Select a hotel...</option>
+                                <option value="Royal Orchid Bangalore">Royal Orchid Bangalore</option>
+                                <option value="Lemon Tree Premier">Lemon Tree Premier</option>
+                                <option value="Ginger Hotel, Panjim">Ginger Hotel, Panjim</option>
+                                <option value="Taj Palace">Taj Palace</option>
+                                <option value="ITC Maratha">ITC Maratha</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                Amount (₹)
+                            </label>
+                            <input
+                                type="number"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                required
+                                min="1"
+                                placeholder="Enter amount"
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                Due Date
+                            </label>
+                            <input
+                                type="date"
+                                value={dueDate}
+                                onChange={(e) => setDueDate(e.target.value)}
+                                required
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                Description
+                            </label>
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                rows={3}
+                                placeholder="Invoice description or notes..."
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white resize-none"
+                            />
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-3 pt-2">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="flex-1 px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="flex-1 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-medium rounded-md hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
+                            >
+                                Create Invoice
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Pagination Footer Component
+function PaginationFooter({
+    currentPage,
+    totalPages,
+    rowsPerPage,
+    totalItems,
+    onPageChange,
+    onRowsPerPageChange,
+}: {
+    currentPage: number;
+    totalPages: number;
+    rowsPerPage: number;
+    totalItems: number;
+    onPageChange: (page: number) => void;
+    onRowsPerPageChange: (rows: number) => void;
+}) {
+    const startItem = (currentPage - 1) * rowsPerPage + 1;
+    const endItem = Math.min(currentPage * rowsPerPage, totalItems);
+
+    return (
+        <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Rows per page:</span>
+                <select
+                    value={rowsPerPage}
+                    onChange={(e) => onRowsPerPageChange(Number(e.target.value))}
+                    className="px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                </select>
+            </div>
+            <div className="flex items-center gap-4">
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                    {totalItems > 0 ? `${startItem}–${endItem} of ${totalItems}` : '0 items'}
+                </span>
+                <div className="flex items-center gap-1">
+                    <button
+                        onClick={() => onPageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                        <ChevronLeft className="w-4 h-4 text-slate-500" />
+                    </button>
+                    <span className="px-2 text-sm text-slate-700 dark:text-slate-300">
+                        {currentPage} / {totalPages || 1}
+                    </span>
+                    <button
+                        onClick={() => onPageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages || totalPages === 0}
+                        className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                        <ChevronRight className="w-4 h-4 text-slate-500" />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function InvoicesPage() {
     const { addToast } = useToast();
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | Invoice['status']>('all');
     const [invoices, setInvoices] = useState<Invoice[]>(MOCK_INVOICES);
-
-    const agingBuckets = getAgingBuckets(invoices);
+    const [showNewInvoiceModal, setShowNewInvoiceModal] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     // Action handlers
     const handleMarkAsPaid = (invoice: Invoice) => {
@@ -81,6 +311,10 @@ export default function InvoicesPage() {
 
     const handleSendReminder = (invoice: Invoice) => {
         addToast('info', 'Reminder Sent', `Payment reminder sent for ${invoice.invoiceNumber}.`);
+    };
+
+    const handleCreateInvoice = (data: any) => {
+        addToast('success', 'Invoice Created', `New invoice created for ${data.hotelName}.`);
     };
 
     // Summary calculations
@@ -100,6 +334,18 @@ export default function InvoicesPage() {
         })
         .filter(inv => statusFilter === 'all' || inv.status === statusFilter);
 
+    // Pagination
+    const totalPages = Math.max(1, Math.ceil(filteredInvoices.length / rowsPerPage));
+    const paginatedInvoices = filteredInvoices.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+    );
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, statusFilter, rowsPerPage]);
+
     return (
         <div className="p-4 sm:p-6">
             {/* Page Header */}
@@ -109,11 +355,11 @@ export default function InvoicesPage() {
                     <p className="text-sm text-slate-500 dark:text-slate-400">Manage billing and payment records</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                        <Download className="w-4 h-4" />
-                        Export
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-medium rounded-md hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors">
+                    <ExportDropdown />
+                    <button
+                        onClick={() => setShowNewInvoiceModal(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-medium rounded-md hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
+                    >
                         <Plus className="w-4 h-4" />
                         New Invoice
                     </button>
@@ -183,61 +429,6 @@ export default function InvoicesPage() {
                 </div>
             </div>
 
-            {/* Aging Analysis */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-6">
-                <h2 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">Aging Analysis</h2>
-                <div className="space-y-3">
-                    <div className="flex items-center gap-4">
-                        <span className="w-20 text-xs text-slate-500 dark:text-slate-400">0-30 days</span>
-                        <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-3">
-                            <div
-                                className="bg-emerald-500 h-3 rounded-full"
-                                style={{ width: `${Math.min(100, (agingBuckets.current.amount / (totalPending + totalOverdue || 1)) * 100)}%` }}
-                            />
-                        </div>
-                        <span className="w-24 text-right text-sm font-medium text-slate-900 dark:text-white">
-                            {formatCurrency(agingBuckets.current.amount)} ({agingBuckets.current.count})
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <span className="w-20 text-xs text-slate-500 dark:text-slate-400">31-60 days</span>
-                        <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-3">
-                            <div
-                                className="bg-amber-500 h-3 rounded-full"
-                                style={{ width: `${Math.min(100, (agingBuckets.thirtyPlus.amount / (totalPending + totalOverdue || 1)) * 100)}%` }}
-                            />
-                        </div>
-                        <span className="w-24 text-right text-sm font-medium text-slate-900 dark:text-white">
-                            {formatCurrency(agingBuckets.thirtyPlus.amount)} ({agingBuckets.thirtyPlus.count})
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <span className="w-20 text-xs text-slate-500 dark:text-slate-400">61-90 days</span>
-                        <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-3">
-                            <div
-                                className="bg-orange-500 h-3 rounded-full"
-                                style={{ width: `${Math.min(100, (agingBuckets.sixtyPlus.amount / (totalPending + totalOverdue || 1)) * 100)}%` }}
-                            />
-                        </div>
-                        <span className="w-24 text-right text-sm font-medium text-slate-900 dark:text-white">
-                            {formatCurrency(agingBuckets.sixtyPlus.amount)} ({agingBuckets.sixtyPlus.count})
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <span className="w-20 text-xs text-slate-500 dark:text-slate-400">90+ days</span>
-                        <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-3">
-                            <div
-                                className="bg-rose-500 h-3 rounded-full"
-                                style={{ width: `${Math.min(100, (agingBuckets.ninetyPlus.amount / (totalPending + totalOverdue || 1)) * 100)}%` }}
-                            />
-                        </div>
-                        <span className="w-24 text-right text-sm font-medium text-slate-900 dark:text-white">
-                            {formatCurrency(agingBuckets.ninetyPlus.amount)} ({agingBuckets.ninetyPlus.count})
-                        </span>
-                    </div>
-                </div>
-            </div>
-
             {/* Invoices Table */}
             <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
                 {/* Filters */}
@@ -278,81 +469,100 @@ export default function InvoicesPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                            {filteredInvoices.map((invoice) => (
-                                <tr
-                                    key={invoice.id}
-                                    className="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"
-                                    onClick={() => setSelectedInvoice(invoice)}
-                                >
-                                    <td className="px-4 py-3">
-                                        <span className="text-sm font-mono font-medium text-slate-900 dark:text-white">{invoice.invoiceNumber}</span>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <span className="text-sm text-slate-700 dark:text-slate-300">{invoice.hotelName}</span>
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        <span className="text-sm font-semibold text-slate-900 dark:text-white">{formatCurrency(invoice.totalAmount)}</span>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <StatusBadge status={invoice.status} />
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
-                                            <Calendar className="w-3.5 h-3.5" />
-                                            {formatDate(invoice.dueDate)}
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
-                                        <div className="flex items-center justify-center gap-1">
-                                            {/* Mark as Paid - primary action for pending/overdue */}
-                                            {(invoice.status === 'pending' || invoice.status === 'overdue') && (
-                                                <button
-                                                    onClick={() => handleMarkAsPaid(invoice)}
-                                                    className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
-                                                >
-                                                    <Check className="w-3 h-3" />
-                                                    Mark Paid
-                                                </button>
-                                            )}
-                                            {/* Overflow menu */}
-                                            <Dropdown
-                                                trigger={
-                                                    <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md transition-colors">
-                                                        <MoreVertical className="w-4 h-4 text-slate-400" />
-                                                    </button>
-                                                }
-                                                align="right"
-                                            >
-                                                <DropdownItem onClick={() => setSelectedInvoice(invoice)}>
-                                                    <FileText className="w-4 h-4 mr-2" />
-                                                    View Details
-                                                </DropdownItem>
-                                                <DropdownItem onClick={() => addToast('info', 'Downloading...', `Downloading ${invoice.invoiceNumber}.pdf`)}>
-                                                    <Download className="w-4 h-4 mr-2" />
-                                                    Download PDF
-                                                </DropdownItem>
-                                                {invoice.status !== 'paid' && (
-                                                    <DropdownItem onClick={() => handleSendReminder(invoice)}>
-                                                        <Send className="w-4 h-4 mr-2" />
-                                                        Send Reminder
-                                                    </DropdownItem>
-                                                )}
-                                            </Dropdown>
-                                        </div>
+                            {paginatedInvoices.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                                        No invoices found matching your filters.
                                     </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                paginatedInvoices.map((invoice) => (
+                                    <tr
+                                        key={invoice.id}
+                                        className="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"
+                                        onClick={() => setSelectedInvoice(invoice)}
+                                    >
+                                        <td className="px-4 py-3">
+                                            <span className="text-sm font-mono font-medium text-slate-900 dark:text-white">{invoice.invoiceNumber}</span>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <span className="text-sm text-slate-700 dark:text-slate-300">{invoice.hotelName}</span>
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            <span className="text-sm font-semibold text-slate-900 dark:text-white">{formatCurrency(invoice.totalAmount)}</span>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <StatusBadge status={invoice.status} />
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
+                                                <Calendar className="w-3.5 h-3.5" />
+                                                {formatDate(invoice.dueDate)}
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                                            <div className="flex items-center justify-center gap-1">
+                                                {/* Mark as Paid - primary action for pending/overdue */}
+                                                {(invoice.status === 'pending' || invoice.status === 'overdue') && (
+                                                    <button
+                                                        onClick={() => handleMarkAsPaid(invoice)}
+                                                        className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
+                                                    >
+                                                        <Check className="w-3 h-3" />
+                                                        Mark Paid
+                                                    </button>
+                                                )}
+                                                {/* Overflow menu */}
+                                                <Dropdown
+                                                    trigger={
+                                                        <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md transition-colors">
+                                                            <MoreVertical className="w-4 h-4 text-slate-400" />
+                                                        </button>
+                                                    }
+                                                    align="right"
+                                                >
+                                                    <DropdownItem onClick={() => setSelectedInvoice(invoice)}>
+                                                        <FileText className="w-4 h-4 mr-2" />
+                                                        View Details
+                                                    </DropdownItem>
+                                                    <DropdownItem onClick={() => addToast('info', 'Downloading...', `Downloading ${invoice.invoiceNumber}.pdf`)}>
+                                                        <Download className="w-4 h-4 mr-2" />
+                                                        Download PDF
+                                                    </DropdownItem>
+                                                    {invoice.status !== 'paid' && (
+                                                        <DropdownItem onClick={() => handleSendReminder(invoice)}>
+                                                            <Send className="w-4 h-4 mr-2" />
+                                                            Send Reminder
+                                                        </DropdownItem>
+                                                    )}
+                                                </Dropdown>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
 
-                {/* Footer */}
-                <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                        Showing {filteredInvoices.length} of {invoices.length} invoices
-                    </p>
-                </div>
+                {/* Pagination Footer */}
+                <PaginationFooter
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    rowsPerPage={rowsPerPage}
+                    totalItems={filteredInvoices.length}
+                    onPageChange={setCurrentPage}
+                    onRowsPerPageChange={setRowsPerPage}
+                />
             </div>
+
+            {/* New Invoice Modal */}
+            {showNewInvoiceModal && (
+                <NewInvoiceModal
+                    onClose={() => setShowNewInvoiceModal(false)}
+                    onSubmit={handleCreateInvoice}
+                />
+            )}
 
             {/* Invoice Detail Slide-over */}
             {selectedInvoice && (
@@ -383,7 +593,7 @@ export default function InvoicesPage() {
                                     <div>
                                         <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedInvoice.hotelName}</p>
                                         <Link
-                                            href={`/finance/subscriptions/${selectedInvoice.hotelId}`}
+                                            href={`/subscriptions/${selectedInvoice.hotelId}`}
                                             className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
                                         >
                                             View subscription →
