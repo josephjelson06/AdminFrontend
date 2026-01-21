@@ -212,8 +212,8 @@ export default function EditHotelRolePage() {
                                 <button
                                     onClick={() => togglePage(page.id)}
                                     className={`relative w-12 h-7 rounded-full transition-all ${page.enabled
-                                            ? 'bg-indigo-600'
-                                            : 'bg-slate-200 dark:bg-slate-600'
+                                        ? 'bg-indigo-600'
+                                        : 'bg-slate-200 dark:bg-slate-600'
                                         }`}
                                 >
                                     <div

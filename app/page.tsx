@@ -102,8 +102,8 @@ function StatusBadge({ status }: { status: Status }) {
 function PlanBadge({ plan }: { plan: HotelPlan }) {
     return (
         <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${plan === 'advanced'
-                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
-                : 'bg-slate-700 text-white dark:bg-slate-600'
+            ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
+            : 'bg-slate-700 text-white dark:bg-slate-600'
             }`}>
             {plan}
         </span>

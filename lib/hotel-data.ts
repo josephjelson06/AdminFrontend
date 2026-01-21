@@ -4,7 +4,7 @@
 // HOTEL USER ROLES
 // ============================================
 
-export type HotelUserRole = 'hotel_manager' | 'front_desk' | 'housekeeping' | 'hotel_finance';
+export type HotelUserRole = 'hotel_manager' | 'front_desk' | 'housekeeping' | 'hotel_finance' | 'maintenance_staff';
 
 export interface HotelUser {
     id: string;
@@ -23,6 +23,7 @@ export const HOTEL_ROLE_LABELS: Record<HotelUserRole, string> = {
     front_desk: 'Front Desk',
     housekeeping: 'Housekeeping',
     hotel_finance: 'Finance',
+    maintenance_staff: 'Maintenance Staff',
 };
 
 // Page access for hotel roles
@@ -31,6 +32,7 @@ export const HOTEL_ROLE_ACCESS: Record<HotelUserRole, string[]> = {
     front_desk: ['dashboard', 'guests', 'rooms'],
     housekeeping: ['rooms'],
     hotel_finance: ['dashboard', 'billing'],
+    maintenance_staff: ['incidents', 'help'],
 };
 
 // ============================================
@@ -351,3 +353,147 @@ export function getVerificationColor(status: VerificationStatus): string {
         case 'failed': return 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400';
     }
 }
+
+// ============================================
+// INCIDENT DATA (Maintenance Staff)
+// ============================================
+
+export type IncidentPriority = 'Low' | 'Medium' | 'Immediate Fix' | null;
+export type IncidentStatus = 'Reported' | 'Assigned' | 'In Progress' | 'Resolved';
+
+export interface Incident {
+    id: string;
+    guestName: string;
+    guestReportPhoto: string;
+    resolvedPhoto: string | null;
+    description: string;
+    priority: IncidentPriority;
+    status: IncidentStatus;
+    assignedToUserId: string | null; // null = unassigned
+    roomNumber: string;
+    reportedAt: string;
+}
+
+// Mock maintenance staff user ID (matches auth.tsx)
+export const MAINTENANCE_STAFF_USER_ID = 'hu-005';
+export const UNASSIGNED = null;
+
+export const MOCK_INCIDENTS: Incident[] = [
+    // ========== UNASSIGNED (Guest Reported - Pending Manager Review) ==========
+    {
+        id: 'inc-101',
+        guestName: 'Ravi Sharma',
+        guestReportPhoto: 'https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?w=400',
+        resolvedPhoto: null,
+        description: 'Shower head is broken and water pressure is very low. Cannot take a proper shower.',
+        priority: null, // Guest didn't set priority - Manager needs to set
+        status: 'Reported',
+        assignedToUserId: UNASSIGNED,
+        roomNumber: '401',
+        reportedAt: '5 mins ago',
+    },
+    {
+        id: 'inc-102',
+        guestName: 'Meera Patel',
+        guestReportPhoto: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400',
+        resolvedPhoto: null,
+        description: 'Window curtain rod has fallen down. Curtains are on the floor.',
+        priority: 'Low', // Guest set priority
+        status: 'Reported',
+        assignedToUserId: UNASSIGNED,
+        roomNumber: '215',
+        reportedAt: '20 mins ago',
+    },
+    {
+        id: 'inc-103',
+        guestName: 'John Williams',
+        guestReportPhoto: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400',
+        resolvedPhoto: null,
+        description: 'Water is flooding from bathroom. Pipe seems to have burst!',
+        priority: 'Immediate Fix', // Guest marked urgent
+        status: 'Reported',
+        assignedToUserId: UNASSIGNED,
+        roomNumber: '608',
+        reportedAt: '2 mins ago',
+    },
+    {
+        id: 'inc-104',
+        guestName: 'Ananya Reddy',
+        guestReportPhoto: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
+        resolvedPhoto: null,
+        description: 'Mini fridge is not cooling. Food items getting spoiled.',
+        priority: null, // Guest didn't set priority
+        status: 'Reported',
+        assignedToUserId: UNASSIGNED,
+        roomNumber: '322',
+        reportedAt: '1 hour ago',
+    },
+    // ========== ASSIGNED (Already sent to Maintenance Staff) ==========
+    {
+        id: 'inc-001',
+        guestName: 'Rajesh Kumar',
+        guestReportPhoto: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400',
+        resolvedPhoto: null,
+        description: 'Bathroom sink is leaking. Water dripping from under the cabinet.',
+        priority: 'Immediate Fix',
+        status: 'Assigned',
+        assignedToUserId: MAINTENANCE_STAFF_USER_ID,
+        roomNumber: '304',
+        reportedAt: '10 mins ago',
+    },
+    {
+        id: 'inc-002',
+        guestName: 'Priya Sharma',
+        guestReportPhoto: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+        resolvedPhoto: null,
+        description: 'Air conditioning unit making loud noise. Guest unable to sleep.',
+        priority: 'Medium',
+        status: 'Assigned',
+        assignedToUserId: MAINTENANCE_STAFF_USER_ID,
+        roomNumber: '512',
+        reportedAt: '45 mins ago',
+    },
+    {
+        id: 'inc-003',
+        guestName: 'Amit Patel',
+        guestReportPhoto: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
+        resolvedPhoto: null,
+        description: 'TV remote not working. Guest requested replacement.',
+        priority: 'Low',
+        status: 'In Progress',
+        assignedToUserId: MAINTENANCE_STAFF_USER_ID,
+        roomNumber: '207',
+        reportedAt: '2 hours ago',
+    },
+    {
+        id: 'inc-004',
+        guestName: 'Sarah Johnson',
+        guestReportPhoto: 'https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=400',
+        resolvedPhoto: 'https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?w=400',
+        description: 'Light bulb in bathroom burnt out. Replaced with new LED bulb.',
+        priority: 'Low',
+        status: 'Resolved',
+        assignedToUserId: MAINTENANCE_STAFF_USER_ID,
+        roomNumber: '415',
+        reportedAt: '1 day ago',
+    },
+];
+
+export function getIncidentPriorityColor(priority: IncidentPriority): string {
+    switch (priority) {
+        case 'Immediate Fix': return 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400';
+        case 'Medium': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
+        case 'Low': return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+        default: return 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400';
+    }
+}
+
+export function getIncidentStatusColor(status: IncidentStatus): string {
+    switch (status) {
+        case 'Reported': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+        case 'Assigned': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+        case 'In Progress': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400';
+        case 'Resolved': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
+    }
+}
+

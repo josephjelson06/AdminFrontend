@@ -15,9 +15,10 @@ const PUBLIC_ROUTES = ['/login'];
 export function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+    const isHotelRoute = pathname?.startsWith('/hotel');
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    if (isPublicRoute) {
+    if (isPublicRoute || isHotelRoute) {
         return (
             <ThemeProvider>
                 <AuthProvider>

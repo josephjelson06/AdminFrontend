@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 // Combined user roles (ATC Admin + Hotel)
 export type UserRole = 'super_admin' | 'operations' | 'finance' | 'support';
-export type HotelUserRole = 'hotel_manager' | 'front_desk' | 'housekeeping' | 'hotel_finance';
+export type HotelUserRole = 'hotel_manager' | 'front_desk' | 'housekeeping' | 'hotel_finance' | 'maintenance_staff';
 export type AnyUserRole = UserRole | HotelUserRole;
 
 export interface User {
@@ -40,10 +40,11 @@ const ADMIN_PAGE_ACCESS: Record<UserRole, string[]> = {
 
 // Hotel panel page access  
 const HOTEL_PAGE_ACCESS: Record<HotelUserRole, string[]> = {
-    hotel_manager: ['dashboard', 'guests', 'rooms', 'kiosk', 'settings', 'team', 'billing', 'help'],
+    hotel_manager: ['dashboard', 'guests', 'rooms', 'kiosk', 'settings', 'team', 'roles', 'billing', 'help', 'incidents'],
     front_desk: ['dashboard', 'guests', 'rooms', 'help'],
     housekeeping: ['rooms', 'help'],
     hotel_finance: ['dashboard', 'billing', 'help'],
+    maintenance_staff: ['incidents', 'help'],
 };
 
 // Role permissions for actions
@@ -143,6 +144,18 @@ const MOCK_HOTEL_USERS: Record<string, { password: string; user: User }> = {
             name: 'Priya Nair',
             email: 'hotelfinance@hotel.in',
             role: 'hotel_finance',
+            hotelId: 'hotel-001',
+            hotelName: 'Grand Hyatt Mumbai',
+            panelType: 'hotel',
+        },
+    },
+    'maintenance@hotel.in': {
+        password: 'maintenance123',
+        user: {
+            id: 'hu-005',
+            name: 'Suresh Maintenance',
+            email: 'maintenance@hotel.in',
+            role: 'maintenance_staff',
             hotelId: 'hotel-001',
             hotelName: 'Grand Hyatt Mumbai',
             panelType: 'hotel',

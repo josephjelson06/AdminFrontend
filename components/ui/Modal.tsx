@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, ReactNode } from 'react';
 import { X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ModalProps {
     isOpen: boolean;
@@ -10,6 +11,24 @@ interface ModalProps {
     children: ReactNode;
     size?: 'sm' | 'md' | 'lg';
 }
+
+const overlayVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+};
+
+const modalVariants = {
+    initial: { opacity: 0, scale: 0.94, y: 12 },
+    animate: { opacity: 1, scale: 1, y: 0 },
+    exit: { opacity: 0, scale: 0.97, y: -6 },
+};
+
+const smoothTransition = {
+    type: 'spring' as const,
+    stiffness: 300,
+    damping: 30,
+};
 
 export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -30,8 +49,6 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         };
     }, [isOpen, onClose]);
 
-    if (!isOpen) return null;
-
     const sizeClasses = {
         sm: 'max-w-md',
         md: 'max-w-lg',
@@ -39,28 +56,46 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
     };
 
     return (
-        <div
-            ref={overlayRef}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-            onClick={(e) => e.target === overlayRef.current && onClose()}
-        >
-            <div className={`w-full ${sizeClasses[size]} bg-white rounded-lg shadow-xl animate-in fade-in zoom-in-95 duration-200`}>
-                {/* Header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-                    <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-                    <button
-                        onClick={onClose}
-                        className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
+        <AnimatePresence>
+            {isOpen && (
+                <motion.div
+                    ref={overlayRef}
+                    variants={overlayVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ duration: 0.2 }}
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+                    onClick={(e) => e.target === overlayRef.current && onClose()}
+                >
+                    <motion.div
+                        variants={modalVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        transition={smoothTransition}
+                        className={`w-full ${sizeClasses[size]} glass-elevated rounded-2xl overflow-hidden`}
                     >
-                        <X className="w-5 h-5 text-slate-400" />
-                    </button>
-                </div>
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+                            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h2>
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={onClose}
+                                className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                                <X className="w-5 h-5 text-slate-400" />
+                            </motion.button>
+                        </div>
 
-                {/* Content */}
-                <div className="px-5 py-4">
-                    {children}
-                </div>
-            </div>
-        </div>
+                        {/* Content */}
+                        <div className="px-5 py-4">
+                            {children}
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 }

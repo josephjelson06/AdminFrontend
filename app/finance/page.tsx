@@ -160,16 +160,16 @@ export default function FinancePage() {
                                     </td>
                                     <td className="px-4 py-2.5">
                                         <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${hotel.status === 'active' ? 'bg-emerald-100 text-emerald-700' :
-                                                hotel.status === 'suspended' ? 'bg-rose-100 text-rose-700' :
-                                                    'bg-slate-100 text-slate-600'
+                                            hotel.status === 'suspended' ? 'bg-rose-100 text-rose-700' :
+                                                'bg-slate-100 text-slate-600'
                                             }`}>
                                             {hotel.status}
                                         </span>
                                     </td>
                                     <td className="px-4 py-2.5">
                                         <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${hotel.plan === 'advanced'
-                                                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
-                                                : 'bg-slate-700 text-white'
+                                            ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
+                                            : 'bg-slate-700 text-white'
                                             }`}>
                                             {hotel.plan}
                                         </span>

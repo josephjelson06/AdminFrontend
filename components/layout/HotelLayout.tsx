@@ -17,6 +17,7 @@ export function HotelLayout({ children }: HotelLayoutProps) {
     const { user, isLoading, isAuthenticated, isHotelUser } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false); // Desktop collapse state
 
     useEffect(() => {
         if (!isLoading) {
@@ -29,7 +30,7 @@ export function HotelLayout({ children }: HotelLayoutProps) {
         }
     }, [isLoading, isAuthenticated, isHotelUser, router]);
 
-    // Close sidebar on route change
+    // Close sidebar on route change (mobile only)
     useEffect(() => {
         setSidebarOpen(false);
     }, [pathname]);
@@ -49,12 +50,24 @@ export function HotelLayout({ children }: HotelLayoutProps) {
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
             {/* Sidebar */}
-            <HotelSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <HotelSidebar
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+                isCollapsed={isCollapsed}
+                onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+            />
 
             {/* Main Content */}
-            <div className="lg:ml-64">
+            <div className={`
+                transition-all duration-300 ease-in-out
+                ${isCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
+            `}>
                 {/* Header */}
-                <header className="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 fixed top-0 right-0 left-0 lg:left-64 z-30">
+                <header className={`
+                    h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 
+                    fixed top-0 right-0 z-30 transition-all duration-300 ease-in-out
+                    left-0 ${isCollapsed ? 'lg:left-20' : 'lg:left-64'}
+                `}>
                     <div className="h-full px-4 flex items-center justify-between">
                         {/* Mobile Menu */}
                         <button
@@ -91,7 +104,7 @@ export function HotelLayout({ children }: HotelLayoutProps) {
                 </header>
 
                 {/* Page Content */}
-                <main className="pt-14 min-h-screen">
+                <main className="pt-14 min-h-screen p-6">
                     {children}
                 </main>
             </div>

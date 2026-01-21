@@ -355,6 +355,7 @@ export const HOTEL_PAGES = [
     { id: 'dashboard', name: 'Dashboard', description: 'Kiosk health and activity overview' },
     { id: 'guests', name: 'Guest Log', description: 'Check-in history and guest records' },
     { id: 'rooms', name: 'Room Status', description: 'Housekeeping and room management' },
+    { id: 'incidents', name: 'Incidents', description: 'Facility repairs and guest incident reports' },
     { id: 'kiosk', name: 'Kiosk Settings', description: 'Kiosk configuration and branding' },
     { id: 'settings', name: 'My Hotel', description: 'Hotel profile and contact info' },
     { id: 'team', name: 'Team Access', description: 'Staff accounts and permissions' },
@@ -415,6 +416,20 @@ export const MOCK_HOTEL_ROLES: HotelRoleDefinition[] = [
         isSystemRole: true,
         createdAt: '2024-01-15',
         updatedAt: '2024-01-15',
+    },
+    {
+        id: 'hotel-role-005',
+        name: 'Maintenance Staff',
+        description: 'Handles facility repairs and guest incidents',
+        color: 'orange',
+        userCount: 24,
+        pageAccess: HOTEL_PAGES.map(page => ({
+            ...page,
+            enabled: ['rooms', 'incidents', 'help'].includes(page.id),
+        })),
+        isSystemRole: false,
+        createdAt: '2024-03-20',
+        updatedAt: '2024-03-20',
     },
 ];
 

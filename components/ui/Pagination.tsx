@@ -35,27 +35,27 @@ export function Pagination({
     }
 
     return (
-        <div className="flex items-center justify-between py-3 px-4 border-t border-slate-200 bg-white">
-            <div className="text-sm text-slate-500">
-                Showing <span className="font-medium text-slate-700">{startItem}</span> to{' '}
-                <span className="font-medium text-slate-700">{endItem}</span> of{' '}
-                <span className="font-medium text-slate-700">{totalItems}</span> results
+        <div className="flex items-center justify-between py-3 px-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+            <div className="text-sm text-slate-500 dark:text-slate-400">
+                Showing <span className="font-medium text-slate-700 dark:text-slate-200">{startItem}</span> to{' '}
+                <span className="font-medium text-slate-700 dark:text-slate-200">{endItem}</span> of{' '}
+                <span className="font-medium text-slate-700 dark:text-slate-200">{totalItems}</span> results
             </div>
 
             <div className="flex items-center gap-1">
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-1.5 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                    <ChevronLeft className="w-4 h-4 text-slate-600" />
+                    <ChevronLeft className="w-4 h-4" />
                 </button>
 
                 {startPage > 1 && (
                     <>
                         <button
                             onClick={() => onPageChange(1)}
-                            className="w-8 h-8 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                            className="w-8 h-8 rounded-md text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                         >
                             1
                         </button>
@@ -68,8 +68,8 @@ export function Pagination({
                         key={page}
                         onClick={() => onPageChange(page)}
                         className={`w-8 h-8 rounded-md text-sm font-medium transition-colors ${page === currentPage
-                                ? 'bg-slate-900 text-white'
-                                : 'text-slate-600 hover:bg-slate-100'
+                            ? 'bg-slate-900 dark:bg-indigo-600 text-white'
+                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
                             }`}
                     >
                         {page}
@@ -81,7 +81,7 @@ export function Pagination({
                         {endPage < totalPages - 1 && <span className="px-1 text-slate-400">...</span>}
                         <button
                             onClick={() => onPageChange(totalPages)}
-                            className="w-8 h-8 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                            className="w-8 h-8 rounded-md text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                         >
                             {totalPages}
                         </button>
@@ -91,9 +91,9 @@ export function Pagination({
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="p-1.5 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                    <ChevronRight className="w-4 h-4 text-slate-600" />
+                    <ChevronRight className="w-4 h-4" />
                 </button>
             </div>
         </div>

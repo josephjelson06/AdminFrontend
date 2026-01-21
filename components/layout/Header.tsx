@@ -73,6 +73,7 @@ const ROLE_LABELS: Record<string, { label: string; color: string }> = {
     front_desk: { label: 'Front Desk', color: 'text-blue-600 dark:text-blue-400' },
     housekeeping: { label: 'Housekeeping', color: 'text-amber-600 dark:text-amber-400' },
     hotel_finance: { label: 'Finance', color: 'text-emerald-600 dark:text-emerald-400' },
+    maintenance_staff: { label: 'Maintenance', color: 'text-orange-600 dark:text-orange-400' },
 };
 
 interface HeaderProps {
