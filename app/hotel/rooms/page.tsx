@@ -20,7 +20,7 @@ import {
     getRoomStatusLabel,
 } from '@/lib/hotel/hotel-data';
 import { useToast } from '@/components/shared/ui/Toast';
-import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
+import { ConfirmModal } from '@/components/shared/ui/ConfirmModal';
 import { Pagination } from '@/components/shared/ui/Pagination';
 
 // Filter options

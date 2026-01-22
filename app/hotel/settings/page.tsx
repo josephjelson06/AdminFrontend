@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { MOCK_HOTEL_PROFILE } from '@/lib/hotel/hotel-data';
 import { useToast } from '@/components/shared/ui/Toast';
-import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
+import { ConfirmModal } from '@/components/shared/ui/ConfirmModal';
 
 export default function HotelSettingsPage() {
     const { addToast } = useToast();

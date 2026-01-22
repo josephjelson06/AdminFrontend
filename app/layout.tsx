@@ -6,8 +6,8 @@ import { ClientLayout } from '@/components/shared/ClientLayout';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'ATC Super Admin Panel',
-    description: 'Manage hotels, kiosks, and operations',
+    title: 'Hotel Panel',
+    description: 'Hotel Management System',
 };
 
 export default function RootLayout({
@@ -23,4 +23,3 @@ export default function RootLayout({
         </html>
     );
 }
-

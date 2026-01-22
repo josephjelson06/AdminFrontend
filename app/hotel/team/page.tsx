@@ -23,7 +23,7 @@ import {
 } from '@/lib/hotel/hotel-data';
 import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
 import { useToast } from '@/components/shared/ui/Toast';
-import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
+import { ConfirmModal } from '@/components/shared/ui/ConfirmModal';
 
 const ROLE_OPTIONS: { value: HotelUserRole; label: string; description: string; color: string }[] = [
     { value: 'hotel_manager', label: 'Hotel Manager', description: 'Full access to all features', color: 'bg-indigo-500' },

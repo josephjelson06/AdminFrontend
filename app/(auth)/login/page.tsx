@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Cpu, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { Building2, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/shared/auth';
 
 export default function LoginPage() {
@@ -22,9 +22,7 @@ export default function LoginPage() {
         const success = await login(email, password);
 
         if (success) {
-            // Route hotel users to /hotel, admin users to /
-            const isHotelUser = email.includes('@hotel.in');
-            router.push(isHotelUser ? '/hotel' : '/');
+            router.push('/hotel');
         } else {
             setError('Invalid email or password');
         }
@@ -33,18 +31,18 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23334155%22 fill-opacity=%220.1%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50" />
 
             <div className="w-full max-w-md relative px-4 sm:px-0">
                 {/* Logo & Title */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30 mb-4">
-                        <Cpu className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+                    <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-lg shadow-indigo-500/30 mb-4">
+                        <Building2 className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">ATC Super Admin</h1>
-                    <p className="text-slate-400 text-sm">Hotel Kiosk Management System</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">Hotel Panel</h1>
+                    <p className="text-slate-400 text-sm">Grand Hyatt Mumbai</p>
                 </div>
 
                 {/* Login Card */}
@@ -75,8 +73,8 @@ export default function LoginPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="admin@atc.in"
-                                    className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                                    placeholder="manager@hotel.in"
+                                    className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                                 />
                             </div>
                         </div>
@@ -94,7 +92,7 @@ export default function LoginPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
-                                    className="w-full pl-10 pr-12 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                                    className="w-full pl-10 pr-12 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                                 />
                                 <button
                                     type="button"
@@ -109,10 +107,10 @@ export default function LoginPage() {
                         {/* Remember & Forgot */}
                         <div className="flex items-center justify-between">
                             <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500 bg-white dark:bg-slate-700" />
+                                <input type="checkbox" className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 bg-white dark:bg-slate-700" />
                                 <span className="text-sm text-slate-600 dark:text-slate-400">Remember me</span>
                             </label>
-                            <button type="button" className="text-sm text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium">
+                            <button type="button" className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium">
                                 Forgot password?
                             </button>
                         </div>
@@ -121,7 +119,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-medium rounded-lg hover:from-emerald-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="w-full py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-medium rounded-lg hover:from-indigo-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {isLoading ? (
                                 <>
@@ -134,44 +132,9 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    {/* Demo Credentials - ATC Admin */}
-                    <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-                        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-3">ATC Admin Panel</p>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <button
-                                type="button"
-                                onClick={() => { setEmail('admin@atc.in'); setPassword('admin123'); }}
-                                className="px-2 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-medium rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors"
-                            >
-                                Super Admin
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => { setEmail('ops@atc.in'); setPassword('ops123'); }}
-                                className="px-2 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                            >
-                                Operations
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => { setEmail('finance@atc.in'); setPassword('finance123'); }}
-                                className="px-2 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium rounded-md hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
-                            >
-                                Finance
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => { setEmail('support@atc.in'); setPassword('support123'); }}
-                                className="px-2 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-md hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                            >
-                                Support
-                            </button>
-                        </div>
-                    </div>
-
                     {/* Demo Credentials - Hotel Panel */}
-                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-3">Hotel Panel (Grand Hyatt Mumbai)</p>
+                    <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 text-center mb-3">Quick Login (Demo)</p>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             <button
                                 type="button"
@@ -214,7 +177,7 @@ export default function LoginPage() {
 
                 {/* Footer */}
                 <p className="text-center text-slate-500 text-xs mt-6">
-                    © 2026 ATC Technologies. All rights reserved.
+                    © 2026 Hotel Panel. Powered by ATC Technologies.
                 </p>
             </div>
         </div>

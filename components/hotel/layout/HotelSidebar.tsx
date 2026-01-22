@@ -51,7 +51,6 @@ const NAV_GROUPS: NavGroup[] = [
             { id: 'kiosk', name: 'Kiosk Settings', href: '/hotel/kiosk', icon: Monitor },
             { id: 'settings', name: 'My Hotel', href: '/hotel/settings', icon: Building2 },
             { id: 'team', name: 'Team Access', href: '/hotel/team', icon: UserCog },
-            { id: 'roles', name: 'Roles & Access', href: '/hotel/roles', icon: Shield },
         ],
     },
     {
