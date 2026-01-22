@@ -12,15 +12,12 @@ import { ProtectedRoute } from '@/components/shared/auth/ProtectedRoute';
 // Routes that don't need authentication
 const PUBLIC_ROUTES = ['/login'];
 
-// Routes that have their own layout (hotel panel and admin panel)
-const HOTEL_ROUTES_PREFIX = '/hotel';
 // Admin routes that use (admin)/layout.tsx
 const ADMIN_ROUTES = ['/', '/dashboard', '/hotels', '/fleet', '/plans', '/subscriptions', '/invoices', '/reports', '/users', '/roles', '/audit', '/settings', '/profile'];
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
-    const isHotelRoute = pathname.startsWith(HOTEL_ROUTES_PREFIX);
     // Check if it's an admin route (handled by (admin)/layout.tsx)
     const isAdminRoute = ADMIN_ROUTES.some(route =>
         route === '/' ? pathname === '/' : pathname === route || pathname.startsWith(route + '/')
@@ -62,19 +59,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     };
 
     if (isPublicRoute) {
-        return (
-            <ThemeProvider>
-                <AuthProvider>
-                    <ToastProvider>
-                        {children}
-                    </ToastProvider>
-                </AuthProvider>
-            </ThemeProvider>
-        );
-    }
-
-    // Hotel routes have their own layout - just provide context providers
-    if (isHotelRoute) {
         return (
             <ThemeProvider>
                 <AuthProvider>

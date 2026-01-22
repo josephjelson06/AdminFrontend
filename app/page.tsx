@@ -6,21 +6,18 @@ import { useAuth } from '@/lib/shared/auth';
 
 export default function RootPage() {
     const router = useRouter();
-    const { isAuthenticated, isLoading, isHotelUser } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
 
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) {
                 router.replace('/login');
-            } else if (isHotelUser) {
-                // Hotel users go to hotel dashboard
-                router.replace('/hotel/dashboard');
             } else {
-                // Admin users go to admin dashboard
+                // All users go to admin dashboard
                 router.replace('/dashboard');
             }
         }
-    }, [isLoading, isAuthenticated, isHotelUser, router]);
+    }, [isLoading, isAuthenticated, router]);
 
     // Loading state while checking auth
     return (
