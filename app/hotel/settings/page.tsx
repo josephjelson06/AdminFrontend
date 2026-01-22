@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     Building2,
     Phone,
@@ -17,9 +17,9 @@ import {
     Sparkles,
     Calendar,
 } from 'lucide-react';
-import { MOCK_HOTEL_PROFILE } from '@/lib/hotel-data';
-import { useToast } from '@/components/ui/Toast';
-import { ConfirmModal } from '@/components/modals/ConfirmModal';
+import { MOCK_HOTEL_PROFILE } from '@/lib/hotel/hotel-data';
+import { useToast } from '@/components/shared/ui/Toast';
+import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
 
 export default function HotelSettingsPage() {
     const { addToast } = useToast();
@@ -296,3 +296,6 @@ export default function HotelSettingsPage() {
         </HotelLayout>
     );
 }
+
+
+

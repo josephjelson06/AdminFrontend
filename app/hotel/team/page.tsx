@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     UserPlus,
     MoreHorizontal,
@@ -20,10 +20,10 @@ import {
     HOTEL_ROLE_LABELS,
     HotelUserRole,
     HotelUser,
-} from '@/lib/hotel-data';
-import { Dropdown, DropdownItem } from '@/components/ui/Dropdown';
-import { useToast } from '@/components/ui/Toast';
-import { ConfirmModal } from '@/components/modals/ConfirmModal';
+} from '@/lib/hotel/hotel-data';
+import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
+import { useToast } from '@/components/shared/ui/Toast';
+import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
 
 const ROLE_OPTIONS: { value: HotelUserRole; label: string; description: string; color: string }[] = [
     { value: 'hotel_manager', label: 'Hotel Manager', description: 'Full access to all features', color: 'bg-indigo-500' },
@@ -38,6 +38,7 @@ function RoleBadge({ role }: { role: HotelUserRole }) {
         front_desk: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
         housekeeping: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
         hotel_finance: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+        maintenance_staff: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
     };
 
     return (
@@ -452,3 +453,6 @@ export default function TeamPage() {
         </HotelLayout>
     );
 }
+
+
+

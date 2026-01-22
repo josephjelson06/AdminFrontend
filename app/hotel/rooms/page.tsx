@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     Filter,
     RefreshCw,
@@ -18,10 +18,10 @@ import {
     RoomStatus,
     getRoomStatusColor,
     getRoomStatusLabel,
-} from '@/lib/hotel-data';
-import { useToast } from '@/components/ui/Toast';
-import { ConfirmModal } from '@/components/modals/ConfirmModal';
-import { Pagination } from '@/components/ui/Pagination';
+} from '@/lib/hotel/hotel-data';
+import { useToast } from '@/components/shared/ui/Toast';
+import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
+import { Pagination } from '@/components/shared/ui/Pagination';
 
 // Filter options
 const FLOOR_FILTERS = [
@@ -481,3 +481,6 @@ export default function RoomsPage() {
         </HotelLayout>
     );
 }
+
+
+

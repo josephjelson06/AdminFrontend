@@ -14,17 +14,17 @@ import {
     Calendar,
     ChevronDown,
 } from 'lucide-react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
-import { useAuth } from '@/lib/auth';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
+import { useAuth } from '@/lib/shared/auth';
 import {
     MOCK_HOTEL_KIOSKS,
     MOCK_GUEST_CHECKINS,
     MOCK_ROOMS,
     GuestCheckIn,
     HotelKiosk,
-} from '@/lib/hotel-data';
-import { TinySparkline } from '@/components/ui/TinySparkline';
-import { useToast } from '@/components/ui/Toast';
+} from '@/lib/hotel/hotel-data';
+import { TinySparkline } from '@/components/shared/ui/TinySparkline';
+import { useToast } from '@/components/shared/ui/Toast';
 
 // ==========================================
 // SUB-COMPONENTS
@@ -345,8 +345,8 @@ export default function HotelDashboard() {
                                         key={filter}
                                         onClick={() => setActivityFilter(filter as any)}
                                         className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${activityFilter === filter
-                                                ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm'
-                                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                            ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm'
+                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                                             }`}
                                     >
                                         {filter}
@@ -416,3 +416,5 @@ export default function HotelDashboard() {
         </HotelLayout>
     );
 }
+
+

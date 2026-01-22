@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     CreditCard,
     Download,
@@ -16,8 +16,8 @@ import {
     Zap,
     Crown,
 } from 'lucide-react';
-import { MOCK_HOTEL_PROFILE, MOCK_INVOICES, Invoice } from '@/lib/hotel-data';
-import { useToast } from '@/components/ui/Toast';
+import { MOCK_HOTEL_PROFILE, MOCK_INVOICES, Invoice } from '@/lib/hotel/hotel-data';
+import { useToast } from '@/components/shared/ui/Toast';
 
 function StatusBadge({ status }: { status: string }) {
     const config = {
@@ -349,3 +349,5 @@ export default function BillingPage() {
         </HotelLayout >
     );
 }
+
+

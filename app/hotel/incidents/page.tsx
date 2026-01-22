@@ -11,10 +11,10 @@ import {
     User,
     ChevronDown,
 } from 'lucide-react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
-import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
-import { useAuth } from '@/lib/auth';
-import { useToast } from '@/components/ui/Toast';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
+import { Breadcrumbs } from '@/components/shared/ui/Breadcrumbs';
+import { useAuth } from '@/lib/shared/auth';
+import { useToast } from '@/components/shared/ui/Toast';
 import {
     MOCK_INCIDENTS,
     Incident,
@@ -22,7 +22,7 @@ import {
     getIncidentPriorityColor,
     getIncidentStatusColor,
     MAINTENANCE_STAFF_USER_ID,
-} from '@/lib/hotel-data';
+} from '@/lib/hotel/hotel-data';
 
 // Priority options for dropdown
 const PRIORITY_OPTIONS: { value: IncidentPriority; label: string }[] = [
@@ -132,8 +132,8 @@ function ManagerIncidentCard({
                             onClick={() => onAssign(incident.id)}
                             disabled={needsPriority}
                             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${needsPriority
-                                    ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-                                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
+                                : 'bg-indigo-600 text-white hover:bg-indigo-700'
                                 }`}
                         >
                             <Send className="w-3.5 h-3.5" />
@@ -384,8 +384,8 @@ function StaffIncidentModal({
                                     onClick={handleMarkCompleted}
                                     disabled={!canResolve}
                                     className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-colors ${canResolve
-                                            ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                                            : 'bg-slate-200 dark:bg-slate-600 text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                                        : 'bg-slate-200 dark:bg-slate-600 text-slate-400 dark:text-slate-500 cursor-not-allowed'
                                         }`}
                                 >
                                     <CheckCircle2 className="w-4 h-4" />
@@ -637,3 +637,5 @@ export default function IncidentsPage() {
         </HotelLayout>
     );
 }
+
+

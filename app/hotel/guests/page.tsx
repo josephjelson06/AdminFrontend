@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     Search,
     Calendar,
@@ -22,9 +22,9 @@ import {
     MOCK_GUEST_CHECKINS,
     GuestCheckIn,
     getVerificationColor,
-} from '@/lib/hotel-data';
-import { useToast } from '@/components/ui/Toast';
-import { Pagination } from '@/components/ui/Pagination';
+} from '@/lib/hotel/hotel-data';
+import { useToast } from '@/components/shared/ui/Toast';
+import { Pagination } from '@/components/shared/ui/Pagination';
 import { useEffect } from 'react';
 
 // Date filter options
@@ -465,3 +465,5 @@ export default function GuestsPage() {
         </HotelLayout>
     );
 }
+
+

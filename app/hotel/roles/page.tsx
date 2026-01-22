@@ -8,11 +8,11 @@ import {
     ChevronRight,
     Shield,
 } from 'lucide-react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
-import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
-import { MOCK_HOTEL_ROLES, HotelRoleDefinition, HotelPageAccess } from '@/lib/rbac-data';
-import { useToast } from '@/components/ui/Toast';
-import { EditRoleSlideOver } from '@/components/modals/EditRoleSlideOver';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
+import { Breadcrumbs } from '@/components/shared/ui/Breadcrumbs';
+import { MOCK_HOTEL_ROLES, HotelRoleDefinition, HotelPageAccess } from '@/lib/admin/rbac-data';
+import { useToast } from '@/components/shared/ui/Toast';
+import { EditRoleSlideOver } from '@/components/admin/modals/EditRoleSlideOver';
 
 // Color mapping for hotel roles (including orange for Maintenance Staff)
 const ROLE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
@@ -172,3 +172,6 @@ export default function HotelRolesPage() {
         </HotelLayout>
     );
 }
+
+
+
