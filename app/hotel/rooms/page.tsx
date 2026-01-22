@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { useState, useEffect } from 'react';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     Filter,
     RefreshCw,
@@ -18,9 +18,10 @@ import {
     RoomStatus,
     getRoomStatusColor,
     getRoomStatusLabel,
-} from '@/lib/hotel-data';
-import { useToast } from '@/components/ui/Toast';
-import { ConfirmModal } from '@/components/modals/ConfirmModal';
+} from '@/lib/hotel/hotel-data';
+import { useToast } from '@/components/shared/ui/Toast';
+import { ConfirmModal } from '@/components/shared/ui/ConfirmModal';
+import { Pagination } from '@/components/shared/ui/Pagination';
 
 // Filter options
 const FLOOR_FILTERS = [
@@ -180,9 +181,9 @@ function RoomDetailModal({
                 <div className="p-5">
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Current Status</p>
                     <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl ${room.status === 'ready' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' :
-                            room.status === 'cleaning' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
-                                room.status === 'occupied' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
-                                    'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400'
+                        room.status === 'cleaning' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
+                            room.status === 'occupied' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                                'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400'
                         }`}>
                         <div className={`w-3 h-3 rounded-full ${getRoomStatusColor(room.status)}`} />
                         <span className="font-semibold">{getRoomStatusLabel(room.status)}</span>
@@ -203,12 +204,12 @@ function RoomDetailModal({
                                     }}
                                     disabled={room.status === status}
                                     className={`py-2.5 px-3 text-sm font-medium rounded-xl transition-all ${room.status === status
-                                            ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-                                            : status === 'ready'
-                                                ? 'bg-emerald-500 text-white hover:bg-emerald-600'
-                                                : status === 'cleaning'
-                                                    ? 'bg-amber-500 text-white hover:bg-amber-600'
-                                                    : 'bg-rose-500 text-white hover:bg-rose-600'
+                                        ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
+                                        : status === 'ready'
+                                            ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                                            : status === 'cleaning'
+                                                ? 'bg-amber-500 text-white hover:bg-amber-600'
+                                                : 'bg-rose-500 text-white hover:bg-rose-600'
                                         }`}
                                 >
                                     {getRoomStatusLabel(status)}
@@ -252,12 +253,28 @@ export default function RoomsPage() {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [confirmModal, setConfirmModal] = useState<{ room: Room; newStatus: RoomStatus } | null>(null);
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(12);
+
     // Filter rooms
     const filteredRooms = rooms.filter((room) => {
         const matchesFloor = floorFilter === 'all' || room.floor.toString() === floorFilter;
         const matchesStatus = statusFilter === 'all' || room.status === statusFilter;
         return matchesFloor && matchesStatus;
     });
+
+    // Reset pagination when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [floorFilter, statusFilter]);
+
+    // Calculate pagination
+    const totalPages = Math.ceil(filteredRooms.length / itemsPerPage);
+    const paginatedRooms = filteredRooms.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     // Handle status change with confirmation for "ready"
     const handleStatusChange = (roomId: string, newStatus: RoomStatus) => {
@@ -298,122 +315,142 @@ export default function RoomsPage() {
 
     return (
         <HotelLayout>
-            <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-                {/* Page Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div>
+
+            {/* Page Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <div className="flex items-center gap-3">
                         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Room Status</h1>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Tap a room to update its status
-                        </p>
+                        {statusFilter !== 'all' && (
+                            <span className="text-sm font-normal text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                                Showing: {STATUS_FILTERS.find(f => f.id === statusFilter)?.label} Rooms
+                            </span>
+                        )}
                     </div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        Tap a room to update its status
+                    </p>
+                </div>
+                <button
+                    onClick={handleRefresh}
+                    disabled={isRefreshing}
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-all"
+                >
+                    <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                    {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                </button>
+            </div>
+
+            {/* Status Summary */}
+            <div className="grid grid-cols-4 gap-3 mb-6">
+                {[
+                    { label: 'Ready', count: stats.ready, color: 'from-emerald-500 to-emerald-600', textColor: 'text-emerald-600 dark:text-emerald-400' },
+                    { label: 'Cleaning', count: stats.cleaning, color: 'from-amber-500 to-amber-600', textColor: 'text-amber-600 dark:text-amber-400' },
+                    { label: 'Occupied', count: stats.occupied, color: 'from-blue-500 to-blue-600', textColor: 'text-blue-600 dark:text-blue-400' },
+                    { label: 'Dirty', count: stats.dirty, color: 'from-rose-500 to-rose-600', textColor: 'text-rose-600 dark:text-rose-400' },
+                ].map((stat) => (
                     <button
-                        onClick={handleRefresh}
-                        disabled={isRefreshing}
-                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-all"
+                        key={stat.label}
+                        onClick={() => setStatusFilter(statusFilter === stat.label.toLowerCase() ? 'all' : stat.label.toLowerCase())}
+                        className={`relative overflow-hidden rounded-xl p-4 text-center transition-all hover:scale-105 ${statusFilter === stat.label.toLowerCase()
+                            ? `bg-gradient-to-br ${stat.color} text-white shadow-lg`
+                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
+                            }`}
                     >
-                        <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                        {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                        <div className={`text-2xl sm:text-3xl font-bold ${statusFilter === stat.label.toLowerCase() ? 'text-white' : stat.textColor}`}>
+                            {stat.count}
+                        </div>
+                        <div className={`text-xs font-medium ${statusFilter === stat.label.toLowerCase() ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'}`}>
+                            {stat.label}
+                        </div>
+                    </button>
+                ))}
+            </div>
+
+            {/* Filters */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-6">
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4 text-slate-400" />
+                        <select
+                            value={floorFilter}
+                            onChange={(e) => setFloorFilter(e.target.value)}
+                            className="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            {FLOOR_FILTERS.map((filter) => (
+                                <option key={filter.id} value={filter.id}>{filter.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {STATUS_FILTERS.map((filter) => (
+                            <button
+                                key={filter.id}
+                                onClick={() => setStatusFilter(filter.id)}
+                                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${statusFilter === filter.id
+                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none'
+                                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                                    }`}
+                            >
+                                <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${filter.color}`} />
+                                {filter.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Room Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                {paginatedRooms.map((room, index) => (
+                    <div
+                        key={room.id}
+                        className="animate-in fade-in slide-in-from-bottom-2"
+                        style={{ animationDelay: `${index * 30}ms` }}
+                    >
+                        <RoomCard
+                            room={room}
+                            onStatusChange={handleStatusChange}
+                            onViewDetails={setSelectedRoom}
+                        />
+                    </div>
+                ))}
+            </div>
+
+            {/* Empty State */}
+            {filteredRooms.length === 0 && (
+                <div className="py-16 text-center">
+                    <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                        <Filter className="w-10 h-10 text-slate-300 dark:text-slate-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                        No rooms match filters
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                        Try adjusting your floor or status filters
+                    </p>
+                    <button
+                        onClick={() => { setFloorFilter('all'); setStatusFilter('all'); }}
+                        className="px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                    >
+                        Clear all filters
                     </button>
                 </div>
+            )}
 
-                {/* Status Summary */}
-                <div className="grid grid-cols-4 gap-3 mb-6">
-                    {[
-                        { label: 'Ready', count: stats.ready, color: 'from-emerald-500 to-emerald-600', textColor: 'text-emerald-600 dark:text-emerald-400' },
-                        { label: 'Cleaning', count: stats.cleaning, color: 'from-amber-500 to-amber-600', textColor: 'text-amber-600 dark:text-amber-400' },
-                        { label: 'Occupied', count: stats.occupied, color: 'from-blue-500 to-blue-600', textColor: 'text-blue-600 dark:text-blue-400' },
-                        { label: 'Dirty', count: stats.dirty, color: 'from-rose-500 to-rose-600', textColor: 'text-rose-600 dark:text-rose-400' },
-                    ].map((stat) => (
-                        <button
-                            key={stat.label}
-                            onClick={() => setStatusFilter(statusFilter === stat.label.toLowerCase() ? 'all' : stat.label.toLowerCase())}
-                            className={`relative overflow-hidden rounded-xl p-4 text-center transition-all hover:scale-105 ${statusFilter === stat.label.toLowerCase()
-                                    ? `bg-gradient-to-br ${stat.color} text-white shadow-lg`
-                                    : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
-                                }`}
-                        >
-                            <div className={`text-2xl sm:text-3xl font-bold ${statusFilter === stat.label.toLowerCase() ? 'text-white' : stat.textColor}`}>
-                                {stat.count}
-                            </div>
-                            <div className={`text-xs font-medium ${statusFilter === stat.label.toLowerCase() ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'}`}>
-                                {stat.label}
-                            </div>
-                        </button>
-                    ))}
+            {/* Pagination */}
+            {filteredRooms.length > 0 && (
+                <div className="mt-6">
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        totalItems={filteredRooms.length}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={setCurrentPage}
+                    />
                 </div>
+            )}
 
-                {/* Filters */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-6">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex items-center gap-2">
-                            <Filter className="w-4 h-4 text-slate-400" />
-                            <select
-                                value={floorFilter}
-                                onChange={(e) => setFloorFilter(e.target.value)}
-                                className="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                {FLOOR_FILTERS.map((filter) => (
-                                    <option key={filter.id} value={filter.id}>{filter.label}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {STATUS_FILTERS.map((filter) => (
-                                <button
-                                    key={filter.id}
-                                    onClick={() => setStatusFilter(filter.id)}
-                                    className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${statusFilter === filter.id
-                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none'
-                                            : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                                        }`}
-                                >
-                                    <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${filter.color}`} />
-                                    {filter.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Room Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    {filteredRooms.map((room, index) => (
-                        <div
-                            key={room.id}
-                            className="animate-in fade-in slide-in-from-bottom-2"
-                            style={{ animationDelay: `${index * 30}ms` }}
-                        >
-                            <RoomCard
-                                room={room}
-                                onStatusChange={handleStatusChange}
-                                onViewDetails={setSelectedRoom}
-                            />
-                        </div>
-                    ))}
-                </div>
-
-                {/* Empty State */}
-                {filteredRooms.length === 0 && (
-                    <div className="py-16 text-center">
-                        <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
-                            <Filter className="w-10 h-10 text-slate-300 dark:text-slate-600" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                            No rooms match filters
-                        </h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                            Try adjusting your floor or status filters
-                        </p>
-                        <button
-                            onClick={() => { setFloorFilter('all'); setStatusFilter('all'); }}
-                            className="px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
-                        >
-                            Clear all filters
-                        </button>
-                    </div>
-                )}
-            </div>
 
             {/* Room Detail Modal */}
             <RoomDetailModal
@@ -444,3 +481,6 @@ export default function RoomsPage() {
         </HotelLayout>
     );
 }
+
+
+

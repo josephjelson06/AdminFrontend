@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HotelLayout } from '@/components/layout/HotelLayout';
+import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     Search,
     Calendar,
@@ -22,8 +22,10 @@ import {
     MOCK_GUEST_CHECKINS,
     GuestCheckIn,
     getVerificationColor,
-} from '@/lib/hotel-data';
-import { useToast } from '@/components/ui/Toast';
+} from '@/lib/hotel/hotel-data';
+import { useToast } from '@/components/shared/ui/Toast';
+import { Pagination } from '@/components/shared/ui/Pagination';
+import { useEffect } from 'react';
 
 // Date filter options
 const DATE_FILTERS = [
@@ -175,6 +177,10 @@ export default function GuestsPage() {
     const [selectedGuest, setSelectedGuest] = useState<GuestCheckIn | null>(null);
     const [isExporting, setIsExporting] = useState(false);
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
+
     // Filter guests
     const filteredGuests = MOCK_GUEST_CHECKINS.filter((guest) => {
         const matchesSearch =
@@ -185,7 +191,20 @@ export default function GuestsPage() {
         const matchesStatus = statusFilter === 'all' || guest.verification === statusFilter;
 
         return matchesSearch && matchesStatus;
+        return matchesSearch && matchesStatus;
     });
+
+    // Reset pagination when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, statusFilter, dateFilter]);
+
+    // Calculate pagination
+    const totalPages = Math.ceil(filteredGuests.length / itemsPerPage);
+    const paginatedGuests = filteredGuests.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     const handleExport = async () => {
         setIsExporting(true);
@@ -204,232 +223,239 @@ export default function GuestsPage() {
 
     return (
         <HotelLayout>
-            <div className="p-4 sm:p-6 max-w-6xl mx-auto">
-                {/* Page Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div>
+
+            {/* Page Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <div className="flex items-center gap-3">
                         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Guest Log</h1>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Check-in history from kiosk
-                        </p>
+                        <span className="text-sm font-normal text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                            Showing: {DATE_FILTERS.find(f => f.id === dateFilter)?.label}
+                        </span>
                     </div>
-                    <button
-                        onClick={handleExport}
-                        disabled={isExporting}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-all hover:shadow-lg"
-                    >
-                        {isExporting ? (
-                            <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                Exporting...
-                            </>
-                        ) : (
-                            <>
-                                <Download className="w-4 h-4" />
-                                Export CSV
-                            </>
-                        )}
-                    </button>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        Check-in history from kiosk
+                    </p>
                 </div>
+                <button
+                    onClick={handleExport}
+                    disabled={isExporting}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-all hover:shadow-lg"
+                >
+                    {isExporting ? (
+                        <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Exporting...
+                        </>
+                    ) : (
+                        <>
+                            <Download className="w-4 h-4" />
+                            Export CSV
+                        </>
+                    )}
+                </button>
+            </div>
 
-                {/* Quick Stats */}
-                <div className="grid grid-cols-4 gap-3 mb-6">
-                    <button
-                        onClick={() => setStatusFilter('all')}
-                        className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'all'
-                                ? 'bg-indigo-600 text-white shadow-lg'
-                                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
-                            }`}
-                    >
-                        <div className={`text-xl font-bold ${statusFilter === 'all' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{stats.total}</div>
-                        <div className={`text-xs ${statusFilter === 'all' ? 'text-white/80' : 'text-slate-500'}`}>Total</div>
-                    </button>
-                    <button
-                        onClick={() => setStatusFilter('verified')}
-                        className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'verified'
-                                ? 'bg-emerald-500 text-white shadow-lg'
-                                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
-                            }`}
-                    >
-                        <div className={`text-xl font-bold ${statusFilter === 'verified' ? 'text-white' : 'text-emerald-600 dark:text-emerald-400'}`}>{stats.verified}</div>
-                        <div className={`text-xs ${statusFilter === 'verified' ? 'text-white/80' : 'text-slate-500'}`}>Verified</div>
-                    </button>
-                    <button
-                        onClick={() => setStatusFilter('manual')}
-                        className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'manual'
-                                ? 'bg-amber-500 text-white shadow-lg'
-                                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
-                            }`}
-                    >
-                        <div className={`text-xl font-bold ${statusFilter === 'manual' ? 'text-white' : 'text-amber-600 dark:text-amber-400'}`}>{stats.manual}</div>
-                        <div className={`text-xs ${statusFilter === 'manual' ? 'text-white/80' : 'text-slate-500'}`}>Manual</div>
-                    </button>
-                    <button
-                        onClick={() => setStatusFilter('failed')}
-                        className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'failed'
-                                ? 'bg-rose-500 text-white shadow-lg'
-                                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
-                            }`}
-                    >
-                        <div className={`text-xl font-bold ${statusFilter === 'failed' ? 'text-white' : 'text-rose-600 dark:text-rose-400'}`}>{stats.failed}</div>
-                        <div className={`text-xs ${statusFilter === 'failed' ? 'text-white/80' : 'text-slate-500'}`}>Failed</div>
-                    </button>
-                </div>
+            {/* Quick Stats */}
+            <div className="grid grid-cols-4 gap-3 mb-6">
+                <button
+                    onClick={() => setStatusFilter('all')}
+                    className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'all'
+                        ? 'bg-indigo-600 text-white shadow-lg'
+                        : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
+                        }`}
+                >
+                    <div className={`text-xl font-bold ${statusFilter === 'all' ? 'text-white' : 'text-slate-900 dark:text-white'}`}>{stats.total}</div>
+                    <div className={`text-xs ${statusFilter === 'all' ? 'text-white/80' : 'text-slate-500'}`}>Total</div>
+                </button>
+                <button
+                    onClick={() => setStatusFilter('verified')}
+                    className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'verified'
+                        ? 'bg-emerald-500 text-white shadow-lg'
+                        : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
+                        }`}
+                >
+                    <div className={`text-xl font-bold ${statusFilter === 'verified' ? 'text-white' : 'text-emerald-600 dark:text-emerald-400'}`}>{stats.verified}</div>
+                    <div className={`text-xs ${statusFilter === 'verified' ? 'text-white/80' : 'text-slate-500'}`}>Verified</div>
+                </button>
+                <button
+                    onClick={() => setStatusFilter('manual')}
+                    className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'manual'
+                        ? 'bg-amber-500 text-white shadow-lg'
+                        : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
+                        }`}
+                >
+                    <div className={`text-xl font-bold ${statusFilter === 'manual' ? 'text-white' : 'text-amber-600 dark:text-amber-400'}`}>{stats.manual}</div>
+                    <div className={`text-xs ${statusFilter === 'manual' ? 'text-white/80' : 'text-slate-500'}`}>Manual</div>
+                </button>
+                <button
+                    onClick={() => setStatusFilter('failed')}
+                    className={`p-3 rounded-xl text-center transition-all ${statusFilter === 'failed'
+                        ? 'bg-rose-500 text-white shadow-lg'
+                        : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-md'
+                        }`}
+                >
+                    <div className={`text-xl font-bold ${statusFilter === 'failed' ? 'text-white' : 'text-rose-600 dark:text-rose-400'}`}>{stats.failed}</div>
+                    <div className={`text-xs ${statusFilter === 'failed' ? 'text-white/80' : 'text-slate-500'}`}>Failed</div>
+                </button>
+            </div>
 
-                {/* Filters */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-6">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        {/* Search */}
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search by name, booking ID, or room..."
-                                className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
-                            />
-                        </div>
-
-                        {/* Date Filter */}
-                        <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-slate-400" />
-                            <select
-                                value={dateFilter}
-                                onChange={(e) => setDateFilter(e.target.value)}
-                                className="px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                {DATE_FILTERS.map((filter) => (
-                                    <option key={filter.id} value={filter.id}>{filter.label}</option>
-                                ))}
-                            </select>
-                        </div>
+            {/* Filters */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-6">
+                <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Search */}
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search by name, booking ID, or room..."
+                            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
+                        />
                     </div>
-                </div>
 
-                {/* Guest Cards (Mobile) */}
-                <div className="space-y-3 sm:hidden">
-                    {filteredGuests.map((guest, index) => (
-                        <button
-                            key={guest.id}
-                            onClick={() => setSelectedGuest(guest)}
-                            className="w-full text-left bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:shadow-lg transition-all animate-in fade-in slide-in-from-bottom-2"
-                            style={{ animationDelay: `${index * 30}ms` }}
+                    {/* Date Filter */}
+                    <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-slate-400" />
+                        <select
+                            value={dateFilter}
+                            onChange={(e) => setDateFilter(e.target.value)}
+                            className="px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center">
-                                        <span className="text-sm font-semibold text-white">
-                                            {guest.guestName.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <p className="font-medium text-slate-900 dark:text-white">{guest.guestName}</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">Room {guest.roomNumber}</p>
-                                    </div>
-                                </div>
-                                <VerificationBadge status={guest.verification} />
-                            </div>
-                            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                                <span>{guest.checkInTime}</span>
-                                <span>{guest.language}</span>
-                            </div>
-                        </button>
-                    ))}
-                </div>
-
-                {/* Guest Table (Desktop) */}
-                <div className="hidden sm:block bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
-                                    <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Guest</th>
-                                    <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Booking ID</th>
-                                    <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Room</th>
-                                    <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Time</th>
-                                    <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Language</th>
-                                    <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                                {filteredGuests.map((guest, index) => (
-                                    <tr
-                                        key={guest.id}
-                                        className="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors animate-in fade-in"
-                                        style={{ animationDelay: `${index * 20}ms` }}
-                                        onClick={() => setSelectedGuest(guest)}
-                                    >
-                                        <td className="px-5 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center">
-                                                    <span className="text-xs font-semibold text-white">
-                                                        {guest.guestName.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                                                    </span>
-                                                </div>
-                                                <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                                    {guest.guestName}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-5 py-4">
-                                            <span className="text-sm text-slate-500 dark:text-slate-400 font-mono">
-                                                {guest.bookingId}
-                                            </span>
-                                        </td>
-                                        <td className="px-5 py-4">
-                                            <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                {guest.roomNumber}
-                                            </span>
-                                        </td>
-                                        <td className="px-5 py-4">
-                                            <span className="text-sm text-slate-500 dark:text-slate-400">
-                                                {guest.checkInTime}
-                                            </span>
-                                        </td>
-                                        <td className="px-5 py-4">
-                                            <span className="text-sm text-slate-500 dark:text-slate-400">
-                                                {guest.language}
-                                            </span>
-                                        </td>
-                                        <td className="px-5 py-4">
-                                            <VerificationBadge status={guest.verification} />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                            {DATE_FILTERS.map((filter) => (
+                                <option key={filter.id} value={filter.id}>{filter.label}</option>
+                            ))}
+                        </select>
                     </div>
-
-                    {/* Empty State */}
-                    {filteredGuests.length === 0 && (
-                        <div className="py-16 text-center">
-                            <User className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                                No guests found
-                            </h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                                Try adjusting your search or filters
-                            </p>
-                            <button
-                                onClick={() => { setSearchQuery(''); setStatusFilter('all'); }}
-                                className="px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
-                            >
-                                Clear filters
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Pagination Info */}
-                    {filteredGuests.length > 0 && (
-                        <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-700">
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                Showing <span className="font-semibold text-slate-700 dark:text-slate-300">{filteredGuests.length}</span> check-ins
-                            </p>
-                        </div>
-                    )}
                 </div>
             </div>
+
+            {/* Guest Cards (Mobile) */}
+            <div className="space-y-3 sm:hidden">
+                {paginatedGuests.map((guest, index) => (
+                    <button
+                        key={guest.id}
+                        onClick={() => setSelectedGuest(guest)}
+                        className="w-full text-left bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:shadow-lg transition-all animate-in fade-in slide-in-from-bottom-2"
+                        style={{ animationDelay: `${index * 30}ms` }}
+                    >
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center">
+                                    <span className="text-sm font-semibold text-white">
+                                        {guest.guestName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                    </span>
+                                </div>
+                                <div>
+                                    <p className="font-medium text-slate-900 dark:text-white">{guest.guestName}</p>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">Room {guest.roomNumber}</p>
+                                </div>
+                            </div>
+                            <VerificationBadge status={guest.verification} />
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                            <span>{guest.checkInTime}</span>
+                            <span>{guest.language}</span>
+                        </div>
+                    </button>
+                ))}
+            </div>
+
+            {/* Guest Table (Desktop) */}
+            <div className="hidden sm:block bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
+                                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Guest</th>
+                                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Booking ID</th>
+                                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Room</th>
+                                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Time</th>
+                                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Language</th>
+                                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                            {paginatedGuests.map((guest, index) => (
+                                <tr
+                                    key={guest.id}
+                                    className="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors animate-in fade-in"
+                                    style={{ animationDelay: `${index * 20}ms` }}
+                                    onClick={() => setSelectedGuest(guest)}
+                                >
+                                    <td className="px-5 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center">
+                                                <span className="text-xs font-semibold text-white">
+                                                    {guest.guestName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                                </span>
+                                            </div>
+                                            <span className="text-sm font-medium text-slate-900 dark:text-white">
+                                                {guest.guestName}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-5 py-4">
+                                        <span className="text-sm text-slate-500 dark:text-slate-400 font-mono">
+                                            {guest.bookingId}
+                                        </span>
+                                    </td>
+                                    <td className="px-5 py-4">
+                                        <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                                            {guest.roomNumber}
+                                        </span>
+                                    </td>
+                                    <td className="px-5 py-4">
+                                        <span className="text-sm text-slate-500 dark:text-slate-400">
+                                            {guest.checkInTime}
+                                        </span>
+                                    </td>
+                                    <td className="px-5 py-4">
+                                        <span className="text-sm text-slate-500 dark:text-slate-400">
+                                            {guest.language}
+                                        </span>
+                                    </td>
+                                    <td className="px-5 py-4">
+                                        <VerificationBadge status={guest.verification} />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Empty State */}
+                {filteredGuests.length === 0 && (
+                    <div className="py-16 text-center">
+                        <User className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                            No guests found
+                        </h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                            Try adjusting your search or filters
+                        </p>
+                        <button
+                            onClick={() => { setSearchQuery(''); setStatusFilter('all'); }}
+                            className="px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                        >
+                            Clear filters
+                        </button>
+                    </div>
+                )}
+
+                {/* Pagination */}
+                {filteredGuests.length > 0 && (
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        totalItems={filteredGuests.length}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={setCurrentPage}
+                    />
+                )}
+            </div>
+
 
             {/* Guest Detail Modal */}
             <GuestDetailModal
@@ -439,3 +465,5 @@ export default function GuestsPage() {
         </HotelLayout>
     );
 }
+
+

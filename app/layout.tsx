@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { ClientLayout } from '@/components/layout/ClientLayout';
+import { ClientLayout } from '@/components/shared/ClientLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'ATC Super Admin Panel',
+    title: 'ATC Hotel Management',
     description: 'Manage hotels, kiosks, and operations',
 };
 

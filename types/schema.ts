@@ -7,6 +7,8 @@ export interface Hotel {
     id: string;
     name: string;
     location: string; // e.g., "Mumbai, MH"
+    city: string;
+    state: string;
     status: Status;
     plan: HotelPlan;
     kioskCount: number;
@@ -14,6 +16,9 @@ export interface Hotel {
     mrr: number; // Monthly Recurring Revenue
     contractRenewalDate: string;
     contactEmail: string;
+    contactPhone: string;
+    onboardedDate: string;
+    lastActivity?: string; // ISO Date, optional for new hotels
 }
 
 // 2. KIOSK (HARDWARE) ENTITY
