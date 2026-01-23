@@ -24,6 +24,7 @@ import {
     CreditCard,
 } from 'lucide-react';
 import { useAuth } from '@/lib/shared/auth';
+import { ExpandableTabs } from "@/components/ui/expandable-tabs";
 
 interface NavItem {
     id: string; // Used for permission check
@@ -290,6 +291,18 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
                         </Link>
                     </div>
                 </nav>
+
+                <div className="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
+                    <ExpandableTabs
+                        tabs={[
+                            { title: "Dashboard", icon: LayoutDashboard },
+                            { title: "Notifications", icon: Shield },
+                            { type: "separator" },
+                            { title: "Settings", icon: Settings },
+                        ]}
+                        className={isCollapsed ? 'hidden' : 'w-full'}
+                    />
+                </div>
 
                 {/* Resize Handle - Desktop Only */}
                 {!isCollapsed && (

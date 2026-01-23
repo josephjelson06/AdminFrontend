@@ -27,6 +27,7 @@ import { BarChartComponent, DonutChartComponent, AreaChartComponent } from '@/co
 import { useAuth } from '@/lib/shared/auth';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { DashboardFilter } from "@/components/admin/dashboard/DashboardFilter";
+import { HoverActionButton } from "@/components/ui/hover-action-button";
 
 // Mock 7-day check-in data
 const CHECKIN_TREND = [
@@ -213,14 +214,10 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3">
                     {/* Global Time Selector */}
                     <DashboardFilter />
-                    <button
-                        onClick={handleRefresh}
-                        disabled={isRefreshing}
-                        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
-                    >
-                        <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                        Refresh
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <DashboardFilter />
+                        <HoverActionButton text="Action" onClick={() => console.log('Action clicked')} />
+                    </div>
                 </div>
             </div>
 

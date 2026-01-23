@@ -52,7 +52,6 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                 billingCycle: 'monthly',
                 features: ['Basic Reporting', 'Email Support'],
                 limits: { kiosks: 5, users: 2, storage: '10GB' },
-                features: ['Basic Reporting', 'Email Support'],
                 status: 'active',
                 popular: false
             });
@@ -100,7 +99,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
             isOpen={isOpen}
             onClose={onClose}
             title={plan ? 'Edit Subscription Plan' : 'Create New Plan'}
-            subtitle="Configure pricing tiers and entitlements."
+            description="Configure pricing tiers and entitlements."
         >
             <form onSubmit={handleSubmit} className="space-y-6 pb-20">
                 {/* Basic Info */}
@@ -277,7 +276,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                 </div>
 
                 {/* Footer Buttons */}
-                <div className="fixed bottom-0 right-0 w-full md:w-[480px] p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex items-center justify-end gap-3 z-10">
+                <div className="fixed bottom-0 right-0 w-full md:max-w-md p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex items-center justify-end gap-3 z-10">
                     <button
                         type="button"
                         onClick={onClose}

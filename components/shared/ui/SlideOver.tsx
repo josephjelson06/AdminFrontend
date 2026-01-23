@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -48,7 +49,10 @@ export function SlideOver({
 }: SlideOverProps) {
     const panelRef = useRef<HTMLDivElement>(null);
 
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
+        setMounted(true);
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isOpen) {
                 onClose();
@@ -70,10 +74,12 @@ export function SlideOver({
         };
     }, [isOpen]);
 
-    return (
+    if (!mounted) return null;
+
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-50 overflow-hidden">
+                <div className="fixed inset-0 z-[9999] overflow-hidden">
                     {/* Backdrop */}
                     <motion.div
                         variants={overlayVariants}
@@ -81,7 +87,7 @@ export function SlideOver({
                         animate="animate"
                         exit="exit"
                         transition={{ duration: 0.2 }}
-                        className="absolute inset-0 bg-black/40 backdrop-blur-md"
+                        className="absolute inset-0 bg-black/40 backdrop-blur-lg"
                         onClick={onClose}
                     />
 
@@ -130,7 +136,8 @@ export function SlideOver({
                     </div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }
 
