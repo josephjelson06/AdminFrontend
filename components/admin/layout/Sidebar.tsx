@@ -142,18 +142,18 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
             {/* Mobile Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-40 lg:hidden"
                     onClick={onClose}
                 />
             )}
 
-            {/* Sidebar */}
+            {/* GLASS SIDEBAR */}
             <aside
                 className={`
                     fixed top-0 left-0 z-50 h-screen
-                    bg-white dark:bg-slate-900 
-                    border-r border-slate-200 dark:border-slate-800
-                    flex flex-col
+                    glass border-r-0
+                    transition-all duration-300 ease-out
+                    flex flex-col overflow-hidden shadow-2xl shadow-emerald-500/5
                     transform lg:translate-x-0
                     ${isOpen ? 'translate-x-0' : '-translate-x-full'}
                 `}
@@ -162,10 +162,10 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
                     transition: isResizing ? 'none' : 'width 200ms ease-in-out, transform 200ms ease-in-out'
                 }}
             >
-                {/* Logo */}
-                <div className={`h-14 flex-shrink-0 flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-between px-4'} border-b border-slate-200 dark:border-slate-800`}>
-                    <Link href="/" className="flex items-center gap-2" onClick={handleLinkClick}>
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center flex-shrink-0">
+                {/* Logo Area */}
+                <div className={`h-16 flex-shrink-0 flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-between px-6'} border-b border-slate-200/50 dark:border-slate-700/50`}>
+                    <Link href="/" className="flex items-center gap-3" onClick={handleLinkClick}>
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-lg shadow-emerald-500/30 flex items-center justify-center flex-shrink-0">
                             <Cpu className="w-4 h-4 text-white" />
                         </div>
                         {!isCollapsed && (
@@ -175,7 +175,7 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
                     {!isCollapsed && (
                         <button
                             onClick={onClose}
-                            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md lg:hidden"
+                            className="p-1.5 hover:bg-slate-500/10 rounded-md lg:hidden transition-colors"
                         >
                             <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                         </button>
@@ -184,15 +184,15 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
 
                 {/* User Role Badge & Collapse Toggle */}
                 {user && (
-                    <div className={`flex-shrink-0 ${isCollapsed ? 'py-3' : 'px-4 py-3'} border-b border-slate-200 dark:border-slate-800`}>
+                    <div className={`flex-shrink-0 ${isCollapsed ? 'py-3' : 'px-4 py-3'} border-b border-slate-200/50 dark:border-slate-700/50`}>
                         {isCollapsed ? (
                             <div className="flex flex-col items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center" title={`${user.name} - ${user.role.replace('_', ' ')}`}>
-                                    <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                                <div className="w-8 h-8 rounded-full bg-emerald-100/80 dark:bg-emerald-900/50 flex items-center justify-center" title={`${user.name} - ${user.role.replace('_', ' ')}`}>
+                                    <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <button
                                     onClick={toggleCollapsed}
-                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors hidden lg:block"
+                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-500/10 rounded-md transition-colors hidden lg:block"
                                     title="Expand sidebar"
                                 >
                                     <PanelLeft className="w-4 h-4" />
@@ -201,8 +201,8 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
                         ) : (
                             <div className="flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-2 min-w-0">
-                                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
-                                        <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                                    <div className="w-8 h-8 rounded-full bg-emerald-100/80 dark:bg-emerald-900/50 flex items-center justify-center flex-shrink-0">
+                                        <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
@@ -215,7 +215,7 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
                                 </div>
                                 <button
                                     onClick={toggleCollapsed}
-                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors hidden lg:block flex-shrink-0"
+                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-500/10 rounded-md transition-colors hidden lg:block flex-shrink-0"
                                     title="Collapse sidebar"
                                 >
                                     <PanelLeftClose className="w-4 h-4" />
@@ -226,16 +226,16 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
                 )}
 
                 {/* Nav Groups */}
-                <nav className={`${isCollapsed ? 'p-2' : 'p-3'} space-y-4 overflow-y-auto flex-1`}>
+                <nav className={`${isCollapsed ? 'px-2 py-4' : 'p-4 space-y-6'} overflow-y-auto flex-1`}>
                     {filteredNavGroups.map((group) => (
                         <div key={group.title}>
                             {!isCollapsed && (
-                                <div className="px-2 py-1.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">
+                                <div className="px-2 py-1.5 text-xs font-bold text-slate-400/80 dark:text-slate-500 uppercase tracking-widest truncate">
                                     {group.title}
                                 </div>
                             )}
 
-                            <div className={`${isCollapsed ? 'space-y-1' : 'mt-1 space-y-0.5'}`}>
+                            <div className={`${isCollapsed ? 'space-y-1' : 'mt-2 space-y-1'}`}>
                                 {group.items.map((item) => {
                                     const active = isActive(item.href);
                                     const Icon = item.icon;
@@ -247,15 +247,16 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
                                             onClick={handleLinkClick}
                                             title={isCollapsed ? item.name : undefined}
                                             className={`
-                                                relative flex items-center ${isCollapsed ? 'justify-center p-2' : 'gap-2.5 px-3 py-2'} rounded-md text-sm font-medium transition-colors
+                                                relative flex items-center transition-all duration-200 rounded-xl overflow-hidden
+                                                ${isCollapsed ? 'justify-center p-2' : 'gap-3 px-3.5 py-2.5 text-sm font-medium'}
                                                 ${active
-                                                    ? 'bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400'
-                                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
+                                                    ? 'bg-emerald-600/90 text-white shadow-lg shadow-emerald-500/25 backdrop-blur-md'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-emerald-600 dark:hover:text-emerald-400'
                                                 }
                                             `}
                                         >
-                                            {active && (
-                                                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-emerald-500 rounded-r-full" />
+                                            {active && !isCollapsed && (
+                                                <span className="absolute left-0 top-0 bottom-0 w-1 bg-white/50 rounded-r-full" />
                                             )}
                                             <Icon className={`w-4 h-4 ${isCollapsed ? '' : 'flex-shrink-0'}`} />
                                             {!isCollapsed && <span className="truncate">{item.name}</span>}
@@ -267,21 +268,22 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
                     ))}
 
                     {/* Profile Link */}
-                    <div className={`pt-4 border-t border-slate-200 dark:border-slate-700 mt-auto`}>
+                    <div className={`pt-4 border-t border-slate-200/50 dark:border-slate-700/50 mt-auto`}>
                         <Link
                             href="/profile"
                             onClick={handleLinkClick}
                             title={isCollapsed ? 'My Profile' : undefined}
                             className={`
-                                relative flex items-center ${isCollapsed ? 'justify-center p-2' : 'gap-2.5 px-3 py-2'} rounded-md text-sm font-medium transition-colors
+                                relative flex items-center transition-all duration-200 rounded-xl overflow-hidden
+                                ${isCollapsed ? 'justify-center p-2' : 'gap-3 px-3.5 py-2.5 text-sm font-medium'}
                                 ${isActive('/profile')
-                                    ? 'bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400'
-                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
+                                    ? 'bg-emerald-600/90 text-white shadow-lg shadow-emerald-500/25 backdrop-blur-md'
+                                    : 'text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700/50 hover:text-emerald-600 dark:hover:text-emerald-400'
                                 }
                             `}
                         >
-                            {isActive('/profile') && (
-                                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-emerald-500 rounded-r-full" />
+                            {isActive('/profile') && !isCollapsed && (
+                                <span className="absolute left-0 top-0 bottom-0 w-1 bg-white/50 rounded-r-full" />
                             )}
                             <User className="w-4 h-4 flex-shrink-0" />
                             {!isCollapsed && <span className="truncate">My Profile</span>}

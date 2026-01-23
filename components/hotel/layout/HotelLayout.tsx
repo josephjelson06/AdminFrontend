@@ -17,38 +17,35 @@ export function HotelLayout({ children }: HotelLayoutProps) {
     const { user, isLoading, isAuthenticated, isHotelUser } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false); // Desktop collapse state
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     useEffect(() => {
         if (!isLoading) {
             if (!isAuthenticated) {
                 router.push('/login');
             } else if (!isHotelUser) {
-                // If admin user tries to access hotel panel, redirect to admin
                 router.push('/');
             }
         }
     }, [isLoading, isAuthenticated, isHotelUser, router]);
 
-    // Close sidebar on route change (mobile only)
     useEffect(() => {
         setSidebarOpen(false);
     }, [pathname]);
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-                <div className="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full" />
+            // Glass Loader
+            <div className="min-h-screen flex items-center justify-center bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm">
+                <div className="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full shadow-lg shadow-indigo-500/30" />
             </div>
         );
     }
 
-    if (!isAuthenticated || !isHotelUser) {
-        return null;
-    }
+    if (!isAuthenticated || !isHotelUser) return null;
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+        <div className="min-h-screen">
             {/* Sidebar */}
             <HotelSidebar
                 isOpen={sidebarOpen}
@@ -57,41 +54,38 @@ export function HotelLayout({ children }: HotelLayoutProps) {
                 onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
             />
 
-            {/* Main Content */}
+            {/* Main Content Area */}
             <div className={`
                 transition-all duration-300 ease-in-out
                 ${isCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
             `}>
-                {/* Header */}
+                {/* GLASS HEADER (Floating) */}
                 <header className={`
-                    h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 
-                    fixed top-0 right-0 z-30 transition-all duration-300 ease-in-out
-                    left-0 ${isCollapsed ? 'lg:left-20' : 'lg:left-64'}
+                    h-14 glass sticky top-4 mx-4 z-30 rounded-2xl transition-all duration-300 ease-in-out
+                    ${isCollapsed ? 'lg:left-20' : 'lg:left-64'}
                 `}>
                     <div className="h-full px-4 flex items-center justify-between">
                         {/* Mobile Menu */}
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg lg:hidden"
+                            className="p-2 hover:bg-slate-500/10 rounded-lg lg:hidden transition-colors"
                         >
                             <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                         </button>
 
-                        {/* Spacer */}
                         <div className="hidden lg:block" />
 
-                        {/* Right Actions */}
                         <div className="flex items-center gap-2">
                             {/* Notifications */}
-                            <button className="relative p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                            <button className="relative p-2 hover:bg-slate-500/10 rounded-lg transition-colors">
                                 <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full" />
+                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
                             </button>
 
                             {/* Theme Toggle */}
                             <button
                                 onClick={toggleTheme}
-                                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                                className="p-2 hover:bg-slate-500/10 rounded-lg transition-colors"
                             >
                                 {theme === 'dark' ? (
                                     <Sun className="w-5 h-5 text-slate-600 dark:text-slate-400" />
@@ -103,8 +97,8 @@ export function HotelLayout({ children }: HotelLayoutProps) {
                     </div>
                 </header>
 
-                {/* Page Content */}
-                <main className="pt-14 min-h-screen p-6">
+                {/* Page Content - Padded to account for floating header */}
+                <main className="pt-8 p-4 sm:p-6 min-h-[calc(100vh-1rem)]">
                     {children}
                 </main>
             </div>

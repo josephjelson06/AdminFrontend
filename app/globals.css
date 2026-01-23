@@ -30,7 +30,15 @@
 }
 
 body {
+  /* THE MESH GRADIENT BACKGROUND */
   background-color: rgb(var(--bg-primary));
+  background-image:
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+  background-attachment: fixed;
+  /* Keeps gradient static while scrolling */
   color: rgb(var(--text-primary));
   transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -42,20 +50,44 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgb(var(--bg-tertiary));
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(var(--text-muted));
+  background: rgba(148, 163, 184, 0.4);
   border-radius: 3px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--text-secondary));
+  background: rgba(71, 85, 105, 0.7);
 }
 
-/* Utility classes for theme */
 @layer utilities {
+
+  /* THE GLASS UTILITY CLASS */
+  .glass {
+    @apply bg-white/70 dark:bg-slate-900/60 border border-white/20 dark:border-slate-700/50 shadow-lg shadow-black/5;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    /* Safari Support */
+  }
+
+  /* Glass variant for modals - higher opacity for better readability */
+  .glass-elevated {
+    @apply bg-white/85 dark:bg-slate-900/80 border border-white/30 dark:border-slate-700/60 shadow-2xl shadow-black/10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Glass variant for sidebars - full height, softer effect */
+  .glass-sidebar {
+    @apply bg-white/75 dark:bg-slate-900/70 border-r border-white/20 dark:border-slate-700/50 shadow-xl shadow-black/5;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
   .bg-theme-primary {
     background-color: rgb(var(--bg-primary));
   }
@@ -85,34 +117,35 @@ body {
   }
 }
 
-/* Mobile menu overlay */
 .mobile-menu-overlay {
-  @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden;
+  @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden;
 }
 
-/* Responsive container */
 @layer components {
   .page-container {
     @apply p-4 sm:p-6;
   }
 
+  /* AUTOMATIC GLASS CARDS */
   .card {
-    @apply bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700;
+    @apply glass rounded-2xl transition-all duration-200;
   }
 
   .card-header {
-    @apply px-4 py-3 border-b border-slate-200 dark:border-slate-700;
+    @apply px-4 py-3 border-b border-slate-200/50 dark:border-slate-700/50;
   }
 
+  /* Semi-transparent Inputs */
   .input-field {
-    @apply w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-md text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400;
+    @apply w-full px-3 py-2 border border-slate-200/60 dark:border-slate-600/60 rounded-xl text-sm bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all;
   }
 
+  /* Glass Buttons */
   .btn-primary {
-    @apply px-4 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-medium rounded-md hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors;
+    @apply px-4 py-2 bg-indigo-600/90 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30 text-sm font-medium rounded-xl transition-all active:scale-95 backdrop-blur-sm;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-medium rounded-md hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors;
+    @apply px-4 py-2 bg-white/50 dark:bg-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-600/80 border border-slate-200/50 dark:border-slate-600/50 text-slate-700 dark:text-slate-200 text-sm font-medium rounded-xl transition-all backdrop-blur-sm;
   }
 }

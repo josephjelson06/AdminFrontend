@@ -30,7 +30,7 @@ export function Dropdown({ trigger, children, align = 'left' }: DropdownProps) {
 
             {isOpen && (
                 <div
-                    className={`absolute z-50 mt-1 min-w-[160px] bg-white rounded-md border border-slate-200 shadow-lg py-1 animate-in fade-in slide-in-from-top-1 duration-150 ${align === 'right' ? 'right-0' : 'left-0'
+                    className={`absolute z-50 mt-1 min-w-[160px] glass-elevated rounded-xl py-1 animate-in fade-in slide-in-from-top-1 duration-150 ${align === 'right' ? 'right-0' : 'left-0'
                         }`}
                 >
                     {children}
@@ -52,8 +52,8 @@ export function DropdownItem({ onClick, children, variant = 'default', className
         <button
             onClick={onClick}
             className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center gap-2 ${variant === 'danger'
-                ? 'text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-900/20'
-                : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700'
+                ? 'text-rose-600 hover:bg-rose-50/50 dark:text-rose-400 dark:hover:bg-rose-900/20'
+                : 'text-slate-700 hover:bg-white/50 dark:text-slate-300 dark:hover:bg-slate-700/50'
                 } ${className || ''}`}
         >
             {children}
@@ -89,14 +89,14 @@ export function SelectDropdown({ value, options, onChange, placeholder = 'Select
         <div ref={dropdownRef} className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-200 rounded-md text-sm text-slate-700 hover:border-slate-300 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/60 dark:border-slate-600/60 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:border-slate-300/70 dark:hover:border-slate-500/70 transition-colors"
             >
-                <span className={value ? 'text-slate-900' : 'text-slate-400'}>{selectedLabel}</span>
+                <span className={value ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400'}>{selectedLabel}</span>
                 <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg py-1 max-h-48 overflow-auto">
+                <div className="absolute z-50 w-full mt-1 glass-elevated rounded-xl py-1 max-h-48 overflow-auto">
                     {options.map((option) => (
                         <button
                             key={option.value}
@@ -105,8 +105,8 @@ export function SelectDropdown({ value, options, onChange, placeholder = 'Select
                                 setIsOpen(false);
                             }}
                             className={`w-full text-left px-3 py-2 text-sm transition-colors ${option.value === value
-                                ? 'bg-slate-100 text-slate-900 font-medium'
-                                : 'text-slate-700 hover:bg-slate-50'
+                                ? 'bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 font-medium'
+                                : 'text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50'
                                 }`}
                         >
                             {option.label}

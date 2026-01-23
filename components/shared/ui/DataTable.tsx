@@ -98,9 +98,9 @@ export function DataTable<T>({
     const endItem = Math.min(startIndex + pageSize, filteredData.length);
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div className="glass rounded-2xl overflow-hidden">
             {/* Toolbar */}
-            <div className="p-4 flex flex-col sm:flex-row gap-3 border-b border-slate-200 dark:border-slate-700">
+            <div className="p-4 flex flex-col sm:flex-row gap-3 border-b border-slate-200/50 dark:border-slate-700/50">
                 {/* Search */}
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -109,7 +109,7 @@ export function DataTable<T>({
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
                         placeholder={searchPlaceholder}
-                        className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400"
+                        className="w-full pl-10 pr-4 py-2 border border-slate-200/60 dark:border-slate-600/60 rounded-xl text-sm bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                     />
                 </div>
 
@@ -118,14 +118,14 @@ export function DataTable<T>({
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => handleExport('pdf')}
-                            className="flex items-center gap-2 px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                            className="flex items-center gap-2 px-3 py-2 border border-slate-200/50 dark:border-slate-600/50 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50 backdrop-blur-sm transition-colors"
                         >
                             <FileDown className="w-4 h-4" />
                             <span className="hidden sm:inline">Export PDF</span>
                         </button>
                         <button
                             onClick={() => handleExport('excel')}
-                            className="flex items-center gap-2 px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                            className="flex items-center gap-2 px-3 py-2 border border-slate-200/50 dark:border-slate-600/50 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50 backdrop-blur-sm transition-colors"
                         >
                             <FileDown className="w-4 h-4" />
                             <span className="hidden sm:inline">Export Excel</span>
@@ -138,7 +138,7 @@ export function DataTable<T>({
             <div className="overflow-x-auto">
                 <table className="w-full">
                     <thead>
-                        <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
+                        <tr className="bg-slate-50/50 dark:bg-slate-700/30 border-b border-slate-200/50 dark:border-slate-700/50">
                             {columns.map((col) => (
                                 <th
                                     key={col.id}
@@ -150,9 +150,9 @@ export function DataTable<T>({
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                    <tbody className="divide-y divide-slate-100/50 dark:divide-slate-700/50">
                         {paginatedData.map((row) => (
-                            <tr key={getRowKey(row)} className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                            <tr key={getRowKey(row)} className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
                                 {columns.map((col) => (
                                     <td
                                         key={col.id}
@@ -183,7 +183,7 @@ export function DataTable<T>({
 
             {/* Pagination */}
             {filteredData.length > 0 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-slate-200/50 dark:border-slate-700/50">
                     {/* Info */}
                     <div className="text-sm text-slate-500 dark:text-slate-400">
                         Showing <span className="font-medium text-slate-700 dark:text-slate-300">{startItem}</span> to{' '}
@@ -199,7 +199,7 @@ export function DataTable<T>({
                             <select
                                 value={pageSize}
                                 onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-                                className="px-2 py-1 border border-slate-200 dark:border-slate-600 rounded text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none"
+                                className="px-2 py-1 border border-slate-200/60 dark:border-slate-600/60 rounded-lg text-sm bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm text-slate-900 dark:text-white focus:outline-none"
                             >
                                 {[5, 10, 25, 50].map((size) => (
                                     <option key={size} value={size}>{size}</option>
@@ -212,7 +212,7 @@ export function DataTable<T>({
                             <button
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
-                                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-slate-700/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronLeft className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                             </button>
@@ -224,7 +224,7 @@ export function DataTable<T>({
                             <button
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                 disabled={currentPage >= totalPages}
-                                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="p-1.5 rounded-lg hover:bg-white/50 dark:hover:bg-slate-700/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronRight className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                             </button>
@@ -256,10 +256,10 @@ export function TableBadge({
     variant?: 'default' | 'success' | 'warning' | 'danger';
 }) {
     const styles = {
-        default: 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300',
-        success: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-        warning: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-        danger: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+        default: 'bg-slate-100/60 text-slate-700 dark:bg-slate-700/60 dark:text-slate-300 backdrop-blur-sm',
+        success: 'bg-emerald-100/60 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 backdrop-blur-sm',
+        warning: 'bg-amber-100/60 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 backdrop-blur-sm',
+        danger: 'bg-rose-100/60 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 backdrop-blur-sm',
     };
 
     return (

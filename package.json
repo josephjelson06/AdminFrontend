@@ -9,12 +9,15 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "clsx": "^2.1.1",
         "framer-motion": "^12.28.1",
         "lucide-react": "^0.468.0",
+        "motion": "^12.28.1",
         "next": "15.1.4",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "recharts": "^3.6.0"
+        "recharts": "^3.6.0",
+        "tailwind-merge": "^3.4.0"
     },
     "devDependencies": {
         "@types/node": "^22",

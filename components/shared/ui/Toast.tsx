@@ -77,22 +77,22 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
 
     const styles: Record<ToastType, { bg: string; icon: string; leftBorder: string }> = {
         success: {
-            bg: 'bg-white dark:bg-slate-800',
+            bg: 'bg-white/80 dark:bg-slate-800/80 backdrop-blur-md',
             icon: 'text-emerald-500',
             leftBorder: 'border-l-emerald-500'
         },
         error: {
-            bg: 'bg-white dark:bg-slate-800',
+            bg: 'bg-white/80 dark:bg-slate-800/80 backdrop-blur-md',
             icon: 'text-rose-500',
             leftBorder: 'border-l-rose-500'
         },
         warning: {
-            bg: 'bg-white dark:bg-slate-800',
+            bg: 'bg-white/80 dark:bg-slate-800/80 backdrop-blur-md',
             icon: 'text-amber-500',
             leftBorder: 'border-l-amber-500'
         },
         info: {
-            bg: 'bg-white dark:bg-slate-800',
+            bg: 'bg-white/80 dark:bg-slate-800/80 backdrop-blur-md',
             icon: 'text-blue-500',
             leftBorder: 'border-l-blue-500'
         },
@@ -103,7 +103,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
 
     return (
         <div
-            className={`${style.bg} ${style.leftBorder} border border-slate-200 dark:border-slate-700 border-l-4 rounded-lg shadow-lg p-4 min-w-[300px] max-w-[400px] animate-in slide-in-from-right-5 duration-300`}
+            className={`${style.bg} ${style.leftBorder} border border-slate-200/50 dark:border-slate-700/50 border-l-4 rounded-xl shadow-lg p-4 min-w-[300px] max-w-[400px] animate-in slide-in-from-right-5 duration-300`}
         >
             <div className="flex items-start gap-3">
                 <Icon className={`w-5 h-5 ${style.icon} flex-shrink-0 mt-0.5`} />
@@ -115,7 +115,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
                 </div>
                 <button
                     onClick={onClose}
-                    className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
+                    className="p-1 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
                 >
                     <X className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                 </button>

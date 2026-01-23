@@ -101,14 +101,14 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
     const roleInfo = user ? ROLE_LABELS[user.role] : { label: 'User', color: 'text-slate-600' };
 
     return (
-        <header className="fixed top-0 right-0 z-30 h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-all duration-200 left-0 lg:left-[var(--sidebar-width)]">
+        <header className="glass sticky top-4 mx-4 z-30 h-14 rounded-2xl transition-all duration-300 ease-in-out">
             <div className="h-full flex items-center justify-between px-4 lg:px-6">
                 {/* Left side */}
                 <div className="flex items-center gap-3">
                     {/* Mobile menu button */}
                     <button
                         onClick={onMenuClick}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md lg:hidden"
+                        className="p-2 hover:bg-slate-500/10 rounded-lg lg:hidden transition-colors"
                     >
                         <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                     </button>
@@ -124,7 +124,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors"
+                        className="p-2 hover:bg-slate-500/10 rounded-lg transition-colors"
                         title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
                     >
                         {theme === 'light' ? (
@@ -141,11 +141,11 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                 setShowNotifications(!showNotifications);
                                 setShowUserMenu(false);
                             }}
-                            className="relative p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors"
+                            className="relative p-2 hover:bg-slate-500/10 rounded-lg transition-colors"
                         >
                             <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                             {unreadCount > 0 && (
-                                <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 rounded-full text-[10px] text-white font-bold flex items-center justify-center">
+                                <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 rounded-full text-[10px] text-white font-bold flex items-center justify-center shadow-[0_0_8px_rgba(244,63,94,0.6)]">
                                     {unreadCount}
                                 </span>
                             )}
@@ -153,8 +153,8 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
 
                         {/* Notifications Dropdown */}
                         {showNotifications && (
-                            <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden">
-                                <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                            <div className="absolute right-0 mt-2 w-80 glass-elevated rounded-xl overflow-hidden">
+                                <div className="px-4 py-3 border-b border-slate-200/50 dark:border-slate-700/50">
                                     <div className="flex items-center justify-between mb-2">
                                         <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Notifications</h3>
                                         {unreadCount > 0 && (
@@ -172,9 +172,9 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                             <button
                                                 key={filter}
                                                 onClick={() => setNotificationFilter(filter)}
-                                                className={`px-2 py-1 text-xs rounded-md transition-colors ${notificationFilter === filter
-                                                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
-                                                    : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                                className={`px-2 py-1 text-xs rounded-lg transition-colors ${notificationFilter === filter
+                                                    ? 'bg-slate-900/90 dark:bg-slate-100/90 text-white dark:text-slate-900 backdrop-blur-sm'
+                                                    : 'text-slate-500 hover:bg-white/50 dark:hover:bg-slate-700/50'
                                                     }`}
                                             >
                                                 {filter === 'all' ? 'All' : filter === 'alert' ? 'Kiosk' : filter === 'payment' ? 'Billing' : 'Contract'}
@@ -213,7 +213,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                         ))
                                     )}
                                 </div>
-                                <div className="px-4 py-2 border-t border-slate-200 dark:border-slate-700">
+                                <div className="px-4 py-2 border-t border-slate-200/50 dark:border-slate-700/50">
                                     <button className="w-full text-center text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
                                         View all notifications
                                     </button>
@@ -229,9 +229,9 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                 setShowUserMenu(!showUserMenu);
                                 setShowNotifications(false);
                             }}
-                            className="flex items-center gap-2 pl-2 sm:pl-4 sm:border-l border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-md py-1 pr-2 transition-colors"
+                            className="flex items-center gap-2 pl-2 sm:pl-4 sm:border-l border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-500/10 rounded-lg py-1 pr-2 transition-colors"
                         >
-                            <div className="w-8 h-8 rounded-full bg-slate-900 dark:bg-slate-600 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-full bg-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center">
                                 <span className="text-sm font-medium text-white">
                                     {user?.name.split(' ').map(n => n[0]).join('') || 'U'}
                                 </span>
@@ -245,10 +245,10 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
 
                         {/* User Dropdown */}
                         {showUserMenu && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1">
+                            <div className="absolute right-0 mt-2 w-48 glass-elevated rounded-xl py-1">
                                 <Link
                                     href="/profile"
-                                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50 transition-colors"
                                     onClick={() => setShowUserMenu(false)}
                                 >
                                     <UserCircle className="w-4 h-4 text-slate-400" />
@@ -256,19 +256,19 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                 </Link>
                                 <Link
                                     href="/settings"
-                                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50 transition-colors"
                                     onClick={() => setShowUserMenu(false)}
                                 >
                                     <Settings className="w-4 h-4 text-slate-400" />
                                     Settings
                                 </Link>
-                                <div className="my-1 border-t border-slate-100 dark:border-slate-700" />
+                                <div className="my-1 border-t border-slate-100/50 dark:border-slate-700/50" />
                                 <button
                                     onClick={() => {
                                         setShowUserMenu(false);
                                         logout();
                                     }}
-                                    className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 w-full transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50/50 dark:hover:bg-rose-900/20 w-full transition-colors"
                                 >
                                     <LogOut className="w-4 h-4" />
                                     Logout
