@@ -10,6 +10,7 @@ import {
     getDate,
     getDaysInMonth,
     startOfMonth,
+    endOfMonth,
     startOfWeek,
     endOfWeek,
     isWithinInterval,
@@ -35,10 +36,10 @@ interface DateRange {
     to: Date | undefined;
 }
 
-interface GlassCalendarProps extends React.HTMLAttributes<HTMLDivElement> {
+interface GlassCalendarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
     mode?: "single" | "range" | "multiple"; // For now we focus on range as per request
     selected?: DateRange;
-    onSelect?: (range: DateRange) => void;
+    onRangeSelect?: (range: DateRange) => void;
     className?: string;
     viewMode?: ViewMode;
     onViewModeChange?: (mode: ViewMode) => void;
@@ -59,7 +60,7 @@ const ScrollbarHide = () => (
 
 // --- MAIN COMPONENT ---
 export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps>(
-    ({ className, selected: propSelected, onSelect, viewMode = "Day", onViewModeChange, ...props }, ref) => {
+    ({ className, selected: propSelected, onRangeSelect, viewMode = "Day", onViewModeChange, ...props }, ref) => {
         const [currentDate, setCurrentDate] = React.useState(new Date());
         const [selectedRange, setSelectedRange] = React.useState<DateRange>(propSelected || { from: undefined, to: undefined });
         const [hoverDate, setHoverDate] = React.useState<Date | undefined>(undefined);
@@ -108,37 +109,22 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                 }
             }
             setSelectedRange(newRange);
-            onSelect?.(newRange);
+            onRangeSelect?.(newRange);
         };
 
         const handleWeekClick = (weekStart: Date, weekEnd: Date) => {
             // Logic for selecting a week or range of weeks
-            // For simplicity in this iteration: If no start selected, select this week. 
-            // If start selected, extend to this week end.
             let newRange = { ...selectedRange };
 
             if (!selectedRange.from || (selectedRange.from && selectedRange.to)) {
                 newRange = { from: weekStart, to: weekEnd };
             } else {
                 if (weekStart < selectedRange.from) {
-                    newRange = { from: weekStart, to: selectedRange.from }; // Should strictly be end of that week but keeping simple
-                    // Actually better: from new week start to old range end (or old range from)
-                    // Let's just set specific logic: selecting multiple weeks
-                    // If clicking, select that week. Implementation can be complex for range of weeks.
-                    // Let'sstick to: Click selects that week. Shift+Click or subsequent click extends?
-                    // User said: "range of weeks which can expand..."
-                    // Let's treat week blocks as the unit.
-
-                    // If we are "extending", we need to know if we are selecting 'to'.
-                    // Let's keep it consistent: First click starts range (week start), second click ends range (week end).
+                    newRange = { from: weekStart, to: selectedRange.from };
                     if (weekEnd < selectedRange.from) {
                         newRange = { from: weekStart, to: selectedRange.to || selectedRange.from };
                         // Re-orient
-                        newRange = { from: weekStart, to: selectedRange.from };  // Wait, if existing was a week, it has a 'to'.
-                        // Resetting for simplicity user experience:
-                        // Click 1: Select 1 week.
-                        // Click 2 (if separate): Select new range? Or extend?
-                        // Standard date picker: Click 1 resets and starts.
+                        newRange = { from: weekStart, to: selectedRange.from };
                     } else {
                         // Extending forward
                         newRange = { from: selectedRange.from, to: weekEnd };
@@ -148,16 +134,13 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                 }
             }
 
-            // Override for "Week" mode: Always ensure we snap to week boundaries if we want "Week" feel?
-            // Actually, the handleDayClick logic is generic. Let's just use specific Week handler.
             setSelectedRange(newRange);
-            onSelect?.(newRange);
+            onRangeSelect?.(newRange);
         };
 
         const handleMonthClick = (monthStart: Date) => {
             // Select distinct month or range of months
-            // Range logic same as days
-            const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0); // End of month
+            const monthEnd = endOfMonth(monthStart);
 
             let newRange = { ...selectedRange };
             if (!selectedRange.from || (selectedRange.from && selectedRange.to)) {
@@ -169,7 +152,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                     // Fix end date consistency if previous was single month
                     if (!selectedRange.to) {
                         // If only from existed (e.g. start of a month), set to to end of that month
-                        const oldFromEnd = new Date(selectedRange.from.getFullYear(), selectedRange.from.getMonth() + 1, 0);
+                        const oldFromEnd = endOfMonth(selectedRange.from);
                         newRange = { from: monthStart, to: oldFromEnd };
                     }
                 } else {
@@ -177,7 +160,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                 }
             }
             setSelectedRange(newRange);
-            onSelect?.(newRange);
+            onRangeSelect?.(newRange);
         };
 
         const handleYearClick = (yearStart: Date) => {
@@ -198,7 +181,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                 }
             }
             setSelectedRange(newRange);
-            onSelect?.(newRange);
+            onRangeSelect?.(newRange);
         };
 
 
@@ -234,8 +217,8 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                             "relative flex h-8 w-8 items-center justify-center text-sm font-medium transition-all duration-200 rounded-full z-10",
                             {
                                 "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30": isRangeStart || isRangeEnd || (isSelected && !selectedRange.to),
-                                "text-slate-300 hover:bg-white/10 mt-[2px]": !isSelected,
-                                "bg-emerald-500/20 text-emerald-100 rounded-none": isMiddle,
+                                "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 mt-[2px]": !isSelected,
+                                "bg-emerald-500/20 text-emerald-700 dark:text-emerald-100 rounded-none": isMiddle,
                                 "rounded-l-full rounded-r-none": isRangeStart && selectedRange.to,
                                 "rounded-r-full rounded-l-none": isRangeEnd && selectedRange.from,
                             }
@@ -261,7 +244,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
         const renderWeeklyView = () => {
             // Render full month but interaction is row-based
             const start = startOfMonth(currentDate);
-            const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const end = endOfMonth(currentDate);
             const startWeek = startOfWeek(start);
             const endWeek = endOfWeek(end);
 
@@ -284,14 +267,6 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                     {weeks.map((weekStart, idx) => {
                         const weekEnd = endOfWeek(weekStart);
                         // Check if this week is fully or partially in selected range
-                        // If range spans this week
-                        const isSelected = selectedRange.from && selectedRange.to
-                            ? (weekStart >= selectedRange.from && weekEnd <= selectedRange.to) || // Fully inside
-                            (selectedRange.from <= weekEnd && selectedRange.to >= weekStart) // Overlap (simplified)
-                            : false; // For simplicty strictly check selection
-
-                        // Strict check for visualization
-                        const isStartWeek = selectedRange.from && isSameDay(weekStart, startOfWeek(selectedRange.from));
 
                         // Let's render the days for visual
                         const days = [];
@@ -312,9 +287,9 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                                         "flex h-8 w-8 items-center justify-center text-sm rounded-full",
                                         {
                                             "text-white bg-emerald-500": isDaySelected && isCurrentMonth,
-                                            "text-emerald-500/50 bg-emerald-500/10": isDaySelected && !isCurrentMonth,
-                                            "text-slate-500/50": !isCurrentMonth && !isDaySelected,
-                                            "text-white": isCurrentMonth && !isDaySelected
+                                            "text-emerald-700 dark:text-emerald-100 bg-emerald-500/20": isDaySelected && !isCurrentMonth,
+                                            "text-slate-400 dark:text-slate-500": !isCurrentMonth && !isDaySelected,
+                                            "text-slate-700 dark:text-white": isCurrentMonth && !isDaySelected
                                         }
                                     )}
                                 >
@@ -329,7 +304,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                                 onClick={() => handleWeekClick(weekStart, weekEnd)}
                                 className={cn(
                                     "grid grid-cols-7 place-items-center p-1 rounded-xl cursor-pointer transition-colors",
-                                    "hover:bg-white/10"
+                                    "hover:bg-slate-100 dark:hover:bg-white/10"
                                 )}
                             >
                                 {days}
@@ -361,7 +336,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                                     "h-10 rounded-lg text-sm font-medium transition-all",
                                     {
                                         "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30": isSelected,
-                                        "text-slate-300 hover:bg-white/10": !isSelected
+                                        "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10": !isSelected
                                     }
                                 )}
                             >
@@ -394,7 +369,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                                     "h-10 rounded-lg text-sm font-medium transition-all",
                                     {
                                         "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30": isSelected,
-                                        "text-slate-300 hover:bg-white/10": !isSelected
+                                        "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10": !isSelected
                                     }
                                 )}
                             >
@@ -425,7 +400,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                 className={cn(
                     "w-full max-w-[360px] p-5 overflow-hidden",
                     "bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-white/20 dark:border-slate-700/50 shadow-2xl",
-                    "rounded-3xl text-white font-sans",
+                    "rounded-3xl text-slate-900 dark:text-white font-sans",
                     className
                 )}
                 {...props}
@@ -433,7 +408,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                 <ScrollbarHide />
                 {/* Header: Tabs */}
                 <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-1 rounded-xl bg-black/20 p-1 w-full relative">
+                    <div className="flex items-center space-x-1 rounded-xl bg-slate-100 dark:bg-black/20 p-1 w-full relative">
                         {/* Tab Sliders could go here, for now simple buttons */}
                         {(['Day', 'Weekly', 'Monthly', 'Yearly'] as ViewMode[]).map((m) => (
                             <button
@@ -441,7 +416,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                                 onClick={() => onViewModeChange?.(m)}
                                 className={cn(
                                     "flex-1 py-1.5 text-[10px] sm:text-xs font-bold rounded-lg transition-all z-10 uppercase",
-                                    viewMode === m ? "bg-white text-black shadow-md" : "text-slate-300 hover:bg-white/10"
+                                    viewMode === m ? "bg-white dark:bg-slate-700 text-black dark:text-white shadow-md" : "text-slate-500 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/10"
                                 )}
                             >
                                 {m === "Weekly" ? "Week" : m === "Monthly" ? "Month" : m === "Yearly" ? "Year" : "Day"}
@@ -457,15 +432,15 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="text-xl font-bold tracking-tight text-white"
+                        className="text-xl font-bold tracking-tight text-slate-900 dark:text-white"
                     >
                         {getHeaderText()}
                     </motion.p>
                     <div className="flex items-center space-x-1">
-                        <button onClick={handlePrev} className="p-1.5 rounded-full text-white/70 transition-colors hover:bg-white/20">
+                        <button onClick={handlePrev} className="p-1.5 rounded-full text-slate-600 dark:text-white/70 transition-colors hover:bg-black/5 dark:hover:bg-white/20">
                             <ChevronLeft className="h-5 w-5" />
                         </button>
-                        <button onClick={handleNext} className="p-1.5 rounded-full text-white/70 transition-colors hover:bg-white/20">
+                        <button onClick={handleNext} className="p-1.5 rounded-full text-slate-600 dark:text-white/70 transition-colors hover:bg-black/5 dark:hover:bg-white/20">
                             <ChevronRight className="h-5 w-5" />
                         </button>
                     </div>
@@ -490,11 +465,11 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
                 </div>
 
                 {/* Footer Divider */}
-                <div className="mt-4 h-px bg-white/10" />
+                <div className="mt-4 h-px bg-slate-200 dark:bg-white/10" />
 
                 {/* Footer Actions */}
                 <div className="mt-4 flex items-center justify-between">
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                         {selectedRange.from ? (
                             <>
                                 {format(selectedRange.from, "MMM d")}

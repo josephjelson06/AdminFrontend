@@ -101,7 +101,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
     const roleInfo = user ? ROLE_LABELS[user.role] : { label: 'User', color: 'text-slate-600' };
 
     return (
-        <header className="glass sticky top-4 mx-4 z-30 h-14 rounded-2xl transition-all duration-300 ease-in-out lg:ml-[calc(var(--sidebar-width)+1rem)] bg-white/60 dark:bg-slate-900/60 backdrop-blur-md">
+        <header className="glass sticky top-4 mx-4 z-[99] h-14 rounded-2xl transition-all duration-300 ease-in-out lg:ml-[calc(var(--sidebar-width)+1rem)] bg-white/60 dark:bg-slate-900/60 backdrop-blur-md">
             <div className="h-full flex items-center justify-between px-4 lg:px-6">
                 {/* Left side */}
                 <div className="flex items-center gap-3">

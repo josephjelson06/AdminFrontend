@@ -46,8 +46,8 @@ export function DashboardFilter() {
             <button
                 onClick={toggleCalendar}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${isCalendarOpen
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-600 ring-2 ring-emerald-500/20"
-                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50"
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-600 ring-2 ring-emerald-500/20"
+                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50"
                     }`}
             >
                 <CalendarIcon className="h-4 w-4" />
@@ -77,7 +77,7 @@ export function DashboardFilter() {
                                     viewMode={viewMode}
                                     onViewModeChange={setViewMode}
                                     selected={selectedRange}
-                                    onSelect={setSelectedRange}
+                                    onRangeSelect={setSelectedRange}
                                 />
                             </div>
                         </div>
