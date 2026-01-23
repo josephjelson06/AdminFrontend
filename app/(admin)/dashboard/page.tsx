@@ -26,6 +26,7 @@ import { MOCK_HOTELS, MOCK_METRICS, MOCK_KIOSKS } from '@/lib/admin/mock-data';
 import { BarChartComponent, DonutChartComponent, AreaChartComponent } from '@/components/shared/ui/Charts';
 import { useAuth } from '@/lib/shared/auth';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
+import { DashboardFilter } from "@/components/admin/dashboard/DashboardFilter";
 
 // Mock 7-day check-in data
 const CHECKIN_TREND = [
@@ -211,21 +212,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-3">
                     {/* Global Time Selector */}
-                    <div className="flex items-center gap-1 px-1 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md">
-                        <Calendar className="w-4 h-4 text-slate-400 ml-2" />
-                        {(['7D', '30D', '90D'] as const).map((period) => (
-                            <button
-                                key={period}
-                                onClick={() => setTimePeriod(period)}
-                                className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${timePeriod === period
-                                    ? 'bg-slate-900 dark:bg-emerald-600 text-white'
-                                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
-                                    }`}
-                            >
-                                {period}
-                            </button>
-                        ))}
-                    </div>
+                    <DashboardFilter />
                     <button
                         onClick={handleRefresh}
                         disabled={isRefreshing}
