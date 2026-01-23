@@ -151,7 +151,7 @@ export function Sidebar({ isOpen = true, onClose, sidebarWidth, setSidebarWidth,
             <aside
                 className={`
                     fixed top-0 left-0 z-50 h-screen
-                    glass border-r-0
+                    glass border-r-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md
                     transition-all duration-300 ease-out
                     flex flex-col overflow-hidden shadow-2xl shadow-emerald-500/5
                     transform lg:translate-x-0

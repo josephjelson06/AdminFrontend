@@ -27,6 +27,15 @@ const config: Config = {
             screens: {
                 'xs': '475px',
             },
+            keyframes: {
+                moveBackground: {
+                    '0%': { backgroundPosition: '0% 0%' },
+                    '100%': { backgroundPosition: '0% -1000%' },
+                },
+            },
+            animation: {
+                'liquid-bg': 'moveBackground 60s linear infinite',
+            },
         },
     },
     plugins: [],

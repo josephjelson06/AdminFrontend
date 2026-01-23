@@ -25,6 +25,7 @@ import {
 import { MOCK_HOTELS, MOCK_METRICS, MOCK_KIOSKS } from '@/lib/admin/mock-data';
 import { BarChartComponent, DonutChartComponent, AreaChartComponent } from '@/components/shared/ui/Charts';
 import { useAuth } from '@/lib/shared/auth';
+import { GlassCard } from '@/components/shared/ui/GlassCard';
 
 // Mock 7-day check-in data
 const CHECKIN_TREND = [
@@ -150,7 +151,6 @@ export default function Dashboard() {
         setTimeout(() => setIsRefreshing(false), 1000);
     };
 
-    // KPI Card component - escalates via link
     const KPICard = ({
         title,
         value,
@@ -170,31 +170,30 @@ export default function Dashboard() {
         href: string;
         trend?: { value: string; positive: boolean };
     }) => (
-        <Link
-            href={href}
-            className="group bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 shadow-sm hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition-all cursor-pointer"
-        >
-            <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{title}</p>
-                    <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{value}</p>
+        <Link href={href} className="block group">
+            <GlassCard className="p-4 h-full hover:border-emerald-500/50 transition-colors">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{title}</p>
+                        <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">{value}</p>
+                    </div>
+                    <div className={`p-2 rounded-lg ${iconBg} group-hover:scale-110 transition-transform`}>
+                        <Icon className={`w-5 h-5 ${iconColor}`} />
+                    </div>
                 </div>
-                <div className={`p-2 rounded-lg ${iconBg} group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-5 h-5 ${iconColor}`} />
+                <div className="mt-2 flex items-center justify-between">
+                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                        {subtitle}
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-            </div>
-            <div className="mt-2 flex items-center justify-between">
-                <div className="text-xs text-slate-500 dark:text-slate-400">
-                    {subtitle}
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-            {trend && (
-                <div className={`mt-1 text-xs flex items-center gap-1 ${trend.positive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                    <TrendingUp className={`w-3 h-3 ${!trend.positive && 'rotate-180'}`} />
-                    {trend.value}
-                </div>
-            )}
+                {trend && (
+                    <div className={`mt-1 text-xs flex items-center gap-1 ${trend.positive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                        <TrendingUp className={`w-3 h-3 ${!trend.positive && 'rotate-180'}`} />
+                        {trend.value}
+                    </div>
+                )}
+            </GlassCard>
         </Link>
     );
 
@@ -294,68 +293,78 @@ export default function Dashboard() {
             {/* Charts Row - Clickable, escalation-only */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
                 {/* Check-in Trend - Links to Reports */}
-                <Link href="/reports/usage" className="block bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 shadow-sm hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Check-in Trend</h3>
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                            View Details <ChevronRight className="w-3 h-3" />
-                        </span>
-                    </div>
-                    <BarChartComponent
-                        data={CHECKIN_TREND}
-                        dataKey="checkins"
-                        color="#10b981"
-                        height={160}
-                    />
+                {/* Check-in Trend - Links to Reports */}
+                <Link href="/reports/usage" className="block group">
+                    <GlassCard className="p-4 hover:border-emerald-500/50 transition-colors">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Check-in Trend</h3>
+                            <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                View Details <ChevronRight className="w-3 h-3" />
+                            </span>
+                        </div>
+                        <BarChartComponent
+                            data={CHECKIN_TREND}
+                            dataKey="checkins"
+                            color="#10b981"
+                            height={160}
+                        />
+                    </GlassCard>
                 </Link>
 
                 {/* System Health Trend - Links to Fleet */}
-                <Link href="/fleet" className="block bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 shadow-sm hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">System Health</h3>
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                            View Fleet <ChevronRight className="w-3 h-3" />
-                        </span>
-                    </div>
-                    <AreaChartComponent
-                        data={HEALTH_TREND}
-                        dataKey="value"
-                        color="#6366f1"
-                        height={160}
-                        gradientId="healthGradient"
-                    />
+                {/* System Health Trend - Links to Fleet */}
+                <Link href="/fleet" className="block group">
+                    <GlassCard className="p-4 hover:border-emerald-500/50 transition-colors">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">System Health</h3>
+                            <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                View Fleet <ChevronRight className="w-3 h-3" />
+                            </span>
+                        </div>
+                        <AreaChartComponent
+                            data={HEALTH_TREND}
+                            dataKey="value"
+                            color="#6366f1"
+                            height={160}
+                            gradientId="healthGradient"
+                        />
+                    </GlassCard>
                 </Link>
 
                 {/* Kiosk Status - Links to Fleet */}
-                <Link href="/fleet" className="block bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 shadow-sm hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Kiosk Status</h3>
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                            Manage <ChevronRight className="w-3 h-3" />
-                        </span>
-                    </div>
-                    <DonutChartComponent data={KIOSK_STATUS} height={160} />
-                    <div className="flex justify-center gap-4 mt-2">
-                        <div className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                            <span className="text-xs text-slate-600 dark:text-slate-400">Online</span>
+                {/* Kiosk Status - Links to Fleet */}
+                <Link href="/fleet" className="block group">
+                    <GlassCard className="p-4 hover:border-emerald-500/50 transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Kiosk Status</h3>
+                            <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                Manage <ChevronRight className="w-3 h-3" />
+                            </span>
                         </div>
-                        <div className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-indigo-500" />
-                            <span className="text-xs text-slate-600 dark:text-slate-400">Offline</span>
+                        <DonutChartComponent data={KIOSK_STATUS} height={160} />
+                        <div className="flex justify-center gap-4 mt-2">
+                            <div className="flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Online</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Offline</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Warning</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-amber-500" />
-                            <span className="text-xs text-slate-600 dark:text-slate-400">Warning</span>
-                        </div>
-                    </div>
+                    </GlassCard>
                 </Link>
             </div>
 
             {/* Bottom Row */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Alert Feed - Simplified, no filters */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                {/* Alert Feed - Simplified, no filters */}
+                <GlassCard>
                     <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
                         <div className="flex items-center justify-between">
                             <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
@@ -408,10 +417,11 @@ export default function Dashboard() {
                             View audit logs <ChevronRight className="w-3 h-3" />
                         </Link>
                     </div>
-                </div>
+                </GlassCard>
 
                 {/* Quick Access - Replaces Hotels Table */}
-                <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                {/* Quick Access - Replaces Hotels Table */}
+                <GlassCard className="lg:col-span-2">
                     <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
                         <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Quick Access</h3>
                     </div>
@@ -432,7 +442,7 @@ export default function Dashboard() {
                             </Link>
                         ))}
                     </div>
-                </div>
+                </GlassCard>
             </div>
         </div>
     );
