@@ -1,234 +1,211 @@
 'use client';
 
 import { useState, use } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Save, X, Trash2, Users } from 'lucide-react';
 import {
-    PERMISSION_CATEGORIES,
-    MOCK_ROLES,
-    ModulePermission,
-} from '@/lib/admin/rbac-data';
-import { PermissionGrid } from '@/components/shared/ui/PermissionGrid';
-import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
+    ArrowLeft,
+    Save,
+    Shield,
+    AlertCircle,
+    Users
+} from 'lucide-react';
+import { GlassCard } from '@/components/shared/ui/GlassCard';
+import { PermissionMatrix } from '@/components/admin/roles/PermissionMatrix';
 import { useToast } from '@/components/shared/ui/Toast';
+import { type RoleFormData } from '@/lib/admin/permission-data';
 
-interface EditRolePageProps {
-    params: Promise<{ id: string }>;
-}
+// Mock existing data fetch
+const getMockRole = (id: string): RoleFormData | null => {
+    if (id === 'new') return null;
+    return {
+        name: 'Operations Manager',
+        description: 'Oversees daily hotel operations and kiosk status.',
+        permissions: {
+            hotels: ['view', 'create', 'edit'],
+            fleet: ['view', 'edit'], // Can view and edit (reboot), but not delete
+            finance: ['view'], // Read only
+            users: [], // No access
+            settings: [] // No access
+        }
+    };
+};
 
-export default function EditRolePage({ params }: EditRolePageProps) {
-    const { id } = use(params);
+export default function RoleEditorPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
     const { addToast } = useToast();
 
-    // Find the role
-    const role = MOCK_ROLES.find(r => r.id === id);
+    // Unwrap params in Next.js 15
+    const { id } = use(params);
+    const isNew = id === 'new';
 
-    const [name, setName] = useState(role?.name || '');
-    const [description, setDescription] = useState(role?.description || '');
-    const [permissions, setPermissions] = useState<Record<string, ModulePermission>>(
-        role?.permissions || {}
-    );
-    const [showSaveModal, setShowSaveModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [hasChanges, setHasChanges] = useState(false);
-
-    if (!role) {
-        return (
-            <div className="p-6 text-center">
-                <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Role not found</h1>
-                <Link href="/roles" className="text-sm text-slate-500 hover:text-slate-700 mt-2 inline-block">
-                    ← Back to Roles
-                </Link>
-            </div>
-        );
-    }
-
-    const handlePermissionChange = (moduleId: string, permission: keyof ModulePermission, value: boolean) => {
-        setPermissions(prev => ({
-            ...prev,
-            [moduleId]: {
-                ...prev[moduleId],
-                [permission]: value,
-            },
-        }));
-        setHasChanges(true);
+    const initialData = getMockRole(id) || {
+        name: '',
+        description: '',
+        permissions: {}
     };
 
-    const handleSelectAll = (moduleId: string, value: boolean) => {
-        setPermissions(prev => ({
-            ...prev,
-            [moduleId]: {
-                view: value,
-                add: value,
-                edit: value,
-                delete: value,
-            },
-        }));
-        setHasChanges(true);
-    };
+    const [formData, setFormData] = useState<RoleFormData>(initialData);
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleSave = () => {
-        if (!name.trim()) {
+        if (!formData.name.trim()) {
             addToast('error', 'Validation Error', 'Role name is required.');
             return;
         }
-        setShowSaveModal(true);
+
+        setIsSaving(true);
+
+        // Simulate API
+        setTimeout(() => {
+            setIsSaving(false);
+            addToast('success', isNew ? 'Role Created' : 'Role Updated', `${formData.name} permissions saved.`);
+            router.push('/roles');
+        }, 800);
     };
 
-    const confirmSave = () => {
-        addToast('success', 'Role Updated', `"${name}" has been updated successfully.`);
-        setShowSaveModal(false);
-        setHasChanges(false);
+    // Quick Select Presets
+    const applyPreset = (type: 'readonly' | 'admin') => {
+        if (type === 'readonly') {
+            setFormData(prev => ({
+                ...prev,
+                permissions: {
+                    hotels: ['view'],
+                    fleet: ['view'],
+                    finance: ['view'],
+                    users: ['view'],
+                    settings: ['view']
+                }
+            }));
+        } else if (type === 'admin') {
+            setFormData(prev => ({
+                ...prev,
+                permissions: {
+                    hotels: ['view', 'create', 'edit', 'delete', 'export'],
+                    fleet: ['view', 'create', 'edit', 'delete'],
+                    finance: ['view', 'create', 'edit', 'export'],
+                    users: ['view', 'create', 'edit', 'delete'],
+                    settings: ['view', 'edit']
+                }
+            }));
+        }
     };
-
-    const handleDelete = () => {
-        addToast('success', 'Role Deleted', `"${role.name}" has been deleted.`);
-        router.push('/roles');
-    };
-
-    const isSuperAdmin = role.id === 'role-001'; // Super Admin role
 
     return (
-        <div className="p-4 sm:p-6 max-w-4xl">
+        <div className="p-6 max-w-5xl mx-auto space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
-                <div>
-                    <Link
-                        href="/roles"
-                        className="inline-flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 mb-2"
-                    >
-                        <ChevronLeft className="w-4 h-4" />
-                        Back to Roles
-                    </Link>
-                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
-                        Edit Role
-                    </h1>
-                    <div className="flex items-center gap-2 mt-1">
-                        <Users className="w-4 h-4 text-slate-400" />
-                        <span className="text-sm text-slate-500 dark:text-slate-400">
-                            {role.userCount} users assigned
-                        </span>
-                    </div>
-                </div>
-
-                {!isSuperAdmin && (
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
                     <button
-                        onClick={() => setShowDeleteModal(true)}
-                        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
+                        onClick={() => router.back()}
+                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                     >
-                        <Trash2 className="w-4 h-4" />
-                        Delete Role
+                        <ArrowLeft className="w-5 h-5 text-slate-500" />
                     </button>
-                )}
-            </div>
-
-            {/* Super Admin Warning */}
-            {isSuperAdmin && (
-                <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                    <p className="text-sm text-amber-800 dark:text-amber-300">
-                        ⚠️ Super Admin has full system access. Permissions cannot be modified for this role.
-                    </p>
-                </div>
-            )}
-
-            {/* Form */}
-            <div className="space-y-6">
-                {/* Role Details */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-                        Role Details
-                    </h2>
-
-                    <div className="grid grid-cols-1 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                                Role Name <span className="text-rose-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => { setName(e.target.value); setHasChanges(true); }}
-                                disabled={isSuperAdmin}
-                                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                                Description
-                            </label>
-                            <textarea
-                                value={description}
-                                onChange={(e) => { setDescription(e.target.value); setHasChanges(true); }}
-                                disabled={isSuperAdmin}
-                                rows={2}
-                                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-                            />
-                        </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                            {isNew ? 'Create New Role' : 'Edit Role'}
+                        </h1>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                            Define access levels and functional permissions.
+                        </p>
                     </div>
                 </div>
-
-                {/* Permissions */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        Page Permissions
-                    </h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                        Configure access levels for each module. "Select All" toggles all permissions for that row.
-                    </p>
-
-                    <PermissionGrid
-                        categories={PERMISSION_CATEGORIES}
-                        permissions={permissions}
-                        onChange={handlePermissionChange}
-                        onSelectAll={handleSelectAll}
-                        disabled={isSuperAdmin}
-                    />
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-end gap-3">
-                    <Link
-                        href="/roles"
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => router.back()}
+                        className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
                     >
-                        <X className="w-4 h-4" />
                         Cancel
-                    </Link>
+                    </button>
                     <button
                         onClick={handleSave}
-                        disabled={!hasChanges || isSuperAdmin}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-medium rounded-lg hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        disabled={isSaving}
+                        className="flex items-center gap-2 px-6 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-70"
                     >
-                        <Save className="w-4 h-4" />
-                        Save Changes
+                        {isSaving ? 'Saving...' : (
+                            <>
+                                <Save className="w-4 h-4" />
+                                Save Role
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
 
-            {/* Save Confirmation Modal */}
-            <ConfirmModal
-                isOpen={showSaveModal}
-                onClose={() => setShowSaveModal(false)}
-                onConfirm={confirmSave}
-                title="Save Changes"
-                message={`This will update permissions for ${role.userCount} users assigned to "${name}". Continue?`}
-                confirmText="Save Changes"
-                variant="warning"
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left Column: Meta Data */}
+                <div className="space-y-6">
+                    <GlassCard className="p-5 space-y-4">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
+                            <Shield className="w-4 h-4 text-emerald-500" />
+                            Role Details
+                        </div>
 
-            {/* Delete Confirmation Modal */}
-            <ConfirmModal
-                isOpen={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
-                onConfirm={handleDelete}
-                title="Delete Role"
-                message={`Are you sure you want to delete "${role.name}"? ${role.userCount} users will be affected.`}
-                confirmText="Delete"
-                variant="danger"
-            />
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Role Name</label>
+                            <input
+                                type="text"
+                                value={formData.name}
+                                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                placeholder="e.g. Support Specialist"
+                                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Description</label>
+                            <textarea
+                                value={formData.description}
+                                onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                placeholder="Describe the purpose of this role..."
+                                rows={4}
+                                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                            />
+                        </div>
+                    </GlassCard>
+
+                    <GlassCard className="p-5">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white mb-4">
+                            <Users className="w-4 h-4 text-blue-500" />
+                            Quick Templates
+                        </div>
+                        <div className="space-y-2">
+                            <button
+                                onClick={() => applyPreset('readonly')}
+                                className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                            >
+                                <span className="block font-medium text-slate-700 dark:text-slate-200">Read Only</span>
+                                <span className="text-xs text-slate-500">View access to all modules</span>
+                            </button>
+                            <button
+                                onClick={() => applyPreset('admin')}
+                                className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                            >
+                                <span className="block font-medium text-slate-700 dark:text-slate-200">Full Admin</span>
+                                <span className="text-xs text-slate-500">Full access to everything</span>
+                            </button>
+                        </div>
+                    </GlassCard>
+
+                    {!isNew && (
+                        <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl flex gap-3">
+                            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                            <div className="text-xs text-amber-800 dark:text-amber-300">
+                                <span className="font-bold block mb-1">Impact Warning</span>
+                                Updating this role will immediately affect <strong>12 users</strong> currently assigned to it.
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Right Column: Permission Matrix */}
+                <div className="lg:col-span-2">
+                    <PermissionMatrix
+                        value={formData.permissions}
+                        onChange={(perms) => setFormData({ ...formData, permissions: perms })}
+                    />
+                </div>
+            </div>
         </div>
     );
 }
