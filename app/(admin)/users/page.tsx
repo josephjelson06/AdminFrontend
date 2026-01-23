@@ -2,198 +2,206 @@
 
 import { useState } from 'react';
 import {
-    UserPlus,
-    MoreHorizontal,
-    Edit2,
-    Key,
-    Trash2,
-    Clock,
-    Mail,
+    Users,
+    Plus,
     Search,
+    MoreVertical,
+    Mail,
+    Shield,
+    Clock,
+    Lock,
+    Unlock,
+    RotateCcw,
+    Trash2,
+    CheckCircle2
 } from 'lucide-react';
-import { MOCK_USERS, MOCK_ROLES, getRoleName, SystemUser } from '@/lib/admin/rbac-data';
-import { DataTable, Column, TableBadge } from '@/components/shared/ui/DataTable';
+import { GlassCard } from '@/components/shared/ui/GlassCard';
+import { SearchFilter, FilterChips } from '@/components/shared/ui/Filters';
 import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
-import { AddUserSlideOver } from '@/components/admin/modals/AddUserSlideOver';
-import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
+import { MOCK_ADMIN_USERS, type AdminUser } from '@/lib/admin/users-data';
 import { useToast } from '@/components/shared/ui/Toast';
+import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
+// Assuming you reuse the AddUserSlideOver, or we can build a simple one
+// import { AddUserSlideOver } from '@/components/admin/modals/AddUserSlideOver';
 
-function StatusBadge({ status }: { status: string }) {
-    const variant = status === 'active' ? 'success' : status === 'invited' ? 'warning' : 'default';
-    return <TableBadge variant={variant}>{status}</TableBadge>;
+function UserStatusBadge({ status }: { status: AdminUser['status'] }) {
+    const styles = {
+        active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+        invited: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+        suspended: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+    };
+
+    return (
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status]}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-current'}`} />
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+        </span>
+    );
 }
 
 export default function UsersPage() {
     const { addToast } = useToast();
-    const [showAddUser, setShowAddUser] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [roleFilter, setRoleFilter] = useState<string[]>([]);
+    const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<SystemUser | null>(null);
+    const [showInviteModal, setShowInviteModal] = useState(false); // Placeholder for SlideOver
 
-    const handleDelete = () => {
-        addToast('success', 'User Deleted', `"${selectedUser?.username}" has been removed.`);
-        setShowDeleteModal(false);
-        setSelectedUser(null);
+    // Filter Logic
+    const filteredUsers = MOCK_ADMIN_USERS.filter(user => {
+        const matchesSearch =
+            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesRole = roleFilter.length === 0 || roleFilter.includes(user.roleName);
+        return matchesSearch && matchesRole;
+    });
+
+    const handleAction = (action: string, user: AdminUser) => {
+        if (action === 'delete') {
+            setSelectedUser(user);
+            setShowDeleteModal(true);
+            return;
+        }
+
+        if (action === 'reset_pwd') {
+            addToast('success', 'Email Sent', `Password reset link sent to ${user.email}`);
+        } else if (action === 'suspend') {
+            addToast('warning', 'User Suspended', `${user.name} has been suspended.`);
+        }
     };
-
-    const handleExport = (format: 'pdf' | 'excel') => {
-        addToast('info', 'Export Started', `Exporting users to ${format.toUpperCase()}...`);
-    };
-
-    // Define columns for DataTable
-    const columns: Column<SystemUser>[] = [
-        {
-            id: 'index',
-            header: '#',
-            accessor: (row) => {
-                const index = MOCK_USERS.findIndex((u) => u.id === row.id);
-                return <span className="text-sm text-slate-500 dark:text-slate-400">{index + 1}</span>;
-            },
-            className: 'w-12',
-        },
-        {
-            id: 'user',
-            header: 'User',
-            accessor: (user) => (
-                <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center">
-                        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                            {user.username.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                        </span>
-                    </div>
-                    <div>
-                        <div className="text-sm font-medium text-slate-900 dark:text-white">
-                            {user.username}
-                        </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 md:hidden flex items-center gap-1">
-                            <Mail className="w-3 h-3" />
-                            {user.email}
-                        </div>
-                    </div>
-                </div>
-            ),
-        },
-        {
-            id: 'email',
-            header: 'Email',
-            accessor: (user) => (
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                    {user.email}
-                </span>
-            ),
-            hideOnMobile: true,
-        },
-        {
-            id: 'role',
-            header: 'Role',
-            accessor: (user) => (
-                <TableBadge>{getRoleName(user.roleId)}</TableBadge>
-            ),
-        },
-        {
-            id: 'status',
-            header: 'Status',
-            accessor: (user) => <StatusBadge status={user.status} />,
-            hideOnMobile: true,
-        },
-        {
-            id: 'lastLogin',
-            header: 'Last Login',
-            accessor: (user) => (
-                <span className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    {user.lastLogin || 'Never'}
-                </span>
-            ),
-            hideOnMobile: true,
-        },
-        {
-            id: 'actions',
-            header: 'Actions',
-            accessor: (user) => (
-                <div className="flex justify-end">
-                    <Dropdown
-                        trigger={
-                            <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md">
-                                <MoreHorizontal className="w-4 h-4 text-slate-500" />
-                            </button>
-                        }
-                        align="right"
-                    >
-                        <DropdownItem onClick={() => addToast('info', 'Edit User', 'Edit feature coming soon')}>
-                            <Edit2 className="w-4 h-4" />
-                            Edit User
-                        </DropdownItem>
-                        <DropdownItem onClick={() => addToast('info', 'Reset Password', 'Password reset email sent')}>
-                            <Key className="w-4 h-4" />
-                            Reset Password
-                        </DropdownItem>
-                        <DropdownItem
-                            onClick={() => {
-                                setSelectedUser(user);
-                                setShowDeleteModal(true);
-                            }}
-                            className="text-rose-600 dark:text-rose-400"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                            Delete User
-                        </DropdownItem>
-                    </Dropdown>
-                </div>
-            ),
-            className: 'w-24 text-right',
-        },
-    ];
 
     return (
-        <div className="p-4 sm:p-6">
-            {/* Page Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="p-4 sm:p-6 space-y-6">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Team & Users</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                        Manage user accounts and access
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <Users className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                        Team Management
+                    </h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        Manage internal staff access and security protocols.
                     </p>
                 </div>
                 <button
-                    onClick={() => setShowAddUser(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-medium rounded-lg hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+                    onClick={() => setShowInviteModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
                 >
-                    <UserPlus className="w-4 h-4" />
-                    Add User
+                    <Plus className="w-4 h-4" />
+                    Invite Member
                 </button>
             </div>
 
-            {/* Data Table */}
-            <DataTable
-                data={MOCK_USERS}
-                columns={columns}
-                searchPlaceholder="Search by name or email..."
-                searchKeys={['username', 'email'] as (keyof SystemUser)[]}
-                showExport={true}
-                onExport={handleExport}
-                getRowKey={(user) => user.id}
-                emptyIcon={<Search className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto" />}
-                emptyTitle="No users found"
-                emptyDescription="Try adjusting your search or filters"
-            />
+            {/* Filters */}
+            <GlassCard className="p-4">
+                <div className="flex flex-wrap items-center gap-4">
+                    <SearchFilter
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        placeholder="Search name or email..."
+                    />
+                    <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+                    <FilterChips
+                        label="Role"
+                        options={[
+                            { value: 'Super Admin', label: 'Super Admin' },
+                            { value: 'L1 Support', label: 'Support' },
+                            { value: 'Finance Manager', label: 'Finance' },
+                        ]}
+                        selected={roleFilter}
+                        onChange={setRoleFilter}
+                    />
+                </div>
+            </GlassCard>
 
-            {/* Add User SlideOver */}
-            <AddUserSlideOver
-                isOpen={showAddUser}
-                onClose={() => setShowAddUser(false)}
-            />
+            {/* Users Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredUsers.map((user) => (
+                    <GlassCard key={user.id} className="p-0 flex flex-col group hover:border-emerald-500/30 transition-all">
+                        <div className="p-6 flex items-start justify-between">
+                            <div className="flex gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-lg font-bold text-slate-600 dark:text-slate-300">
+                                    {user.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 dark:text-white">{user.name}</h3>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <Mail className="w-3 h-3 text-slate-400" />
+                                        <span className="text-xs text-slate-500 dark:text-slate-400">{user.email}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <Dropdown
+                                trigger={
+                                    <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 transition-colors">
+                                        <MoreVertical className="w-4 h-4" />
+                                    </button>
+                                }
+                                align="right"
+                            >
+                                <DropdownItem onClick={() => handleAction('edit', user)}>Edit Role</DropdownItem>
+                                <DropdownItem onClick={() => handleAction('reset_pwd', user)}>
+                                    <RotateCcw className="w-4 h-4" /> Reset Password
+                                </DropdownItem>
+                                <div className="my-1 border-t border-slate-100 dark:border-slate-700" />
+                                {user.status === 'active' ? (
+                                    <DropdownItem onClick={() => handleAction('suspend', user)} className="text-amber-600">
+                                        <Lock className="w-4 h-4" /> Suspend User
+                                    </DropdownItem>
+                                ) : (
+                                    <DropdownItem onClick={() => addToast('success', 'Re-activated', 'User access restored.')} className="text-emerald-600">
+                                        <Unlock className="w-4 h-4" /> Activate User
+                                    </DropdownItem>
+                                )}
+                                <DropdownItem onClick={() => handleAction('delete', user)} className="text-rose-600">
+                                    <Trash2 className="w-4 h-4" /> Remove User
+                                </DropdownItem>
+                            </Dropdown>
+                        </div>
 
-            {/* Delete Confirmation */}
+                        {/* Meta Info */}
+                        <div className="px-6 pb-6 space-y-3">
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-500 dark:text-slate-400">Role Access</span>
+                                <span className="font-medium text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs">
+                                    {user.roleName}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-500 dark:text-slate-400">Department</span>
+                                <span className="text-slate-700 dark:text-slate-300">{user.department}</span>
+                            </div>
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
+                                <UserStatusBadge status={user.status} />
+                                <div className="flex items-center gap-1.5 text-xs text-slate-400" title="Last Active">
+                                    <Clock className="w-3 h-3" />
+                                    {user.lastActive}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* MFA Indicator */}
+                        {user.mfaEnabled && (
+                            <div className="absolute top-0 right-0 p-2">
+                                <div className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-1 rounded-full" title="MFA Enabled">
+                                    <Shield className="w-3 h-3" />
+                                </div>
+                            </div>
+                        )}
+                    </GlassCard>
+                ))}
+            </div>
+
             <ConfirmModal
                 isOpen={showDeleteModal}
-                onClose={() => {
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={() => {
+                    addToast('success', 'User Removed', `${selectedUser?.name} has been removed.`);
                     setShowDeleteModal(false);
-                    setSelectedUser(null);
                 }}
-                onConfirm={handleDelete}
-                title="Delete User"
-                message={`Are you sure you want to delete "${selectedUser?.username}"? This action cannot be undone.`}
-                confirmText="Delete"
+                title="Remove Team Member"
+                message={`Are you sure you want to remove ${selectedUser?.name}? They will immediately lose access to all admin panels.`}
+                confirmText="Remove User"
                 variant="danger"
             />
         </div>
