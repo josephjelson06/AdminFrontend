@@ -16,6 +16,8 @@ import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
 import { PlanEditorSlideOver, type Plan } from '@/components/admin/plans/PlanEditorSlideOver';
 import { useAuth } from '@/lib/shared/auth';
+import { VerticalCutReveal } from '@/components/ui/vertical-cut-reveal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Initial Mock Data
 const INITIAL_PLANS: Plan[] = [
@@ -55,6 +57,30 @@ const INITIAL_PLANS: Plan[] = [
     }
 ];
 
+// Animation Variants
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.15
+        }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20, filter: 'blur(10px)' },
+    visible: {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        transition: {
+            duration: 0.5,
+            ease: "easeOut"
+        }
+    }
+};
+
 export default function PlansPage() {
     const { hasPermission } = useAuth();
     const [plans, setPlans] = useState<Plan[]>(INITIAL_PLANS);
@@ -91,110 +117,136 @@ export default function PlansPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <CreditCard className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-                        Subscription Plans
+                        <VerticalCutReveal
+                            splitBy="words"
+                            staggerDuration={0.15}
+                            staggerFrom="first"
+                            reverse={true}
+                            transition={{
+                                type: "spring",
+                                stiffness: 250,
+                                damping: 40,
+                            }}
+                        >
+                            Subscription Plans
+                        </VerticalCutReveal>
                     </h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    <motion.p
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-sm text-slate-500 dark:text-slate-400 mt-1"
+                    >
                         Manage pricing tiers, entitlements, and features.
-                    </p>
+                    </motion.p>
                 </div>
                 {canEdit && (
-                    <button
+                    <motion.button
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 }}
                         onClick={() => { setEditingPlan(null); setIsEditorOpen(true); }}
                         className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
                     >
                         <Plus className="w-4 h-4" />
                         Create New Plan
-                    </button>
+                    </motion.button>
                 )}
             </div>
 
             {/* Plans Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
                 {plans.map((plan) => (
-                    <GlassCard
-                        key={plan.id}
-                        className={`relative p-0 flex flex-col h-full ${plan.status === 'archived' ? 'opacity-60 grayscale' : ''}`}
-                    >
-                        {/* Popular Badge */}
-                        {plan.popular && plan.status === 'active' && (
-                            <div className="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl shadow-sm z-10">
-                                POPULAR
-                            </div>
-                        )}
-
-                        {/* Card Header */}
-                        <div className="p-6 border-b border-slate-100 dark:border-slate-700/50">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">{plan.name}</h3>
-                                    <div className="mt-2 flex items-baseline gap-1">
-                                        <span className="text-3xl font-bold text-slate-900 dark:text-white">
-                                            {plan.currency === 'INR' ? '₹' : '$'}{plan.price.toLocaleString()}
-                                        </span>
-                                        <span className="text-sm text-slate-500 dark:text-slate-400">/{plan.billingCycle}</span>
-                                    </div>
+                    <motion.div key={plan.id} variants={itemVariants} className="h-full">
+                        <GlassCard
+                            className={`relative p-0 flex flex-col h-full ${plan.status === 'archived' ? 'opacity-60 grayscale' : ''}`}
+                        >
+                            {/* Popular Badge */}
+                            {plan.popular && plan.status === 'active' && (
+                                <div className="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl shadow-sm z-10">
+                                    POPULAR
                                 </div>
-                                {canEdit && (
-                                    <Dropdown
-                                        trigger={
-                                            <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors">
-                                                <MoreHorizontal className="w-5 h-5 text-slate-400" />
-                                            </button>
-                                        }
-                                        align="right"
-                                    >
-                                        <DropdownItem onClick={() => handleEdit(plan)}>
-                                            <Edit2 className="w-4 h-4" />
-                                            Edit Plan
-                                        </DropdownItem>
-                                        <DropdownItem onClick={() => handleArchive(plan.id)} className="text-rose-600">
-                                            <Archive className="w-4 h-4" />
-                                            Archive
-                                        </DropdownItem>
-                                    </Dropdown>
-                                )}
-                            </div>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                                {plan.description}
-                            </p>
-                        </div>
+                            )}
 
-                        {/* Limits Grid */}
-                        <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700/50 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/30">
-                            <div className="p-3 text-center">
-                                <Monitor className="w-4 h-4 mx-auto text-slate-400 mb-1" />
-                                <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{plan.limits.kiosks}</div>
-                                <div className="text-[10px] text-slate-500 uppercase tracking-wide">Kiosks</div>
-                            </div>
-                            <div className="p-3 text-center">
-                                <Users className="w-4 h-4 mx-auto text-slate-400 mb-1" />
-                                <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{plan.limits.users}</div>
-                                <div className="text-[10px] text-slate-500 uppercase tracking-wide">Users</div>
-                            </div>
-                            <div className="p-3 text-center">
-                                <HardDrive className="w-4 h-4 mx-auto text-slate-400 mb-1" />
-                                <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{plan.limits.storage}</div>
-                                <div className="text-[10px] text-slate-500 uppercase tracking-wide">Storage</div>
-                            </div>
-                        </div>
-
-                        {/* Features List */}
-                        <div className="p-6 flex-1">
-                            <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Included Features</h4>
-                            <ul className="space-y-3">
-                                {plan.features.map((feature, i) => (
-                                    <li key={i} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                        <div className="mt-0.5 p-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex-shrink-0">
-                                            <Check className="w-3 h-3" />
+                            {/* Card Header */}
+                            <div className="p-6 border-b border-slate-100 dark:border-slate-700/50">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">{plan.name}</h3>
+                                        <div className="mt-2 flex items-baseline gap-1">
+                                            <span className="text-3xl font-bold text-slate-900 dark:text-white">
+                                                {plan.currency === 'INR' ? '₹' : '$'}{plan.price.toLocaleString()}
+                                            </span>
+                                            <span className="text-sm text-slate-500 dark:text-slate-400">/{plan.billingCycle}</span>
                                         </div>
-                                        {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </GlassCard>
+                                    </div>
+                                    {canEdit && (
+                                        <Dropdown
+                                            trigger={
+                                                <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors">
+                                                    <MoreHorizontal className="w-5 h-5 text-slate-400" />
+                                                </button>
+                                            }
+                                            align="right"
+                                        >
+                                            <DropdownItem onClick={() => handleEdit(plan)}>
+                                                <Edit2 className="w-4 h-4" />
+                                                Edit Plan
+                                            </DropdownItem>
+                                            <DropdownItem onClick={() => handleArchive(plan.id)} className="text-rose-600">
+                                                <Archive className="w-4 h-4" />
+                                                Archive
+                                            </DropdownItem>
+                                        </Dropdown>
+                                    )}
+                                </div>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                                    {plan.description}
+                                </p>
+                            </div>
+
+                            {/* Limits Grid */}
+                            <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700/50 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/30">
+                                <div className="p-3 text-center">
+                                    <Monitor className="w-4 h-4 mx-auto text-slate-400 mb-1" />
+                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{plan.limits.kiosks}</div>
+                                    <div className="text-[10px] text-slate-500 uppercase tracking-wide">Kiosks</div>
+                                </div>
+                                <div className="p-3 text-center">
+                                    <Users className="w-4 h-4 mx-auto text-slate-400 mb-1" />
+                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{plan.limits.users}</div>
+                                    <div className="text-[10px] text-slate-500 uppercase tracking-wide">Users</div>
+                                </div>
+                                <div className="p-3 text-center">
+                                    <HardDrive className="w-4 h-4 mx-auto text-slate-400 mb-1" />
+                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{plan.limits.storage}</div>
+                                    <div className="text-[10px] text-slate-500 uppercase tracking-wide">Storage</div>
+                                </div>
+                            </div>
+
+                            {/* Features List */}
+                            <div className="p-6 flex-1">
+                                <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Included Features</h4>
+                                <ul className="space-y-3">
+                                    {plan.features.map((feature, i) => (
+                                        <li key={i} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
+                                            <div className="mt-0.5 p-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+                                                <Check className="w-3 h-3" />
+                                            </div>
+                                            {feature}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </GlassCard>
+                    </motion.div>
                 ))}
-            </div>
+            </motion.div>
 
             {/* Editor SlideOver */}
             <PlanEditorSlideOver
