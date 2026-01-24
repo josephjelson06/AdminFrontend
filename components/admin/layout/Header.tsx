@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import {
     Bell,
@@ -20,6 +20,7 @@ import {
 import { GlobalSearch } from '@/components/shared/ui/GlobalSearch';
 import { useAuth } from '@/lib/shared/auth';
 import { useTheme } from '@/lib/shared/theme';
+import { useOnClickOutside } from '@/hooks/use-on-click-outside';
 
 // Mock notifications
 const MOCK_NOTIFICATIONS = [
@@ -88,6 +89,13 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
     const { user, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
 
+    // Refs for click outside
+    const notificationRef = useRef<HTMLDivElement>(null);
+    const userMenuRef = useRef<HTMLDivElement>(null);
+
+    useOnClickOutside(notificationRef, () => setShowNotifications(false));
+    useOnClickOutside(userMenuRef, () => setShowUserMenu(false));
+
     const unreadCount = notifications.filter((n) => !n.read).length;
 
     const markAllRead = () => {
@@ -135,7 +143,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                     </button>
 
                     {/* Notifications */}
-                    <div className="relative">
+                    <div className="relative" ref={notificationRef}>
                         <button
                             onClick={() => {
                                 setShowNotifications(!showNotifications);
@@ -223,7 +231,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                     </div>
 
                     {/* User Menu */}
-                    <div className="relative">
+                    <div className="relative" ref={userMenuRef}>
                         <button
                             onClick={() => {
                                 setShowUserMenu(!showUserMenu);

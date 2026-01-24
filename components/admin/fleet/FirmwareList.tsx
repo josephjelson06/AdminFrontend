@@ -62,7 +62,7 @@ export function FirmwareList() {
 
             <div className="grid gap-4">
                 {MOCK_FIRMWARE.map((fw) => (
-                    <GlassCard key={fw.id} className="p-0 group">
+                    <GlassCard key={fw.id} className="p-0 group overflow-visible">
                         <div className="p-5 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                             <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
                                 <FileCode className="w-6 h-6 text-slate-500" />

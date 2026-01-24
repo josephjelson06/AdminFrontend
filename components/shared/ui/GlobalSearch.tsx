@@ -41,15 +41,29 @@ export function GlobalSearch() {
 
     // Keyboard Shortcut (Cmd+K)
     React.useEffect(() => {
-        const down = (e: KeyboardEvent) => {
-            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
                 setOpen((open) => !open);
             }
         };
-        document.addEventListener('keydown', down);
-        return () => document.removeEventListener('keydown', down);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
+
+    // Close on ESC
+    React.useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                setOpen(false);
+            }
+        };
+        if (open) {
+            document.addEventListener('keydown', handleEsc);
+        }
+        return () => document.removeEventListener('keydown', handleEsc);
+    }, [open]);
 
     // Search Logic
     const results = React.useMemo(() => {
@@ -174,7 +188,7 @@ export function GlobalSearch() {
 
             {/* Modal Overlay */}
             {open && (
-                <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4">
+                <div className="fixed inset-0 z-[99999] flex items-start justify-center pt-[20vh] px-4">
                     {/* Backdrop */}
                     <div
                         className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
@@ -226,8 +240,8 @@ export function GlobalSearch() {
                                                             if (idx !== -1) setSelectedIndex(idx);
                                                         }}
                                                         className={`flex items-center w-full px-3 py-3 rounded-xl transition-colors text-left gap-3 ${isSelected
-                                                                ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-900 dark:text-emerald-100'
-                                                                : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300'
+                                                            ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-900 dark:text-emerald-100'
+                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300'
                                                             }`}
                                                     >
                                                         <div className={`p-2 rounded-lg ${isSelected ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'

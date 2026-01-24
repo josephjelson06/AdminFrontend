@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 
 interface DropdownProps {
@@ -12,29 +13,65 @@ interface DropdownProps {
 export function Dropdown({ trigger, children, align = 'left' }: DropdownProps) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         const handleClickOutside = (e: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+            // Check if click is outside trigger AND outside the portal menu
+            const menuElement = document.getElementById(`dropdown-menu-${dropdownRef.current?.id}`);
+
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(e.target as Node) &&
+                (!menuElement || !menuElement.contains(e.target as Node))
+            ) {
                 setIsOpen(false);
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+        const handleScroll = () => {
+            if (isOpen) setIsOpen(false); // Close on scroll for simplicity or update position
+        };
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            window.addEventListener('scroll', handleScroll, true);
+            // Calculate position
+            if (dropdownRef.current) {
+                const rect = dropdownRef.current.getBoundingClientRect();
+                setMenuStyle({
+                    position: 'fixed',
+                    top: rect.bottom + 8,
+                    left: align === 'left' ? rect.left : 'auto',
+                    right: align === 'right' ? window.innerWidth - rect.right : 'auto',
+                    minWidth: '160px',
+                    zIndex: 99999,
+                });
+            }
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            window.removeEventListener('scroll', handleScroll, true);
+        };
+    }, [isOpen, align]);
+
+    const dropdownId = useRef(`dropdown-${Math.random().toString(36).substr(2, 9)}`);
 
     return (
-        <div ref={dropdownRef} className="relative inline-block">
+        <div ref={dropdownRef} id={dropdownId.current} className="relative inline-block">
             <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
 
-            {isOpen && (
+            {mounted && isOpen && createPortal(
                 <div
-                    className={`absolute z-50 mt-1 min-w-[160px] glass-elevated rounded-xl py-1 animate-in fade-in slide-in-from-top-1 duration-150 ${align === 'right' ? 'right-0' : 'left-0'
-                        }`}
+                    id={`dropdown-menu-${dropdownId.current}`}
+                    className="glass-elevated rounded-xl py-1 animate-in fade-in zoom-in-95 duration-100"
+                    style={menuStyle}
                 >
                     {children}
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
