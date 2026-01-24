@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -16,8 +17,8 @@ import {
     Cpu,
     Shield,
     AlertTriangle,
-    ChevronLeft,
-    ChevronRight,
+    PanelLeft,
+    PanelLeftClose,
 } from 'lucide-react';
 import { useAuth, HOTEL_PAGE_ACCESS, HotelUserRole } from '@/lib/shared/auth';
 import { HOTEL_ROLE_LABELS, MOCK_GUEST_CHECKINS, MOCK_ROOMS } from '@/lib/hotel/hotel-data';
@@ -66,11 +67,50 @@ interface HotelSidebarProps {
     onClose?: () => void;
     isCollapsed: boolean;
     onToggleCollapse: () => void;
+    sidebarWidth: number;
+    setSidebarWidth: (width: number) => void;
 }
 
-export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleCollapse }: HotelSidebarProps) {
+export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleCollapse, sidebarWidth, setSidebarWidth }: HotelSidebarProps) {
     const pathname = usePathname();
     const { user, logout, canAccessPage } = useAuth();
+    const [isResizing, setIsResizing] = useState(false);
+
+    // Resizing logic
+    const startResizing = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isResizing) return;
+            // Limit width between 200px and 450px
+            const newWidth = Math.max(200, Math.min(450, e.clientX));
+            setSidebarWidth(newWidth);
+        };
+
+        const handleMouseUp = () => {
+            setIsResizing(false);
+        };
+
+        if (isResizing) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        } else {
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        };
+    }, [isResizing, setSidebarWidth]);
 
     const attentionCount = MOCK_GUEST_CHECKINS.filter(g => g.verification === 'failed' || g.verification === 'manual').length;
     const dirtyRoomCount = MOCK_ROOMS.filter(r => r.status === 'dirty').length;
@@ -109,11 +149,14 @@ export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleColl
                     transition-all duration-300 ease-out
                     flex flex-col overflow-hidden shadow-2xl shadow-indigo-500/5
                     ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-                    ${isCollapsed ? 'lg:w-20' : 'lg:w-64'} w-64
                 `}
+                style={{
+                    width: isCollapsed ? 80 : sidebarWidth,
+                    transition: isResizing ? 'none' : 'width 200ms ease-in-out, transform 200ms ease-in-out'
+                }}
             >
                 {/* Logo Area */}
-                <div className={`h-16 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between px-6'} border-b border-slate-200/50 dark:border-slate-700/50 flex-shrink-0`}>
+                <div className={`h-16 flex items-center ${isCollapsed ? 'justify-center mx-2' : 'justify-between px-6'} border-b border-slate-200/50 dark:border-slate-700/50 flex-shrink-0`}>
                     <Link href="/hotel" className="flex items-center gap-3 overflow-hidden" onClick={handleLinkClick}>
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-500/30 flex items-center justify-center flex-shrink-0">
                             <Cpu className="w-4 h-4 text-white" />
@@ -134,6 +177,53 @@ export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleColl
                         <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                     </button>
                 </div>
+
+                {/* User Role Badge & Collapse Toggle */}
+                {user && (
+                    <div className={`flex-shrink-0 ${isCollapsed ? 'py-3' : 'px-4 py-3'} border-b border-slate-200/50 dark:border-slate-700/50`}>
+                        {isCollapsed ? (
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-indigo-100/80 dark:bg-indigo-900/50 flex items-center justify-center" title={`${user.name} - ${roleLabel}`}>
+                                    <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                                        {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={onToggleCollapse}
+                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-500/10 rounded-md transition-colors hidden lg:block"
+                                    title="Expand sidebar"
+                                >
+                                    <PanelLeft className="w-4 h-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <div className="w-8 h-8 rounded-full bg-indigo-100/80 dark:bg-indigo-900/50 flex items-center justify-center flex-shrink-0">
+                                        <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                                            {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
+                                        </span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                            {user.name}
+                                        </p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">
+                                            {roleLabel}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={onToggleCollapse}
+                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-500/10 rounded-md transition-colors hidden lg:block flex-shrink-0"
+                                    title="Collapse sidebar"
+                                >
+                                    <PanelLeftClose className="w-4 h-4" />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Nav Groups */}
                 <nav className={`flex-1 overflow-y-auto ${isCollapsed ? 'px-2 py-4' : 'p-4 space-y-6'}`}>
@@ -200,63 +290,33 @@ export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleColl
                             </div>
                         </div>
                     ))}
+
+                    {/* Log Out Button at Bottom of Nav */}
+                    <div className={`mt-auto pt-6 border-t border-slate-200/50 dark:border-slate-700/50 ${isCollapsed ? 'flex justify-center' : ''}`}>
+                        <button
+                            onClick={logout}
+                            className={`
+                                flex items-center gap-2 text-sm text-slate-500 hover:text-rose-600 transition-colors w-full
+                                ${isCollapsed ? 'p-2 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/20 justify-center' : 'px-3.5 py-2.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20'}
+                            `}
+                            title="Log Out"
+                        >
+                            <LogOut className="w-4 h-4 flex-shrink-0" />
+                            {!isCollapsed && <span className="font-medium">Log Out</span>}
+                        </button>
+                    </div>
                 </nav>
 
-                {/* Collapse Toggle */}
-                <div className="hidden lg:flex items-center justify-end p-4 border-t border-slate-200/50 dark:border-slate-700/50">
-                    <button
-                        onClick={onToggleCollapse}
-                        className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-500/10 transition-colors"
-                        title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                {/* Resize Handle - Desktop Only */}
+                {!isCollapsed && (
+                    <div
+                        className="hidden lg:block absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-indigo-500/50 active:bg-indigo-500 transition-colors z-50 group"
+                        onMouseDown={startResizing}
                     >
-                        {isCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-                    </button>
-                </div>
-
-                {/* User Footer */}
-                <div className="p-4 bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-md border-t border-slate-200/50 dark:border-slate-700/50">
-                    {!isCollapsed ? (
-                        <>
-                            <div className="flex items-center gap-3 px-1 py-1 overflow-hidden">
-                                <div className="w-9 h-9 rounded-full bg-indigo-100/80 dark:bg-indigo-900/50 flex items-center justify-center flex-shrink-0">
-                                    <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
-                                        {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
-                                    </span>
-                                </div>
-                                <div className="flex-1 min-w-0 overflow-hidden">
-                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                                        {user?.name || 'User'}
-                                    </p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                                        {roleLabel}
-                                    </p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={logout}
-                                className="w-full mt-3 flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-white/60 dark:hover:bg-slate-700/60 rounded-xl transition-colors whitespace-nowrap overflow-hidden border border-transparent hover:border-slate-200/50 dark:hover:border-slate-600/50"
-                            >
-                                <LogOut className="w-4 h-4 flex-shrink-0" />
-                                Log Out
-                            </button>
-                        </>
-                    ) : (
-                        <div className="flex flex-col items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
-                                <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">
-                                    {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
-                                </span>
-                            </div>
-                            <button
-                                onClick={logout}
-                                className="p-2 text-slate-500 hover:bg-slate-500/10 rounded-md transition-colors"
-                                title="Log Out"
-                            >
-                                <LogOut className="w-4 h-4" />
-                            </button>
-                        </div>
-                    )}
-                </div>
+                        {/* Visual indicator on hover */}
+                        <div className="absolute top-0 right-0 w-1 h-full bg-transparent group-hover:bg-indigo-500/30"></div>
+                    </div>
+                )}
             </aside>
         </>
     );

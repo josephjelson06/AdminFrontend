@@ -25,6 +25,8 @@ import {
 } from '@/lib/hotel/hotel-data';
 import { TinySparkline } from '@/components/shared/ui/TinySparkline';
 import { useToast } from '@/components/shared/ui/Toast';
+import { GlassCalendar, ViewMode } from '@/components/shared/ui/glass-calendar';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // ==========================================
 // SUB-COMPONENTS
@@ -212,6 +214,29 @@ export default function HotelDashboard() {
     const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
     const [activityFilter, setActivityFilter] = useState<'All' | 'Failed' | 'Success'>('All');
 
+    // Calendar state
+    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+    const [viewMode, setViewMode] = useState<ViewMode>("Day");
+    const [customDate, setCustomDate] = useState<{ from: Date | undefined; to: Date | undefined }>({
+        from: new Date(),
+        to: undefined
+    });
+
+    // Handle date range change
+    const handleDateRangeChange = (value: string) => {
+        setDateRange(value as any);
+        if (value === 'Custom') {
+            setIsCalendarOpen(true);
+        }
+    };
+
+    // Close calendar when clicking outside
+    const closeCalendar = () => {
+        setIsCalendarOpen(false);
+        // If no range selected, revert to default? Or keep Custom empty?
+        // Logic can be refined based on preference.
+    };
+
     // Redirect maintenance staff
     useEffect(() => {
         if (user?.role === 'maintenance_staff') {
@@ -282,18 +307,48 @@ export default function HotelDashboard() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <div className="relative">
+                        <div className="relative z-50">
                             <select
                                 value={dateRange}
-                                onChange={(e) => setDateRange(e.target.value as any)}
-                                className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                onChange={(e) => handleDateRangeChange(e.target.value)}
+                                className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                             >
                                 <option>Today</option>
                                 <option>Last 7 Days</option>
                                 <option>Custom</option>
                             </select>
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+
+                            {/* Custom Date Picker Popup */}
+                            <AnimatePresence>
+                                {isCalendarOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute top-full right-0 mt-2 z-50 origin-top-right"
+                                    >
+                                        <div className="relative">
+                                            {/* Click outside closer overlay */}
+                                            <div
+                                                className="fixed inset-0 z-40"
+                                                onClick={closeCalendar}
+                                            />
+                                            {/* The Calendar itself */}
+                                            <div className="relative z-50">
+                                                <GlassCalendar
+                                                    viewMode={viewMode}
+                                                    onViewModeChange={setViewMode}
+                                                    selected={customDate}
+                                                    onRangeSelect={setCustomDate}
+                                                />
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </div>
