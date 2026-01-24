@@ -214,10 +214,6 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3">
                     {/* Global Time Selector */}
                     <DashboardFilter />
-                    <div className="flex items-center gap-3">
-                        <DashboardFilter />
-                        <HoverActionButton text="Action" onClick={() => console.log('Action clicked')} />
-                    </div>
                 </div>
             </div>
 
