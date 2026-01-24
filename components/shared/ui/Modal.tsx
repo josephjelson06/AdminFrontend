@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, ReactNode } from 'react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -32,8 +33,10 @@ const smoothTransition = {
 
 export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
     const overlayRef = useRef<HTMLDivElement>(null);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
         };
@@ -55,7 +58,9 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         lg: 'max-w-2xl',
     };
 
-    return (
+    if (!mounted) return null;
+
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
                 <motion.div
@@ -65,7 +70,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                     animate="animate"
                     exit="exit"
                     transition={{ duration: 0.2 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+                    className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
                     onClick={(e) => e.target === overlayRef.current && onClose()}
                 >
                     <motion.div
@@ -96,6 +101,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                     </motion.div>
                 </motion.div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }
