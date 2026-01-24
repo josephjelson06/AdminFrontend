@@ -22,6 +22,7 @@ import {
     PanelLeftClose,
     PanelLeft,
     CreditCard,
+    LifeBuoy,
 } from 'lucide-react';
 import { useAuth } from '@/lib/shared/auth';
 
@@ -62,6 +63,7 @@ const NAV_GROUPS: NavGroup[] = [
             { id: 'roles', name: 'Roles & Access', href: '/roles', icon: Shield },
             { id: 'audit', name: 'Audit Logs', href: '/audit', icon: ScrollText },
             { id: 'settings', name: 'Settings', href: '/settings', icon: Settings },
+            { id: 'support', name: 'Helpdesk', href: '/support', icon: LifeBuoy },
         ],
     },
 ];
