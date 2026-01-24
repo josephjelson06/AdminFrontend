@@ -10,17 +10,24 @@ export function FeatureManager() {
     const [flags, setFlags] = useState(FEATURE_FLAGS);
 
     const toggleFlag = (id: string) => {
-        setFlags(prev => prev.map(flag => {
-            if (flag.id === id) {
-                const newStatus = flag.status === 'inactive' ? 'active' : 'inactive';
-                addToast(
-                    newStatus === 'active' ? 'success' : 'info',
-                    `Feature ${newStatus === 'active' ? 'Enabled' : 'Disabled'}`,
-                    `${flag.name} is now ${newStatus}.`
-                );
-                return { ...flag, status: newStatus };
+        const flag = flags.find(f => f.id === id);
+        if (!flag) return;
+
+        const newStatus = flag.status === 'inactive' ? 'active' : 'inactive';
+
+        // Side effect: Toast
+        addToast(
+            newStatus === 'active' ? 'success' : 'info',
+            `Feature ${newStatus === 'active' ? 'Enabled' : 'Disabled'}`,
+            `${flag.name} is now ${newStatus}.`
+        );
+
+        // State update
+        setFlags(prev => prev.map(f => {
+            if (f.id === id) {
+                return { ...f, status: newStatus };
             }
-            return flag;
+            return f;
         }));
     };
 
@@ -45,8 +52,8 @@ export function FeatureManager() {
                     >
                         <div className="flex items-start gap-4">
                             <div className={`p-2 rounded-lg ${flag.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600' :
-                                    flag.status === 'beta' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' :
-                                        'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                                flag.status === 'beta' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' :
+                                    'bg-slate-100 dark:bg-slate-700 text-slate-500'
                                 }`}>
                                 {flag.status === 'beta' ? <Beaker className="w-5 h-5" /> : <Zap className="w-5 h-5" />}
                             </div>
