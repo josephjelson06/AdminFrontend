@@ -3,9 +3,6 @@
 import { useState } from 'react';
 import {
     LifeBuoy,
-    Search,
-    Filter,
-    MoreVertical,
     Inbox,
     Clock,
     CheckCircle2,
@@ -14,7 +11,6 @@ import {
 import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { MOCK_TICKETS, type SupportTicket } from '@/lib/admin/support-data';
 import { TicketDetailSlideOver } from '@/components/admin/support/TicketDetailSlideOver';
-import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
 
 export default function SupportPage() {
     const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
@@ -90,9 +86,9 @@ export default function SupportPage() {
                         <GlassCard
                             key={ticket.id}
                             className="p-5 hover:border-emerald-500/30 cursor-pointer transition-all group"
-                            onClick={() => setSelectedTicket(ticket)} // Open SlideOver (to be implemented on GlassCard usually via prop or wrapping div, here wrapper)
+                            onClick={() => setSelectedTicket(ticket)}
                         >
-                            <div className="flex items-start justify-between gap-4" onClick={() => setSelectedTicket(ticket)}>
+                            <div className="flex items-start justify-between gap-4">
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className={`w-2 h-2 rounded-full ${ticket.priority === 'critical' || ticket.priority === 'high' ? 'bg-rose-500' : 'bg-blue-500'}`} />
@@ -129,7 +125,6 @@ export default function SupportPage() {
                 </div>
             </div>
 
-            {/* SlideOver */}
             <TicketDetailSlideOver
                 isOpen={!!selectedTicket}
                 onClose={() => setSelectedTicket(null)}

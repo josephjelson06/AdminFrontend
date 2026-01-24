@@ -11,7 +11,7 @@ import {
     CheckCircle2,
     AlertCircle
 } from 'lucide-react';
-import { type SupportTicket, type TicketPriority, type TicketStatus } from '@/lib/admin/support-data';
+import { type SupportTicket, type TicketPriority } from '@/lib/admin/support-data';
 import { useToast } from '@/components/shared/ui/Toast';
 
 interface TicketDetailProps {
@@ -44,7 +44,6 @@ export function TicketDetailSlideOver({ isOpen, onClose, ticket }: TicketDetailP
         e.preventDefault();
         if (!replyText.trim()) return;
 
-        // In a real app, API call here
         addToast('success', 'Reply Sent', 'Notification sent to hotel admin.');
         setReplyText('');
     };
@@ -114,7 +113,7 @@ export function TicketDetailSlideOver({ isOpen, onClose, ticket }: TicketDetailP
                             value={replyText}
                             onChange={(e) => setReplyText(e.target.value)}
                             placeholder="Type your reply..."
-                            className="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-emerald-500 resize-none h-14" // Fixed height for simplicity
+                            className="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-emerald-500 resize-none h-14"
                         />
                         <div className="absolute right-2 top-2 flex items-center gap-1">
                             <button type="button" className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
