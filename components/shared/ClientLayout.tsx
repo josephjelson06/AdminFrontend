@@ -13,7 +13,7 @@ import { ProtectedRoute } from '@/components/shared/auth/ProtectedRoute';
 const PUBLIC_ROUTES = ['/login'];
 
 // Admin routes that use (admin)/layout.tsx
-const ADMIN_ROUTES = ['/', '/dashboard', '/hotels', '/fleet', '/plans', '/subscriptions', '/invoices', '/reports', '/users', '/roles', '/audit', '/settings', '/profile'];
+const ADMIN_ROUTES = ['/', '/dashboard', '/hotels', '/fleet', '/plans', '/subscriptions', '/invoices', '/reports', '/users', '/roles', '/audit', '/settings', '/profile', '/support'];
 
 // Hotel routes that use their own HotelLayout - should only get context providers
 const HOTEL_ROUTES = ['/hotel'];

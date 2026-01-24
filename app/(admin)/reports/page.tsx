@@ -18,6 +18,7 @@ import {
 import { IndiaHeatmap } from '@/components/shared/ui/IndiaHeatmap';
 import { AreaChartComponent, BarChartComponent, DonutChartComponent, LineChartComponent } from '@/components/shared/ui/Charts';
 import { DateRangeFilter, type DateRange } from '@/components/admin/reports/DateRangeFilter';
+import { ReportsFilter } from '@/components/admin/reports/ReportsFilter';
 import { exportToCSV } from '@/lib/export';
 import { useToast } from '@/components/shared/ui/Toast';
 
@@ -110,7 +111,7 @@ export default function ReportsPage() {
 
                 <div className="flex flex-wrap items-center gap-3">
                     {/* Date Range Picker */}
-                    <DateRangeFilter date={dateRange} onDateChange={setDateRange} />
+                    <ReportsFilter date={dateRange} onDateChange={setDateRange} />
 
                     <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
 
