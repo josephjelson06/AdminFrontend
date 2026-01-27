@@ -10,7 +10,7 @@ interface ModalProps {
     onClose: () => void;
     title: string;
     children: ReactNode;
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const overlayVariants = {
@@ -20,14 +20,14 @@ const overlayVariants = {
 };
 
 const modalVariants = {
-    initial: { opacity: 0, scale: 0.94, y: 12 },
+    initial: { opacity: 0, scale: 0.95, y: 16 },
     animate: { opacity: 1, scale: 1, y: 0 },
-    exit: { opacity: 0, scale: 0.97, y: -6 },
+    exit: { opacity: 0, scale: 0.97, y: -8 },
 };
 
 const smoothTransition = {
     type: 'spring' as const,
-    stiffness: 300,
+    stiffness: 350,
     damping: 30,
 };
 
@@ -56,6 +56,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         sm: 'max-w-md',
         md: 'max-w-lg',
         lg: 'max-w-2xl',
+        xl: 'max-w-4xl',
     };
 
     if (!mounted) return null;
@@ -70,7 +71,12 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                     animate="animate"
                     exit="exit"
                     transition={{ duration: 0.2 }}
-                    className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+                    className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+                    style={{
+                        background: 'rgba(var(--shadow-color), 0.5)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                    }}
                     onClick={(e) => e.target === overlayRef.current && onClose()}
                 >
                     <motion.div
@@ -82,20 +88,20 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                         className={`w-full ${sizeClasses[size]} glass-elevated rounded-2xl overflow-hidden`}
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-                            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h2>
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-glass">
+                            <h2 className="text-lg font-semibold text-primary">{title}</h2>
                             <motion.button
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={onClose}
-                                className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                                className="p-2 btn-ghost rounded-xl"
                             >
-                                <X className="w-5 h-5 text-slate-400" />
+                                <X className="w-5 h-5 text-muted" />
                             </motion.button>
                         </div>
 
                         {/* Content */}
-                        <div className="px-5 py-4">
+                        <div className="px-6 py-5">
                             {children}
                         </div>
                     </motion.div>

@@ -45,9 +45,9 @@ const HOTELS = [
 
 function StatusBadge({ status }: { status: string }) {
     const config: Record<string, { icon: typeof CheckCircle; style: string; label: string }> = {
-        completed: { icon: CheckCircle, style: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400', label: 'Completed' },
-        pending: { icon: Clock, style: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', label: 'Pending' },
-        failed: { icon: XCircle, style: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400', label: 'Failed' },
+        completed: { icon: CheckCircle, style: 'badge-success', label: 'Completed' },
+        pending: { icon: Clock, style: 'badge-warning', label: 'Pending' },
+        failed: { icon: XCircle, style: 'badge-danger', label: 'Failed' },
     };
     const { icon: Icon, style, label } = config[status] || config.pending;
     return (
@@ -122,62 +122,62 @@ export default function UsageReportsPage() {
     };
 
     return (
-        <div className="p-6">
+        <div className="p-6 animate-in fade-in duration-normal">
             {/* Page Header */}
             <div className="flex items-center gap-4 mb-6">
                 <Link
                     href="/reports"
-                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors"
+                    className="p-2 glass-hover rounded-md transition-colors"
                 >
-                    <ChevronLeft className="w-5 h-5 text-slate-500" />
+                    <ChevronLeft className="w-5 h-5 text-muted" />
                 </Link>
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Usage Reports</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Check-in and session consumption data</p>
+                    <h1 className="text-xl font-semibold text-primary">Usage Reports</h1>
+                    <p className="text-sm text-muted">Check-in and session consumption data</p>
                 </div>
             </div>
 
             {/* Filters Card */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-6">
+            <div className="surface-glass-strong rounded-lg border border-glass p-4 mb-6">
                 <div className="flex items-center gap-2 mb-4">
-                    <Filter className="w-4 h-4 text-slate-400" />
-                    <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Report Filters</h2>
+                    <Filter className="w-4 h-4 text-muted" />
+                    <h2 className="text-sm font-semibold text-primary">Report Filters</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     {/* Date Range */}
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">From Date</label>
+                        <label className="block text-xs font-medium text-muted mb-1">From Date</label>
                         <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                             <input
                                 type="date"
                                 value={dateFrom}
                                 onChange={(e) => setDateFrom(e.target.value)}
-                                className="w-full pl-10 pr-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                                className="input-glass pl-10"
                             />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">To Date</label>
+                        <label className="block text-xs font-medium text-muted mb-1">To Date</label>
                         <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                             <input
                                 type="date"
                                 value={dateTo}
                                 onChange={(e) => setDateTo(e.target.value)}
-                                className="w-full pl-10 pr-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                                className="input-glass pl-10"
                             />
                         </div>
                     </div>
 
                     {/* Hotel Filter */}
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Hotel</label>
+                        <label className="block text-xs font-medium text-muted mb-1">Hotel</label>
                         <select
                             value={hotelFilter}
                             onChange={(e) => setHotelFilter(e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                            className="input-glass"
                         >
                             {HOTELS.map(hotel => (
                                 <option key={hotel.id} value={hotel.id}>{hotel.name}</option>
@@ -187,11 +187,11 @@ export default function UsageReportsPage() {
 
                     {/* Status Filter */}
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Status</label>
+                        <label className="block text-xs font-medium text-muted mb-1">Status</label>
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-                            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                            className="input-glass"
                         >
                             <option value="all">All Status</option>
                             <option value="completed">Completed</option>
@@ -205,7 +205,7 @@ export default function UsageReportsPage() {
                     <select
                         value={typeFilter}
                         onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)}
-                        className="px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                        className="input-glass"
                     >
                         <option value="all">All Types</option>
                         <option value="Check-in">Check-in</option>
@@ -214,7 +214,7 @@ export default function UsageReportsPage() {
 
                     <button
                         onClick={handleGenerateReport}
-                        className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-emerald-700 transition-colors"
+                        className="btn-primary"
                     >
                         <Play className="w-4 h-4" />
                         Generate Report
@@ -224,21 +224,21 @@ export default function UsageReportsPage() {
 
             {/* Results Section */}
             {isGenerated && (
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <div className="surface-glass-strong rounded-lg border border-glass">
                     {/* Results Header */}
-                    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
+                    <div className="px-4 py-3 border-b border-glass flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
                             <div className="relative min-w-[200px]">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                                 <input
                                     type="text"
                                     placeholder="Search results..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                                    className="input-glass pl-10"
                                 />
                             </div>
-                            <span className="text-sm text-slate-500 dark:text-slate-400">
+                            <span className="text-sm text-muted">
                                 {filteredData.length} records
                             </span>
                         </div>
@@ -247,14 +247,14 @@ export default function UsageReportsPage() {
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={handleExportPDF}
-                                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+                                className="btn-secondary"
                             >
                                 <FileText className="w-4 h-4" />
                                 Export PDF
                             </button>
                             <button
                                 onClick={handleExportCSV}
-                                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+                                className="btn-secondary"
                             >
                                 <FileSpreadsheet className="w-4 h-4" />
                                 Export Excel
@@ -264,48 +264,48 @@ export default function UsageReportsPage() {
 
                     {/* Results Table */}
                     <div className="overflow-x-auto">
-                        <table className="w-full">
+                        <table className="table-glass">
                             <thead>
-                                <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
-                                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">#</th>
-                                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Session ID</th>
-                                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Hotel</th>
-                                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Guest</th>
-                                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Type</th>
-                                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Date</th>
-                                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Language</th>
-                                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Status</th>
+                                <tr className="surface-glass-soft border-b border-glass">
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">#</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Session ID</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Hotel</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Guest</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Type</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Date</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Language</th>
+                                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Status</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                            <tbody className="divide-y divide-glass">
                                 {filteredData.length === 0 ? (
                                     <tr>
-                                        <td colSpan={8} className="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                                        <td colSpan={8} className="px-4 py-8 text-center text-sm text-muted">
                                             No records found matching your criteria.
                                         </td>
                                     </tr>
                                 ) : (
                                     filteredData.map((item, idx) => (
-                                        <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                                            <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">{idx + 1}</td>
-                                            <td className="px-4 py-3 text-sm font-mono text-slate-900 dark:text-white">{item.id}</td>
+                                        <tr key={item.id} className="glass-hover transition-colors">
+                                            <td className="px-4 py-3 text-sm text-muted">{idx + 1}</td>
+                                            <td className="px-4 py-3 text-sm font-mono text-primary">{item.id}</td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
-                                                    <Building2 className="w-4 h-4 text-slate-400" />
-                                                    <span className="text-sm text-slate-700 dark:text-slate-300">{item.hotelName}</span>
+                                                    <Building2 className="w-4 h-4 text-muted" />
+                                                    <span className="text-sm text-secondary-text">{item.hotelName}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-slate-900 dark:text-white">{item.guestName}</td>
+                                            <td className="px-4 py-3 text-sm text-primary">{item.guestName}</td>
                                             <td className="px-4 py-3">
                                                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${item.type === 'Check-in'
-                                                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                                                        : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                                                        ? 'badge-default'
+                                                        : 'badge-default'
                                                     }`}>
                                                     {item.type}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{formatDate(item.date)}</td>
-                                            <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{item.language}</td>
+                                            <td className="px-4 py-3 text-sm text-secondary-text">{formatDate(item.date)}</td>
+                                            <td className="px-4 py-3 text-sm text-secondary-text">{item.language}</td>
                                             <td className="px-4 py-3">
                                                 <StatusBadge status={item.status} />
                                             </td>
@@ -317,11 +317,11 @@ export default function UsageReportsPage() {
                     </div>
 
                     {/* Footer */}
-                    <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <div className="px-4 py-3 border-t border-glass flex items-center justify-between">
+                        <p className="text-sm text-muted">
                             Showing {filteredData.length} of {MOCK_CONSUMPTION_DATA.length} records
                         </p>
-                        <p className="text-xs text-slate-400 dark:text-slate-500">
+                        <p className="text-xs text-muted">
                             Report generated at {new Date().toLocaleTimeString()}
                         </p>
                     </div>
@@ -330,10 +330,10 @@ export default function UsageReportsPage() {
 
             {/* Empty State */}
             {!isGenerated && (
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
-                    <FileSpreadsheet className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No Report Generated</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                <div className="surface-glass-strong rounded-lg border border-glass p-12 text-center">
+                    <FileSpreadsheet className="w-12 h-12 mx-auto text-muted mb-4" />
+                    <h3 className="text-lg font-medium text-primary mb-2">No Report Generated</h3>
+                    <p className="text-sm text-muted mb-4">
                         Configure your filters above and click &quot;Generate Report&quot; to view data.
                     </p>
                 </div>

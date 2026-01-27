@@ -52,22 +52,22 @@ const HOTELS = [
 
 function UtilizationBar({ value }: { value: number }) {
     const getColor = (v: number) => {
-        if (v >= 80) return 'bg-emerald-500';
-        if (v >= 60) return 'bg-amber-500';
-        return 'bg-rose-500';
+        if (v >= 80) return 'bg-success';
+        if (v >= 60) return 'bg-warning';
+        return 'bg-danger';
     };
 
     return (
         <div className="flex items-center gap-2">
-            <div className="w-20 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div className="w-20 h-2 surface-glass-soft rounded-full overflow-hidden">
                 <div
                     className={`h-full rounded-full ${getColor(value)}`}
                     style={{ width: `${value}%` }}
                 />
             </div>
-            <span className={`text-xs font-medium ${value >= 80 ? 'text-emerald-600 dark:text-emerald-400' :
-                    value >= 60 ? 'text-amber-600 dark:text-amber-400' :
-                        'text-rose-600 dark:text-rose-400'
+            <span className={`text-xs font-medium ${value >= 80 ? 'text-success' :
+                    value >= 60 ? 'text-warning' :
+                        'text-danger'
                 }`}>
                 {value}%
             </span>
@@ -79,8 +79,8 @@ function StatusBadge({ status }: { status: string }) {
     const isActive = status === 'active';
     return (
         <span className={`px-2 py-0.5 rounded text-xs font-medium ${isActive
-                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                ? 'badge-success'
+                : 'badge-warning'
             }`}>
             {isActive ? 'Active' : 'Maintenance'}
         </span>
@@ -144,62 +144,62 @@ export default function OperationalReportsPage() {
     };
 
     return (
-        <div className="p-6">
+        <div className="p-6 animate-in fade-in duration-normal">
             {/* Page Header */}
             <div className="flex items-center gap-4 mb-6">
                 <Link
                     href="/reports"
-                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors"
+                    className="p-2 glass-hover rounded-md transition-colors"
                 >
-                    <ChevronLeft className="w-5 h-5 text-slate-500" />
+                    <ChevronLeft className="w-5 h-5 text-muted" />
                 </Link>
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Operational Reports</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Kiosk usage and deployment data</p>
+                    <h1 className="text-xl font-semibold text-primary">Operational Reports</h1>
+                    <p className="text-sm text-muted">Kiosk usage and deployment data</p>
                 </div>
             </div>
 
             {/* Filters Card */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-6">
+            <div className="surface-glass-strong rounded-lg border border-glass p-4 mb-6">
                 <div className="flex items-center gap-2 mb-4">
-                    <Filter className="w-4 h-4 text-slate-400" />
-                    <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Report Filters</h2>
+                    <Filter className="w-4 h-4 text-muted" />
+                    <h2 className="text-sm font-semibold text-primary">Report Filters</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     {/* Date Range */}
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">From Date</label>
+                        <label className="block text-xs font-medium text-muted mb-1">From Date</label>
                         <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                             <input
                                 type="date"
                                 value={dateFrom}
                                 onChange={(e) => setDateFrom(e.target.value)}
-                                className="w-full pl-10 pr-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                                className="input-glass pl-10"
                             />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">To Date</label>
+                        <label className="block text-xs font-medium text-muted mb-1">To Date</label>
                         <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                             <input
                                 type="date"
                                 value={dateTo}
                                 onChange={(e) => setDateTo(e.target.value)}
-                                className="w-full pl-10 pr-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                                className="input-glass pl-10"
                             />
                         </div>
                     </div>
 
                     {/* State Filter */}
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">State</label>
+                        <label className="block text-xs font-medium text-muted mb-1">State</label>
                         <select
                             value={stateFilter}
                             onChange={(e) => setStateFilter(e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                            className="input-glass"
                         >
                             {STATES.map(state => (
                                 <option key={state.id} value={state.id}>{state.name}</option>
@@ -209,11 +209,11 @@ export default function OperationalReportsPage() {
 
                     {/* Hotel Filter */}
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Hotel</label>
+                        <label className="block text-xs font-medium text-muted mb-1">Hotel</label>
                         <select
                             value={hotelFilter}
                             onChange={(e) => setHotelFilter(e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                            className="input-glass"
                         >
                             {HOTELS.map(hotel => (
                                 <option key={hotel.id} value={hotel.id}>{hotel.name}</option>
@@ -225,7 +225,7 @@ export default function OperationalReportsPage() {
                 <div className="flex items-center justify-end">
                     <button
                         onClick={handleGenerateReport}
-                        className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-emerald-700 transition-colors"
+                        className="btn-primary"
                     >
                         <Play className="w-4 h-4" />
                         Generate Report
@@ -238,38 +238,38 @@ export default function OperationalReportsPage() {
                 <>
                     {/* Summary Cards */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Total Kiosks</p>
-                            <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{filteredData.length}</p>
+                        <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                            <p className="text-xs font-medium text-muted uppercase">Total Kiosks</p>
+                            <p className="text-2xl font-bold text-primary mt-1">{filteredData.length}</p>
                         </div>
-                        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Total Check-ins</p>
-                            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{totalCheckins.toLocaleString()}</p>
+                        <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                            <p className="text-xs font-medium text-muted uppercase">Total Check-ins</p>
+                            <p className="text-2xl font-bold text-success mt-1">{totalCheckins.toLocaleString()}</p>
                         </div>
-                        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Avg Utilization</p>
-                            <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{avgUtilization}%</p>
+                        <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                            <p className="text-xs font-medium text-muted uppercase">Avg Utilization</p>
+                            <p className="text-2xl font-bold text-primary mt-1">{avgUtilization}%</p>
                         </div>
-                        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Active Kiosks</p>
-                            <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+                        <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                            <p className="text-xs font-medium text-muted uppercase">Active Kiosks</p>
+                            <p className="text-2xl font-bold text-primary mt-1">
                                 {filteredData.filter(k => k.status === 'active').length}
                             </p>
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div className="surface-glass-strong rounded-lg border border-glass">
                         {/* Results Header */}
-                        <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
+                        <div className="px-4 py-3 border-b border-glass flex flex-wrap items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                                 <div className="relative min-w-[200px]">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                                     <input
                                         type="text"
                                         placeholder="Search kiosks..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                                        className="input-glass pl-10"
                                     />
                                 </div>
                             </div>
@@ -278,14 +278,14 @@ export default function OperationalReportsPage() {
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={handleExportPDF}
-                                    className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+                                    className="btn-secondary"
                                 >
                                     <FileText className="w-4 h-4" />
                                     Export PDF
                                 </button>
                                 <button
                                     onClick={handleExportCSV}
-                                    className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+                                    className="btn-secondary"
                                 >
                                     <FileSpreadsheet className="w-4 h-4" />
                                     Export Excel
@@ -295,46 +295,46 @@ export default function OperationalReportsPage() {
 
                         {/* Results Table */}
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <table className="table-glass">
                                 <thead>
-                                    <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Kiosk ID</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Hotel</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">State</th>
-                                        <th className="text-right px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Check-ins</th>
-                                        <th className="text-right px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Avg/Day</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Utilization</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Status</th>
+                                    <tr className="surface-glass-soft border-b border-glass">
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Kiosk ID</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Hotel</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">State</th>
+                                        <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase">Check-ins</th>
+                                        <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase">Avg/Day</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Utilization</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                                <tbody className="divide-y divide-glass">
                                     {filteredData.map((item) => (
-                                        <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                        <tr key={item.id} className="glass-hover transition-colors">
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
-                                                    <Cpu className="w-4 h-4 text-slate-400" />
-                                                    <span className="text-sm font-mono text-slate-900 dark:text-white">{item.id}</span>
+                                                    <Cpu className="w-4 h-4 text-muted" />
+                                                    <span className="text-sm font-mono text-primary">{item.id}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
-                                                    <Building2 className="w-4 h-4 text-slate-400" />
-                                                    <span className="text-sm text-slate-700 dark:text-slate-300">{item.hotelName}</span>
+                                                    <Building2 className="w-4 h-4 text-muted" />
+                                                    <span className="text-sm text-secondary-text">{item.hotelName}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-1.5">
-                                                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                                                    <span className="text-sm text-slate-600 dark:text-slate-400">{item.state}</span>
+                                                    <MapPin className="w-3.5 h-3.5 text-muted" />
+                                                    <span className="text-sm text-secondary-text">{item.state}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-3 text-right">
-                                                <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                                                <span className="text-sm font-semibold text-success">
                                                     {item.checkins.toLocaleString()}
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3 text-right">
-                                                <span className="text-sm text-slate-700 dark:text-slate-300">{item.avgPerDay}</span>
+                                                <span className="text-sm text-secondary-text">{item.avgPerDay}</span>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <UtilizationBar value={item.utilization} />
@@ -349,8 +349,8 @@ export default function OperationalReportsPage() {
                         </div>
 
                         {/* Footer */}
-                        <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700">
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                        <div className="px-4 py-3 border-t border-glass">
+                            <p className="text-sm text-muted">
                                 Showing {filteredData.length} kiosks
                             </p>
                         </div>
@@ -360,10 +360,10 @@ export default function OperationalReportsPage() {
 
             {/* Empty State */}
             {!isGenerated && (
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
-                    <Cpu className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No Report Generated</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                <div className="surface-glass-strong rounded-lg border border-glass p-12 text-center">
+                    <Cpu className="w-12 h-12 mx-auto text-muted mb-4" />
+                    <h3 className="text-lg font-medium text-primary mb-2">No Report Generated</h3>
+                    <p className="text-sm text-muted mb-4">
                         Configure your filters above and click &quot;Generate Report&quot; to view kiosk data.
                     </p>
                 </div>

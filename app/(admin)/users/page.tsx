@@ -26,14 +26,14 @@ import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
 
 function UserStatusBadge({ status }: { status: AdminUser['status'] }) {
     const styles = {
-        active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-        invited: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-        suspended: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+        active: 'badge-success',
+        invited: 'badge-warning',
+        suspended: 'badge-danger',
     };
 
     return (
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status]}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-current'}`} />
+        <span className={`inline-flex items-center gap-1.5 ${styles[status]}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-success animate-pulse' : 'bg-current'}`} />
             {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
     );
@@ -71,21 +71,21 @@ export default function UsersPage() {
     };
 
     return (
-        <div className="p-4 sm:p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-6 animate-in fade-in duration-normal">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Users className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                    <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+                        <Users className="w-6 h-6 text-primary" />
                         Team Management
                     </h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-sm text-muted mt-1">
                         Manage internal staff access and security protocols.
                     </p>
                 </div>
                 <button
                     onClick={() => setShowInviteModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                    className="btn-primary"
                 >
                     <Plus className="w-4 h-4" />
                     Invite Member
@@ -100,7 +100,7 @@ export default function UsersPage() {
                         onChange={setSearchQuery}
                         placeholder="Search name or email..."
                     />
-                    <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+                    <div className="h-8 w-px bg-glass hidden sm:block" />
                     <FilterChips
                         label="Role"
                         options={[
@@ -117,23 +117,23 @@ export default function UsersPage() {
             {/* Users Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredUsers.map((user) => (
-                    <GlassCard key={user.id} className="p-0 flex flex-col group hover:border-emerald-500/30 transition-all">
+                    <GlassCard key={user.id} className="p-0 flex flex-col group hover:border-primary/30 transition-all duration-normal">
                         <div className="p-6 flex items-start justify-between">
                             <div className="flex gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-lg font-bold text-slate-600 dark:text-slate-300">
+                                <div className="w-12 h-12 rounded-2xl surface-glass-soft flex items-center justify-center text-lg font-bold text-secondary-text">
                                     {user.name.charAt(0)}
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-900 dark:text-white">{user.name}</h3>
+                                    <h3 className="font-bold text-primary">{user.name}</h3>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <Mail className="w-3 h-3 text-slate-400" />
-                                        <span className="text-xs text-slate-500 dark:text-slate-400">{user.email}</span>
+                                        <Mail className="w-3 h-3 text-muted" />
+                                        <span className="text-xs text-muted">{user.email}</span>
                                     </div>
                                 </div>
                             </div>
                             <Dropdown
                                 trigger={
-                                    <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 transition-colors">
+                                    <button className="p-2 glass-hover rounded-lg text-muted transition-all duration-fast">
                                         <MoreVertical className="w-4 h-4" />
                                     </button>
                                 }
@@ -143,17 +143,17 @@ export default function UsersPage() {
                                 <DropdownItem onClick={() => handleAction('reset_pwd', user)}>
                                     <RotateCcw className="w-4 h-4" /> Reset Password
                                 </DropdownItem>
-                                <div className="my-1 border-t border-slate-100 dark:border-slate-700" />
+                                <div className="my-1 border-t border-glass" />
                                 {user.status === 'active' ? (
-                                    <DropdownItem onClick={() => handleAction('suspend', user)} className="text-amber-600">
+                                    <DropdownItem onClick={() => handleAction('suspend', user)} className="text-warning">
                                         <Lock className="w-4 h-4" /> Suspend User
                                     </DropdownItem>
                                 ) : (
-                                    <DropdownItem onClick={() => addToast('success', 'Re-activated', 'User access restored.')} className="text-emerald-600">
+                                    <DropdownItem onClick={() => addToast('success', 'Re-activated', 'User access restored.')} className="text-success">
                                         <Unlock className="w-4 h-4" /> Activate User
                                     </DropdownItem>
                                 )}
-                                <DropdownItem onClick={() => handleAction('delete', user)} className="text-rose-600">
+                                <DropdownItem onClick={() => handleAction('delete', user)} className="text-danger">
                                     <Trash2 className="w-4 h-4" /> Remove User
                                 </DropdownItem>
                             </Dropdown>
@@ -162,18 +162,18 @@ export default function UsersPage() {
                         {/* Meta Info */}
                         <div className="px-6 pb-6 space-y-3">
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-500 dark:text-slate-400">Role Access</span>
-                                <span className="font-medium text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs">
+                                <span className="text-muted">Role Access</span>
+                                <span className="font-medium text-primary surface-glass-soft px-2 py-1 rounded text-xs">
                                     {user.roleName}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-500 dark:text-slate-400">Department</span>
-                                <span className="text-slate-700 dark:text-slate-300">{user.department}</span>
+                                <span className="text-muted">Department</span>
+                                <span className="text-secondary-text">{user.department}</span>
                             </div>
-                            <div className="pt-4 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
+                            <div className="pt-4 border-t border-glass flex items-center justify-between">
                                 <UserStatusBadge status={user.status} />
-                                <div className="flex items-center gap-1.5 text-xs text-slate-400" title="Last Active">
+                                <div className="flex items-center gap-1.5 text-xs text-muted" title="Last Active">
                                     <Clock className="w-3 h-3" />
                                     {user.lastActive}
                                 </div>
@@ -183,7 +183,7 @@ export default function UsersPage() {
                         {/* MFA Indicator */}
                         {user.mfaEnabled && (
                             <div className="absolute top-0 right-0 p-2">
-                                <div className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-1 rounded-full" title="MFA Enabled">
+                                <div className="bg-success/10 text-success p-1 rounded-full" title="MFA Enabled">
                                     <Shield className="w-3 h-3" />
                                 </div>
                             </div>

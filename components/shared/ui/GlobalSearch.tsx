@@ -14,7 +14,7 @@ import {
     CreditCard,
     ArrowRight
 } from 'lucide-react';
-import { MOCK_HOTELS } from '@/lib/hotel/hotel-data';
+import { MOCK_HOTELS } from '@/lib/admin/mock-data';
 import { MOCK_ADMIN_USERS } from '@/lib/admin/users-data';
 import { MOCK_KIOSKS } from '@/lib/admin/mock-data';
 import { MOCK_INVOICES } from '@/lib/admin/finance-data';
@@ -38,6 +38,17 @@ export function GlobalSearch() {
     const [open, setOpen] = React.useState(false);
     const [query, setQuery] = React.useState('');
     const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const [scrolled, setScrolled] = React.useState(false);
+
+    // Scroll detection for transparency effect
+    React.useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Check initial position
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     // Keyboard Shortcut (Cmd+K)
     React.useEffect(() => {
@@ -177,11 +188,19 @@ export function GlobalSearch() {
             {/* Trigger Button */}
             <button
                 onClick={() => setOpen(true)}
-                className="group flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors border border-transparent hover:border-slate-300 dark:hover:border-slate-600 w-full sm:w-64"
+                className={`group flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 border w-full sm:w-64 ${
+                    scrolled
+                        ? 'bg-transparent border-transparent hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
+                        : 'bg-slate-100 dark:bg-slate-800 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                }`}
             >
-                <Search className="w-4 h-4 text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300" />
-                <span className="text-sm text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300">Search...</span>
-                <span className="ml-auto text-xs text-slate-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 font-mono hidden sm:inline-block">
+                <Search className={`w-4 h-4 transition-colors duration-300 ${scrolled ? 'text-slate-400' : 'text-slate-500'} group-hover:text-slate-700 dark:group-hover:text-slate-300`} />
+                <span className={`text-sm transition-colors duration-300 ${scrolled ? 'text-slate-400' : 'text-slate-500'} group-hover:text-slate-700 dark:group-hover:text-slate-300`}>Search...</span>
+                <span className={`ml-auto text-xs px-1.5 py-0.5 rounded border font-mono hidden sm:inline-block transition-all duration-300 ${
+                    scrolled 
+                        ? 'bg-transparent border-slate-300/50 dark:border-slate-600/50 text-slate-400' 
+                        : 'bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-slate-700 text-slate-400'
+                }`}>
                     ⌘K
                 </span>
             </button>

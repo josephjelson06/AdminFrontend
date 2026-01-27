@@ -54,6 +54,7 @@ export default function AdminLayout({
     return (
         <ProtectedRoute>
             <div
+                className="min-h-screen bg-gradient-mesh"
                 style={{
                     '--sidebar-width': `${currentSidebarWidth}px`
                 } as React.CSSProperties}
@@ -70,8 +71,10 @@ export default function AdminLayout({
                     onMenuClick={() => setSidebarOpen(true)}
                     sidebarCollapsed={isCollapsed}
                 />
-                <main className="mt-14 min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950 transition-all duration-200 lg:ml-[var(--sidebar-width)]">
-                    {children}
+                <main className="pt-20 min-h-screen transition-all duration-normal ease-smooth lg:ml-[var(--sidebar-width)]">
+                    <div className="p-4 sm:p-6 lg:p-8">
+                        {children}
+                    </div>
                 </main>
             </div>
         </ProtectedRoute>

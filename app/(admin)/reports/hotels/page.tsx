@@ -36,51 +36,51 @@ const CATEGORY_PERFORMANCE = [
 
 export default function HotelPerformancePage() {
     return (
-        <div className="p-4 sm:p-6">
+        <div className="p-4 sm:p-6 animate-in fade-in duration-normal">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm mb-4">
-                <Link href="/reports" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
+                <Link href="/reports" className="text-muted hover:text-secondary-text">
                     Reports
                 </Link>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-                <span className="font-medium text-slate-900 dark:text-white">Hotel Performance</span>
+                <ChevronRight className="w-4 h-4 text-muted" />
+                <span className="font-medium text-primary">Hotel Performance</span>
             </div>
 
-            <h1 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">Hotel Performance Analytics</h1>
+            <h1 className="text-xl font-semibold text-primary mb-6">Hotel Performance Analytics</h1>
 
             {/* Main Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* Top Performing Hotels */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center gap-2">
-                        <Trophy className="w-4 h-4 text-amber-500" />
-                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Top Performing Hotels</h3>
+                <div className="surface-glass-strong rounded-lg border border-glass">
+                    <div className="px-4 py-3 border-b border-glass flex items-center gap-2">
+                        <Trophy className="w-4 h-4 text-warning" />
+                        <h3 className="text-sm font-semibold text-primary">Top Performing Hotels</h3>
                     </div>
-                    <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                    <div className="divide-y divide-glass">
                         {MOCK_TOP_HOTELS.map((hotel, idx) => (
                             <Link
                                 key={hotel.id}
                                 href={`/hotels/${hotel.id}`}
-                                className="flex items-center gap-4 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                                className="flex items-center gap-4 px-4 py-3 glass-hover transition-colors"
                             >
-                                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${idx === 0 ? 'bg-amber-100 text-amber-700' :
-                                        idx === 1 ? 'bg-slate-100 text-slate-600' :
-                                            idx === 2 ? 'bg-orange-100 text-orange-700' :
-                                                'bg-slate-50 text-slate-500'
+                                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${idx === 0 ? 'bg-warning/20 text-warning' :
+                                        idx === 1 ? 'surface-glass-soft text-secondary-text' :
+                                            idx === 2 ? 'bg-warning/10 text-warning' :
+                                                'surface-glass-soft text-muted'
                                     }`}>
                                     {idx + 1}
                                 </span>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{hotel.name}</p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">{hotel.category}</p>
+                                    <p className="text-sm font-medium text-primary truncate">{hotel.name}</p>
+                                    <p className="text-xs text-muted">{hotel.category}</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{hotel.checkins.toLocaleString()}</p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">check-ins</p>
+                                    <p className="text-sm font-semibold text-primary">{hotel.checkins.toLocaleString()}</p>
+                                    <p className="text-xs text-muted">check-ins</p>
                                 </div>
                                 <div className="text-right w-16">
-                                    <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{hotel.selfCheckInRate}%</p>
-                                    <span className="inline-flex items-center gap-0.5 text-xs text-emerald-600">
+                                    <p className="text-sm font-semibold text-success">{hotel.selfCheckInRate}%</p>
+                                    <span className="inline-flex items-center gap-0.5 text-xs text-success">
                                         <TrendingUp className="w-3 h-3" />
                                         +{hotel.trend}%
                                     </span>
@@ -91,42 +91,42 @@ export default function HotelPerformancePage() {
                 </div>
 
                 {/* Needs Attention */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-500" />
-                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Needs Attention</h3>
-                        <span className="ml-auto px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-medium rounded">
+                <div className="surface-glass-strong rounded-lg border border-glass">
+                    <div className="px-4 py-3 border-b border-glass flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-warning" />
+                        <h3 className="text-sm font-semibold text-primary">Needs Attention</h3>
+                        <span className="ml-auto badge-warning">
                             {MOCK_UNDERPERFORMING.length}
                         </span>
                     </div>
-                    <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                    <div className="divide-y divide-glass">
                         {MOCK_UNDERPERFORMING.map((hotel) => (
                             <Link
                                 key={hotel.id}
                                 href={`/hotels/${hotel.id}`}
-                                className="flex items-center gap-4 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                                className="flex items-center gap-4 px-4 py-3 glass-hover transition-colors"
                             >
-                                <div className={`w-2 h-2 rounded-full ${hotel.severity === 'critical' ? 'bg-rose-500' :
-                                        hotel.severity === 'warning' ? 'bg-amber-500' :
-                                            'bg-blue-500'
+                                <div className={`w-2 h-2 rounded-full ${hotel.severity === 'critical' ? 'bg-danger' :
+                                        hotel.severity === 'warning' ? 'bg-warning' :
+                                            'bg-info'
                                     }`} />
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{hotel.name}</p>
-                                    <p className={`text-xs ${hotel.severity === 'critical' ? 'text-rose-600 dark:text-rose-400' :
-                                            hotel.severity === 'warning' ? 'text-amber-600 dark:text-amber-400' :
-                                                'text-blue-600 dark:text-blue-400'
+                                    <p className="text-sm font-medium text-primary truncate">{hotel.name}</p>
+                                    <p className={`text-xs ${hotel.severity === 'critical' ? 'text-danger' :
+                                            hotel.severity === 'warning' ? 'text-warning' :
+                                                'text-info'
                                         }`}>{hotel.issue}</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm font-semibold text-rose-600 dark:text-rose-400">{hotel.selfCheckInRate}%</p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">self check-in</p>
+                                    <p className="text-sm font-semibold text-danger">{hotel.selfCheckInRate}%</p>
+                                    <p className="text-xs text-muted">self check-in</p>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-slate-400" />
+                                <ChevronRight className="w-4 h-4 text-muted" />
                             </Link>
                         ))}
                     </div>
-                    <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700">
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <div className="px-4 py-3 border-t border-glass">
+                        <p className="text-xs text-muted">
                             Hotels with self check-in rate below 60% or declining usage patterns
                         </p>
                     </div>
@@ -134,34 +134,34 @@ export default function HotelPerformancePage() {
             </div>
 
             {/* Category Performance */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-6">
-                    <Percent className="w-4 h-4 text-slate-400" />
+            <div className="surface-glass-strong rounded-lg border border-glass p-6">
+                <h3 className="text-sm font-semibold text-primary flex items-center gap-2 mb-6">
+                    <Percent className="w-4 h-4 text-muted" />
                     Self Check-in Rate by Hotel Category
                 </h3>
                 <div className="space-y-4">
                     {CATEGORY_PERFORMANCE.map((cat) => (
                         <div key={cat.name} className="flex items-center gap-4">
-                            <span className="w-20 text-sm text-slate-600 dark:text-slate-400">{cat.name}</span>
-                            <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-4 relative overflow-hidden">
+                            <span className="w-20 text-sm text-secondary-text">{cat.name}</span>
+                            <div className="flex-1 surface-glass-soft rounded-full h-4 relative overflow-hidden">
                                 <div
-                                    className={`h-4 rounded-full ${cat.value >= 80 ? 'bg-emerald-500' :
-                                            cat.value >= 65 ? 'bg-blue-500' :
-                                                'bg-amber-500'
+                                    className={`h-4 rounded-full ${cat.value >= 80 ? 'bg-success' :
+                                            cat.value >= 65 ? 'bg-info' :
+                                                'bg-warning'
                                         }`}
                                     style={{ width: `${cat.value}%` }}
                                 />
                             </div>
-                            <span className="w-12 text-right text-sm font-semibold text-slate-900 dark:text-white">{cat.value}%</span>
+                            <span className="w-12 text-right text-sm font-semibold text-primary">{cat.value}%</span>
                         </div>
                     ))}
                 </div>
-                <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <div className="mt-4 pt-4 border-t border-glass flex items-center justify-between text-xs text-muted">
                     <span>Benchmark: 70% for optimal kiosk ROI</span>
                     <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500" /> Excellent
-                        <span className="w-2 h-2 rounded-full bg-blue-500 ml-2" /> Good
-                        <span className="w-2 h-2 rounded-full bg-amber-500 ml-2" /> Needs improvement
+                        <span className="w-2 h-2 rounded-full bg-success" /> Excellent
+                        <span className="w-2 h-2 rounded-full bg-info ml-2" /> Good
+                        <span className="w-2 h-2 rounded-full bg-warning ml-2" /> Needs improvement
                     </span>
                 </div>
             </div>

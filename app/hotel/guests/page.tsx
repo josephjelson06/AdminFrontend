@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import {
     Search,
@@ -17,6 +17,8 @@ import {
     CreditCard,
     BedDouble,
     Loader2,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-react';
 import {
     MOCK_GUEST_CHECKINS,
@@ -24,8 +26,6 @@ import {
     getVerificationColor,
 } from '@/lib/hotel/hotel-data';
 import { useToast } from '@/components/shared/ui/Toast';
-import { Pagination } from '@/components/shared/ui/Pagination';
-import { useEffect } from 'react';
 
 // Date filter options
 const DATE_FILTERS = [
@@ -179,7 +179,7 @@ export default function GuestsPage() {
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     // Filter guests
     const filteredGuests = MOCK_GUEST_CHECKINS.filter((guest) => {
@@ -191,19 +191,18 @@ export default function GuestsPage() {
         const matchesStatus = statusFilter === 'all' || guest.verification === statusFilter;
 
         return matchesSearch && matchesStatus;
-        return matchesSearch && matchesStatus;
     });
 
     // Reset pagination when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchQuery, statusFilter, dateFilter]);
+    }, [searchQuery, statusFilter, dateFilter, rowsPerPage]);
 
     // Calculate pagination
-    const totalPages = Math.ceil(filteredGuests.length / itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(filteredGuests.length / rowsPerPage));
     const paginatedGuests = filteredGuests.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
     );
 
     const handleExport = async () => {
@@ -446,13 +445,47 @@ export default function GuestsPage() {
 
                 {/* Pagination */}
                 {filteredGuests.length > 0 && (
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        totalItems={filteredGuests.length}
-                        itemsPerPage={itemsPerPage}
-                        onPageChange={setCurrentPage}
-                    />
+                    <div className="py-3 px-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-b-lg flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-slate-500 dark:text-slate-400">Rows per page:</span>
+                            <select
+                                value={rowsPerPage}
+                                onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                                className="px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                                <option value={25}>25</option>
+                            </select>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm text-slate-500 dark:text-slate-400">
+                                {filteredGuests.length > 0 
+                                    ? `${(currentPage - 1) * rowsPerPage + 1}–${Math.min(currentPage * rowsPerPage, filteredGuests.length)} of ${filteredGuests.length}` 
+                                    : '0 items'}
+                            </span>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronLeft className="w-4 h-4 text-slate-500" />
+                                </button>
+                                <span className="px-2 text-sm text-slate-700 dark:text-slate-300">
+                                    {currentPage} / {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronRight className="w-4 h-4 text-slate-500" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
 

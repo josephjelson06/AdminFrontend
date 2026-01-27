@@ -66,7 +66,7 @@ export function Dropdown({ trigger, children, align = 'left' }: DropdownProps) {
             {mounted && isOpen && createPortal(
                 <div
                     id={`dropdown-menu-${dropdownId.current}`}
-                    className="glass-elevated rounded-xl py-1 animate-in fade-in zoom-in-95 duration-100"
+                    className="glass-elevated rounded-2xl py-2 animate-scale-in"
                     style={menuStyle}
                 >
                     {children}
@@ -88,9 +88,9 @@ export function DropdownItem({ onClick, children, variant = 'default', className
     return (
         <button
             onClick={onClick}
-            className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center gap-2 ${variant === 'danger'
-                ? 'text-rose-600 hover:bg-rose-50/50 dark:text-rose-400 dark:hover:bg-rose-900/20'
-                : 'text-slate-700 hover:bg-white/50 dark:text-slate-300 dark:hover:bg-slate-700/50'
+            className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-normal flex items-center gap-2.5 ${variant === 'danger'
+                ? 'text-danger hover:bg-danger/10'
+                : 'text-secondary hover:text-primary hover:bg-glass-soft'
                 } ${className || ''}`}
         >
             {children}

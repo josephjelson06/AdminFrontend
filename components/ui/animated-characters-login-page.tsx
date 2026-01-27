@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Sparkles, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { useAuth } from "@/lib/shared/auth";
 
 
 interface PupilProps {
@@ -180,6 +182,8 @@ const EyeBall = ({
 
 
 export function AnimatedCharactersLoginPage() {
+    const router = useRouter();
+    const { login, user } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -327,20 +331,25 @@ export function AnimatedCharactersLoginPage() {
         setError("");
         setIsLoading(true);
 
-        // Simulate API delay (quick)
-        await new Promise(resolve => setTimeout(resolve, 300));
-
-        // Mock authentication - validate against dummy credentials
-        if (email === "erik@gmail.com" && password === "1234") {
-            console.log("✅ Login successful!");
-            alert("Login successful! Welcome, Erik!");
-            // In a real app, you would:
-            // - Store auth token
-            // - Redirect to dashboard
-            // - Set user session
-        } else {
-            setError("Invalid email or password. Please try again.");
-            console.log("❌ Login failed");
+        try {
+            const success = await login(email, password);
+            if (success) {
+                console.log("✅ Login successful!");
+                // Redirect based on user panel type
+                // Check email domain to determine panel type
+                const emailLower = email.toLowerCase();
+                if (emailLower.includes('@hotel.in')) {
+                    router.push('/hotel');
+                } else {
+                    router.push('/dashboard');
+                }
+            } else {
+                setError("Invalid email or password. Please try again.");
+                console.log("❌ Login failed");
+            }
+        } catch (err) {
+            setError("An error occurred. Please try again.");
+            console.log("❌ Login failed", err);
         }
 
         setIsLoading(false);

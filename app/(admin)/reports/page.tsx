@@ -101,23 +101,23 @@ export default function ReportsPage() {
     };
 
     return (
-        <div className="p-4 sm:p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-6 animate-in fade-in duration-normal">
             {/* Page Header with Filters */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Analytics Overview</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Business intelligence and usage insights</p>
+                    <h1 className="text-xl font-semibold text-primary">Analytics Overview</h1>
+                    <p className="text-sm text-muted">Business intelligence and usage insights</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
                     {/* Date Range Picker */}
                     <ReportsFilter date={dateRange} onDateChange={setDateRange} />
 
-                    <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+                    <div className="h-8 w-px bg-glass hidden sm:block" />
 
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                        className="btn-secondary"
                     >
                         <Download className="w-4 h-4" />
                         <span className="hidden sm:inline">Export CSV</span>
@@ -125,7 +125,7 @@ export default function ReportsPage() {
 
                     <Link
                         href="/reports/usage"
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20"
+                        className="btn-primary"
                     >
                         <FileText className="w-4 h-4" />
                         Detailed Reports
@@ -135,40 +135,40 @@ export default function ReportsPage() {
 
             {/* KPI Summary - Dynamic (Mocked logic would go here based on dates) */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Total Check-ins</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">{totalCheckins.toLocaleString()}</p>
-                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1.5 flex items-center gap-1 font-medium">
+                <div className="surface-glass-strong rounded-2xl border border-glass p-5">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Total Check-ins</p>
+                    <p className="text-2xl font-bold text-primary mt-2">{totalCheckins.toLocaleString()}</p>
+                    <p className="text-xs text-success mt-1.5 flex items-center gap-1 font-medium">
                         <TrendingUp className="w-3 h-3" /> +23% vs prev period
                     </p>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Deployed Kiosks</p>
-                    <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{totalKiosks}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Across {MOCK_STATE_DATA.length} states</p>
+                <div className="surface-glass-strong rounded-2xl border border-glass p-5">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Deployed Kiosks</p>
+                    <p className="text-2xl font-bold text-success mt-2">{totalKiosks}</p>
+                    <p className="text-xs text-muted mt-1.5">Across {MOCK_STATE_DATA.length} states</p>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Avg Self Check-in Rate</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">74%</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Guests using kiosk vs front desk</p>
+                <div className="surface-glass-strong rounded-2xl border border-glass p-5">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Avg Self Check-in Rate</p>
+                    <p className="text-2xl font-bold text-primary mt-2">74%</p>
+                    <p className="text-xs text-muted mt-1.5">Guests using kiosk vs front desk</p>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Non-English Usage</p>
-                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-2">72%</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Regional language interactions</p>
+                <div className="surface-glass-strong rounded-2xl border border-glass p-5">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Non-English Usage</p>
+                    <p className="text-2xl font-bold text-info mt-2">72%</p>
+                    <p className="text-xs text-muted mt-1.5">Regional language interactions</p>
                 </div>
             </div>
 
             {/* Main Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Check-ins & AI Sessions Trend */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                <div className="surface-glass-strong rounded-2xl border border-glass p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <BarChart3 className="w-4 h-4 text-slate-400" />
+                        <h3 className="text-base font-bold text-primary flex items-center gap-2">
+                            <BarChart3 className="w-4 h-4 text-muted" />
                             Check-ins & AI Sessions
                         </h3>
-                        <Link href="/reports/usage" className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1 hover:underline">
+                        <Link href="/reports/usage" className="text-xs font-medium text-success flex items-center gap-1 hover:underline">
                             View Details <ArrowRight className="w-3 h-3" />
                         </Link>
                     </div>
@@ -183,9 +183,9 @@ export default function ReportsPage() {
                 </div>
 
                 {/* Weekly Pattern */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-6">
-                        <TrendingUp className="w-4 h-4 text-slate-400" />
+                <div className="surface-glass-strong rounded-2xl border border-glass p-6">
+                    <h3 className="text-base font-bold text-primary flex items-center gap-2 mb-6">
+                        <TrendingUp className="w-4 h-4 text-muted" />
                         Weekly Check-in Pattern
                     </h3>
                     <AreaChartComponent
@@ -201,9 +201,9 @@ export default function ReportsPage() {
             {/* Second Row */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Language Distribution */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                        <Languages className="w-4 h-4 text-slate-400" />
+                <div className="surface-glass-strong rounded-2xl border border-glass p-6">
+                    <h3 className="text-base font-bold text-primary flex items-center gap-2 mb-4">
+                        <Languages className="w-4 h-4 text-muted" />
                         Language Distribution
                     </h3>
                     <DonutChartComponent data={MOCK_LANGUAGE_DATA} height={200} />
@@ -214,20 +214,20 @@ export default function ReportsPage() {
                                     className="w-2 h-2 rounded-full flex-shrink-0"
                                     style={{ backgroundColor: ['#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'][idx] }}
                                 />
-                                <span className="text-xs font-medium text-slate-600 dark:text-slate-400 truncate">{lang.name}</span>
+                                <span className="text-xs font-medium text-secondary-text truncate">{lang.name}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* India Heatmap */}
-                <Link href="/reports/operational" className="block bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors cursor-pointer group">
+                <Link href="/reports/operational" className="block surface-glass-strong rounded-2xl border border-glass p-6 glass-hover cursor-pointer group">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-slate-400" />
+                        <h3 className="text-base font-bold text-primary flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-muted" />
                             Geographic Coverage
                         </h3>
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                        <span className="text-xs text-success opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                             Expand <ArrowRight className="w-3 h-3" />
                         </span>
                     </div>
@@ -235,10 +235,10 @@ export default function ReportsPage() {
                 </Link>
 
                 {/* Top Hotels */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/20">
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <Building2 className="w-4 h-4 text-slate-400" />
+                <div className="surface-glass-strong rounded-2xl border border-glass overflow-hidden">
+                    <div className="px-6 py-4 border-b border-glass surface-glass-soft">
+                        <h3 className="text-base font-bold text-primary flex items-center gap-2">
+                            <Building2 className="w-4 h-4 text-muted" />
                             Top Performing Hotels
                         </h3>
                     </div>
@@ -254,33 +254,33 @@ export default function ReportsPage() {
             </div>
 
             {/* State-wise Table */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/20">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-slate-400" />
+            <div className="surface-glass-strong rounded-2xl border border-glass overflow-hidden">
+                <div className="px-6 py-4 border-b border-glass flex justify-between items-center surface-glass-soft">
+                    <h3 className="text-base font-bold text-primary flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-muted" />
                         State-wise Performance
                     </h3>
-                    <button className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors text-slate-400 hover:text-slate-600">
+                    <button className="p-1 glass-hover rounded transition-colors text-muted hover:text-secondary-text">
                         <Share2 className="w-4 h-4" />
                     </button>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="table-glass">
                         <thead>
-                            <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">State</th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Kiosks</th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Check-ins</th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Avg/Kiosk</th>
+                            <tr className="surface-glass-soft border-b border-glass">
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">State</th>
+                                <th className="text-right px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Kiosks</th>
+                                <th className="text-right px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Check-ins</th>
+                                <th className="text-right px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">Avg/Kiosk</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                        <tbody className="divide-y divide-glass">
                             {MOCK_STATE_DATA.slice(0, 6).map((region) => (
-                                <tr key={region.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                                    <td className="px-6 py-3.5 text-sm font-medium text-slate-900 dark:text-white">{region.name}</td>
-                                    <td className="px-6 py-3.5 text-right text-sm text-slate-700 dark:text-slate-300">{region.kiosks}</td>
-                                    <td className="px-6 py-3.5 text-right text-sm font-medium text-emerald-600 dark:text-emerald-400">{region.checkins.toLocaleString()}</td>
-                                    <td className="px-6 py-3.5 text-right text-sm text-slate-500 dark:text-slate-400">{Math.round(region.checkins / region.kiosks)}</td>
+                                <tr key={region.id} className="glass-hover transition-colors group">
+                                    <td className="px-6 py-3.5 text-sm font-medium text-primary">{region.name}</td>
+                                    <td className="px-6 py-3.5 text-right text-sm text-secondary-text">{region.kiosks}</td>
+                                    <td className="px-6 py-3.5 text-right text-sm font-medium text-success">{region.checkins.toLocaleString()}</td>
+                                    <td className="px-6 py-3.5 text-right text-sm text-muted">{Math.round(region.checkins / region.kiosks)}</td>
                                 </tr>
                             ))}
                         </tbody>

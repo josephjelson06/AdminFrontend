@@ -11,6 +11,8 @@ import {
     User,
     Clock,
     BedDouble,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-react';
 import {
     MOCK_ROOMS,
@@ -21,7 +23,6 @@ import {
 } from '@/lib/hotel/hotel-data';
 import { useToast } from '@/components/shared/ui/Toast';
 import { ConfirmModal } from '@/components/shared/ui/ConfirmModal';
-import { Pagination } from '@/components/shared/ui/Pagination';
 
 // Filter options
 const FLOOR_FILTERS = [
@@ -255,7 +256,7 @@ export default function RoomsPage() {
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(12);
+    const [rowsPerPage, setRowsPerPage] = useState(12);
 
     // Filter rooms
     const filteredRooms = rooms.filter((room) => {
@@ -267,13 +268,13 @@ export default function RoomsPage() {
     // Reset pagination when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [floorFilter, statusFilter]);
+    }, [floorFilter, statusFilter, rowsPerPage]);
 
     // Calculate pagination
-    const totalPages = Math.ceil(filteredRooms.length / itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(filteredRooms.length / rowsPerPage));
     const paginatedRooms = filteredRooms.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
     );
 
     // Handle status change with confirmation for "ready"
@@ -440,14 +441,46 @@ export default function RoomsPage() {
 
             {/* Pagination */}
             {filteredRooms.length > 0 && (
-                <div className="mt-6">
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        totalItems={filteredRooms.length}
-                        itemsPerPage={itemsPerPage}
-                        onPageChange={setCurrentPage}
-                    />
+                <div className="mt-6 py-3 px-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-slate-500 dark:text-slate-400">Rows per page:</span>
+                        <select
+                            value={rowsPerPage}
+                            onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                            className="px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            <option value={6}>6</option>
+                            <option value={12}>12</option>
+                            <option value={18}>18</option>
+                            <option value={24}>24</option>
+                        </select>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <span className="text-sm text-slate-500 dark:text-slate-400">
+                            {filteredRooms.length > 0 
+                                ? `${(currentPage - 1) * rowsPerPage + 1}–${Math.min(currentPage * rowsPerPage, filteredRooms.length)} of ${filteredRooms.length}` 
+                                : '0 items'}
+                        </span>
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <ChevronLeft className="w-4 h-4 text-slate-500" />
+                            </button>
+                            <span className="px-2 text-sm text-slate-700 dark:text-slate-300">
+                                {currentPage} / {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <ChevronRight className="w-4 h-4 text-slate-500" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
 

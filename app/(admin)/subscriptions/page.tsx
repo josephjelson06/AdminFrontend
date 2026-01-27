@@ -40,10 +40,10 @@ function formatDate(dateStr: string): string {
 
 function StatusBadge({ status }: { status: HotelSubscription['status'] }) {
     const config = {
-        active: { label: 'Active', style: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
-        suspended: { label: 'Suspended', style: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400' },
-        grace_period: { label: 'Grace Period', style: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
-        cancelled: { label: 'Cancelled', style: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400' },
+        active: { label: 'Active', style: 'badge-success' },
+        suspended: { label: 'Suspended', style: 'badge-danger' },
+        grace_period: { label: 'Grace Period', style: 'badge-warning' },
+        cancelled: { label: 'Cancelled', style: 'badge-default' },
     };
     const { label, style } = config[status];
     return (
@@ -56,8 +56,8 @@ function StatusBadge({ status }: { status: HotelSubscription['status'] }) {
 function PlanBadge({ plan }: { plan: 'standard' | 'advanced' }) {
     return (
         <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${plan === 'advanced'
-            ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
-            : 'bg-slate-700 text-white dark:bg-slate-600'
+            ? 'bg-gradient-to-r from-warning to-warning/80 text-inverse'
+            : 'surface-glass-soft text-secondary-text'
             }`}>
             {plan}
         </span>
@@ -66,15 +66,15 @@ function PlanBadge({ plan }: { plan: 'standard' | 'advanced' }) {
 
 function PaymentMethodIcon({ method }: { method: HotelSubscription['paymentMethod'] }) {
     const config = {
-        auto: { icon: CreditCard, color: 'text-emerald-500', label: 'Auto-pay' },
-        manual: { icon: Wallet, color: 'text-blue-500', label: 'Manual' },
-        bank_transfer: { icon: Building2, color: 'text-purple-500', label: 'Bank' },
-        upi: { icon: Wallet, color: 'text-orange-500', label: 'UPI' },
-        cheque: { icon: Wallet, color: 'text-slate-500', label: 'Cheque' },
+        auto: { icon: CreditCard, color: 'text-success', label: 'Auto-pay' },
+        manual: { icon: Wallet, color: 'text-info', label: 'Manual' },
+        bank_transfer: { icon: Building2, color: 'text-info', label: 'Bank' },
+        upi: { icon: Wallet, color: 'text-warning', label: 'UPI' },
+        cheque: { icon: Wallet, color: 'text-muted', label: 'Cheque' },
     };
     const { icon: Icon, color, label } = config[method];
     return (
-        <span className="inline-flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
+        <span className="inline-flex items-center gap-1.5 text-xs text-secondary-text">
             <Icon className={`w-3.5 h-3.5 ${color}`} />
             {label}
         </span>
@@ -83,10 +83,10 @@ function PaymentMethodIcon({ method }: { method: HotelSubscription['paymentMetho
 
 function PaymentStatusIndicator({ status }: { status: HotelSubscription['paymentStatus'] }) {
     const config = {
-        active: { icon: CheckCircle, color: 'text-emerald-500' },
-        failed: { icon: XCircle, color: 'text-rose-500' },
-        grace_period: { icon: Clock, color: 'text-amber-500' },
-        paused: { icon: Clock, color: 'text-slate-500' },
+        active: { icon: CheckCircle, color: 'text-success' },
+        failed: { icon: XCircle, color: 'text-danger' },
+        grace_period: { icon: Clock, color: 'text-warning' },
+        paused: { icon: Clock, color: 'text-muted' },
     };
     const { icon: Icon, color } = config[status];
     return <Icon className={`w-4 h-4 ${color}`} />;
@@ -117,24 +117,24 @@ function ExportDropdown() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="btn-secondary"
             >
                 <Download className="w-4 h-4" />
                 Export
                 <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
             {isOpen && (
-                <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md shadow-lg z-50">
+                <div className="absolute right-0 mt-1 w-40 surface-glass-strong border border-glass rounded-md shadow-lg z-50">
                     <button
                         onClick={() => handleExport('pdf')}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-secondary-text glass-hover transition-colors"
                     >
                         <FileText className="w-4 h-4" />
                         Export as PDF
                     </button>
                     <button
                         onClick={() => handleExport('excel')}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-secondary-text glass-hover transition-colors"
                     >
                         <FileText className="w-4 h-4" />
                         Export as Excel
@@ -164,15 +164,15 @@ function RowActionsMenu({ hotelId }: { hotelId: string }) {
         <div className="relative" ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                className="inline-flex items-center justify-center p-2 rounded-md glass-hover transition-colors"
             >
-                <MoreVertical className="w-4 h-4 text-slate-500" />
+                <MoreVertical className="w-4 h-4 text-muted" />
             </button>
             {isOpen && (
-                <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md shadow-lg z-50">
+                <div className="absolute right-0 mt-1 w-36 surface-glass-strong border border-glass rounded-md shadow-lg z-50">
                     <Link
                         href={`/subscriptions/${hotelId}`}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors rounded-md"
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-primary glass-hover transition-colors rounded-md"
                     >
                         More Details
                     </Link>
@@ -202,13 +202,13 @@ function PaginationFooter({
     const endItem = Math.min(currentPage * rowsPerPage, totalItems);
 
     return (
-        <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="px-4 py-3 border-t border-glass flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Rows per page:</span>
+                <span className="text-sm text-muted">Rows per page:</span>
                 <select
                     value={rowsPerPage}
                     onChange={(e) => onRowsPerPageChange(Number(e.target.value))}
-                    className="px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                    className="input-glass py-1"
                 >
                     <option value={5}>5</option>
                     <option value={10}>10</option>
@@ -216,26 +216,26 @@ function PaginationFooter({
                 </select>
             </div>
             <div className="flex items-center gap-4">
-                <span className="text-sm text-slate-500 dark:text-slate-400">
+                <span className="text-sm text-muted">
                     {startItem}–{endItem} of {totalItems}
                 </span>
                 <div className="flex items-center gap-1">
                     <button
                         onClick={() => onPageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="p-1.5 rounded-md glass-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        <ChevronLeft className="w-4 h-4 text-slate-500" />
+                        <ChevronLeft className="w-4 h-4 text-muted" />
                     </button>
-                    <span className="px-2 text-sm text-slate-700 dark:text-slate-300">
+                    <span className="px-2 text-sm text-secondary-text">
                         {currentPage} / {totalPages}
                     </span>
                     <button
                         onClick={() => onPageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="p-1.5 rounded-md glass-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        <ChevronRight className="w-4 h-4 text-slate-500" />
+                        <ChevronRight className="w-4 h-4 text-muted" />
                     </button>
                 </div>
             </div>
@@ -314,12 +314,12 @@ export default function SubscriptionsPage() {
     ];
 
     return (
-        <div className="p-4 sm:p-6">
+        <div className="p-4 sm:p-6 animate-in fade-in duration-normal">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Subscription Management</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Track entitlements and subscription status</p>
+                    <h1 className="text-xl font-semibold text-primary">Subscription Management</h1>
+                    <p className="text-sm text-muted">Track entitlements and subscription status</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <ExportDropdown />
@@ -328,48 +328,48 @@ export default function SubscriptionsPage() {
 
             {/* KPI Summary - LOCKED (Do Not Modify) */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Active</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{metrics.activeSubscriptions}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">subscriptions</p>
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Active</p>
+                    <p className="text-2xl font-bold text-primary mt-1">{metrics.activeSubscriptions}</p>
+                    <p className="text-xs text-muted mt-1">subscriptions</p>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">New</p>
-                    <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">+{metrics.newSubscriptionsThisMonth}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">this month</p>
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">New</p>
+                    <p className="text-2xl font-bold text-success mt-1">+{metrics.newSubscriptionsThisMonth}</p>
+                    <p className="text-xs text-muted mt-1">this month</p>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Churned</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{metrics.churnedThisMonth}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">this month</p>
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Churned</p>
+                    <p className="text-2xl font-bold text-primary mt-1">{metrics.churnedThisMonth}</p>
+                    <p className="text-xs text-muted mt-1">this month</p>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Net Growth</p>
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Net Growth</p>
                     <div className="flex items-center gap-2 mt-1">
-                        <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">+{metrics.newSubscriptionsThisMonth - metrics.churnedThisMonth}</p>
-                        <TrendingUp className="w-5 h-5 text-emerald-500" />
+                        <p className="text-2xl font-bold text-success">+{metrics.newSubscriptionsThisMonth - metrics.churnedThisMonth}</p>
+                        <TrendingUp className="w-5 h-5 text-success" />
                     </div>
-                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{((metrics.newSubscriptionsThisMonth / metrics.activeSubscriptions) * 100).toFixed(1)}%</p>
+                    <p className="text-xs text-success mt-1">+{((metrics.newSubscriptionsThisMonth / metrics.activeSubscriptions) * 100).toFixed(1)}%</p>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
-                <div className="border-b border-slate-200 dark:border-slate-700 overflow-x-auto">
+            <div className="surface-glass-strong rounded-lg border border-glass">
+                <div className="border-b border-glass overflow-x-auto">
                     <div className="flex">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
-                                    ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
-                                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-muted hover:text-secondary-text'
                                     }`}
                             >
                                 {tab.label}
                                 <span className={`px-1.5 py-0.5 rounded text-xs ${activeTab === tab.id
-                                    ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
-                                    : `bg-slate-100 dark:bg-slate-700 ${tab.color || 'text-slate-600 dark:text-slate-400'}`
+                                    ? 'bg-primary text-inverse'
+                                    : `surface-glass-soft ${tab.color || 'text-muted'}`
                                     }`}>
                                     {tab.count}
                                 </span>
@@ -379,21 +379,21 @@ export default function SubscriptionsPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center gap-3">
+                <div className="px-4 py-3 border-b border-glass flex flex-wrap items-center gap-3">
                     <div className="relative flex-1 min-w-[200px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                         <input
                             type="text"
                             placeholder="Search hotels..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                            className="input-glass pl-10"
                         />
                     </div>
                     <select
                         value={planFilter}
                         onChange={(e) => setPlanFilter(e.target.value as typeof planFilter)}
-                        className="px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                        className="input-glass"
                     >
                         <option value="all">All Plans</option>
                         <option value="standard">Standard</option>
@@ -402,7 +402,7 @@ export default function SubscriptionsPage() {
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-                        className="px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                        className="input-glass"
                     >
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
@@ -413,36 +413,36 @@ export default function SubscriptionsPage() {
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="table-glass">
                         <thead>
-                            <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Hotel</th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Plan</th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Status</th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Payment</th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Kiosk Usage</th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Next Billing</th>
-                                <th className="text-center px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Actions</th>
+                            <tr className="surface-glass-soft border-b border-glass">
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">Hotel</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">Plan</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">Status</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">Payment</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">Kiosk Usage</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">Next Billing</th>
+                                <th className="text-center px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                        <tbody className="divide-y divide-glass">
                             {paginatedSubscriptions.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                                    <td colSpan={7} className="px-4 py-8 text-center text-sm text-muted">
                                         No subscriptions found matching your filters.
                                     </td>
                                 </tr>
                             ) : (
                                 paginatedSubscriptions.map((sub) => (
-                                    <tr key={sub.hotelId} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                    <tr key={sub.hotelId} className="glass-hover transition-colors">
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700">
-                                                    <Building2 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                                                <div className="p-2 rounded-lg surface-glass-soft">
+                                                    <Building2 className="w-4 h-4 text-muted" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-medium text-slate-900 dark:text-white">{sub.hotelName}</p>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400">{sub.location}</p>
+                                                    <p className="text-sm font-medium text-primary">{sub.hotelName}</p>
+                                                    <p className="text-xs text-muted">{sub.location}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -458,29 +458,29 @@ export default function SubscriptionsPage() {
                                                 <div>
                                                     <PaymentMethodIcon method={sub.paymentMethod} />
                                                     {sub.cardLast4 && (
-                                                        <p className="text-xs text-slate-400 dark:text-slate-500">•••• {sub.cardLast4}</p>
+                                                        <p className="text-xs text-muted">•••• {sub.cardLast4}</p>
                                                     )}
                                                     {sub.failedAttempts && sub.failedAttempts > 0 && (
-                                                        <p className="text-xs text-rose-500">{sub.failedAttempts} failed</p>
+                                                        <p className="text-xs text-danger">{sub.failedAttempts} failed</p>
                                                     )}
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-16 bg-slate-100 dark:bg-slate-700 rounded-full h-1.5">
+                                                <div className="w-16 surface-glass-soft rounded-full h-1.5">
                                                     <div
-                                                        className="bg-emerald-500 h-1.5 rounded-full"
+                                                        className="bg-success h-1.5 rounded-full"
                                                         style={{ width: `${(sub.kioskUsage / sub.kioskLimit) * 100}%` }}
                                                     />
                                                 </div>
-                                                <span className="text-xs text-slate-600 dark:text-slate-400">
+                                                <span className="text-xs text-secondary-text">
                                                     {sub.kioskUsage}/{sub.kioskLimit}
                                                 </span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className="text-sm text-slate-700 dark:text-slate-300">
+                                            <span className="text-sm text-secondary-text">
                                                 {formatDate(sub.nextBillingDate)}
                                             </span>
                                         </td>

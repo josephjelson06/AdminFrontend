@@ -28,21 +28,21 @@ function ATCRoleCard({
     const isSuperAdmin = role.name === 'Super Admin';
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-lg transition-all group">
+        <div className="surface-glass-strong rounded-2xl p-5 hover:shadow-elevated transition-all duration-normal group">
             <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-slate-100 dark:bg-slate-700 rounded-xl group-hover:bg-slate-200 dark:group-hover:bg-slate-600 transition-colors">
-                        <Shield className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                    <div className="p-2.5 surface-glass-soft rounded-xl group-hover:bg-primary/10 transition-colors duration-fast">
+                        <Shield className="w-5 h-5 text-secondary-text" />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-slate-900 dark:text-white">{role.name}</h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{role.userCount} users</p>
+                        <h3 className="font-semibold text-primary">{role.name}</h3>
+                        <p className="text-xs text-muted">{role.userCount} users</p>
                     </div>
                 </div>
                 <Dropdown
                     trigger={
-                        <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                            <MoreHorizontal className="w-4 h-4 text-slate-500" />
+                        <button className="p-1.5 glass-hover rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-fast">
+                            <MoreHorizontal className="w-4 h-4 text-muted" />
                         </button>
                     }
                     align="right"
@@ -59,12 +59,12 @@ function ATCRoleCard({
                     )}
                 </Dropdown>
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
+            <p className="text-sm text-secondary-text mb-4 line-clamp-2">
                 {role.description}
             </p>
             <Link
                 href={`/roles/${role.id}`}
-                className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
             >
                 View Permissions
                 <ChevronRight className="w-4 h-4" />
@@ -85,18 +85,18 @@ export default function RolesPage() {
     };
 
     return (
-        <div className="p-4 sm:p-6 max-w-6xl mx-auto">
+        <div className="p-4 sm:p-6 max-w-6xl mx-auto animate-in fade-in duration-normal">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Roles & Access</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    <h1 className="text-2xl font-bold text-primary">Roles & Access</h1>
+                    <p className="text-sm text-muted mt-1">
                         Manage ATC admin roles and permissions
                     </p>
                 </div>
                 <Link
                     href="/roles/new"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none transition-all"
+                    className="btn-primary"
                 >
                     <Plus className="w-4 h-4" />
                     Add Role
@@ -105,13 +105,13 @@ export default function RolesPage() {
 
             {/* Section Header */}
             <div className="flex items-center gap-2 mb-4">
-                <Shield className="w-5 h-5 text-slate-400" />
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">ATC Admin Roles</h2>
-                <span className="ml-2 px-2 py-0.5 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full">
+                <Shield className="w-5 h-5 text-muted" />
+                <h2 className="text-lg font-semibold text-primary">ATC Admin Roles</h2>
+                <span className="ml-2 badge-default">
                     {MOCK_ROLES.length} roles
                 </span>
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+            <p className="text-sm text-muted mb-6">
                 Roles for ATC internal staff managing the super admin panel. Control access to hotels, fleet, finance, and system settings.
             </p>
 

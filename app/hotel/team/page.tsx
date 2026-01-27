@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import { RoleEditor } from '@/components/hotel/team/RoleEditor'; // Update path if needed
 import { INITIAL_ROLES, RoleConfig } from '@/lib/hotel/rbac-data';
@@ -10,7 +10,9 @@ import {
     Shield,
     Edit2,
     Check,
-    Lock
+    Lock,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-react';
 
 // ... (Keep your existing Imports, RoleBadge, AddMemberModal helper functions here) ...
@@ -36,9 +38,25 @@ export default function TeamPage() {
     const [team, setTeam] = useState(MOCK_HOTEL_TEAM);
     const [showAddModal, setShowAddModal] = useState(false);
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
     // Roles State
     const [roles, setRoles] = useState<RoleConfig[]>(INITIAL_ROLES);
     const [editingRole, setEditingRole] = useState<RoleConfig | null>(null);
+
+    // Pagination calculations
+    const totalPages = Math.max(1, Math.ceil(team.length / rowsPerPage));
+    const paginatedTeam = team.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+    );
+
+    // Reset pagination when rowsPerPage changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [rowsPerPage]);
 
     // --- Handlers ---
     const handleSaveRole = (roleId: string, newAccess: string[]) => {
@@ -122,6 +140,50 @@ export default function TeamPage() {
                         <Users className="w-8 h-8 mb-2 opacity-50" />
                         <span>(Existing User Table Component Goes Here)</span>
                    </div>
+
+                   {/* Pagination */}
+                   {team.length > 0 && (
+                       <div className="mt-4 py-3 px-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                           <div className="flex items-center gap-2">
+                               <span className="text-sm text-slate-500 dark:text-slate-400">Rows per page:</span>
+                               <select
+                                   value={rowsPerPage}
+                                   onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                                   className="px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                               >
+                                   <option value={5}>5</option>
+                                   <option value={10}>10</option>
+                                   <option value={15}>15</option>
+                               </select>
+                           </div>
+                           <div className="flex items-center gap-4">
+                               <span className="text-sm text-slate-500 dark:text-slate-400">
+                                   {team.length > 0 
+                                       ? `${(currentPage - 1) * rowsPerPage + 1}–${Math.min(currentPage * rowsPerPage, team.length)} of ${team.length}` 
+                                       : '0 items'}
+                               </span>
+                               <div className="flex items-center gap-1">
+                                   <button
+                                       onClick={() => setCurrentPage(currentPage - 1)}
+                                       disabled={currentPage === 1}
+                                       className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                   >
+                                       <ChevronLeft className="w-4 h-4 text-slate-500" />
+                                   </button>
+                                   <span className="px-2 text-sm text-slate-700 dark:text-slate-300">
+                                       {currentPage} / {totalPages}
+                                   </span>
+                                   <button
+                                       onClick={() => setCurrentPage(currentPage + 1)}
+                                       disabled={currentPage === totalPages}
+                                       className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                   >
+                                       <ChevronRight className="w-4 h-4 text-slate-500" />
+                                   </button>
+                               </div>
+                           </div>
+                       </div>
+                   )}
                 </div>
             )}
 

@@ -128,7 +128,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                                 onMenuClick={() => setSidebarOpen(true)}
                                 sidebarCollapsed={isCollapsed}
                             />
-                            <main className="mt-14 min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950 transition-all duration-200 lg:ml-[var(--sidebar-width)]">
+                            <main className="pt-20 min-h-screen bg-slate-50 dark:bg-slate-950 transition-all duration-200 lg:ml-[var(--sidebar-width)]">
                                 {children}
                             </main>
                         </div>

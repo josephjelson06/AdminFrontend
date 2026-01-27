@@ -6,10 +6,10 @@ export default function HotelsLoading() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <div className="h-6 w-32 bg-slate-200 rounded animate-pulse mb-2" />
-                    <div className="h-4 w-48 bg-slate-200 rounded animate-pulse" />
+                    <div className="h-6 w-32 surface-glass-soft rounded animate-pulse mb-2" />
+                    <div className="h-4 w-48 surface-glass-soft rounded animate-pulse" />
                 </div>
-                <div className="h-9 w-28 bg-slate-200 rounded animate-pulse" />
+                <div className="h-9 w-28 surface-glass-soft rounded animate-pulse" />
             </div>
 
             {/* Table */}

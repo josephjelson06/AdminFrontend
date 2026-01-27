@@ -26,27 +26,27 @@ export default function SupportPage() {
     const criticalCount = MOCK_TICKETS.filter(t => t.priority === 'critical').length;
 
     return (
-        <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
+        <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto animate-in fade-in duration-normal">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <LifeBuoy className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                    <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+                        <LifeBuoy className="w-6 h-6 text-success" />
                         Helpdesk
                     </h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-sm text-muted mt-1">
                         Support tickets and hotel inquiries
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-xl text-sm font-medium border border-rose-100 dark:border-rose-900/50">
+                    <div className="badge-danger flex items-center gap-2 px-4 py-2 text-sm font-medium">
                         <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
                         </span>
                         {criticalCount} Critical
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-xl text-sm font-medium border border-blue-100 dark:border-blue-900/50">
+                    <div className="badge-default flex items-center gap-2 px-4 py-2 text-sm font-medium">
                         <Inbox className="w-4 h-4" />
                         {openCount} Open
                     </div>
@@ -60,14 +60,14 @@ export default function SupportPage() {
                     <button
                         onClick={() => setFilterStatus('all')}
                         className={`flex items-center gap-2 text-sm transition-colors ${filterStatus === 'all'
-                            ? 'font-bold text-slate-900 dark:text-white'
-                            : 'font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                            ? 'font-bold text-primary'
+                            : 'font-medium text-muted hover:text-secondary-text'
                             }`}
                     >
                         All Tickets
                         <span className={`px-2 py-0.5 rounded-md text-xs font-bold ${filterStatus === 'all'
-                            ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                            : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                            ? 'bg-primary text-inverse'
+                            : 'surface-glass-soft text-muted'
                             }`}>
                             {MOCK_TICKETS.length}
                         </span>
@@ -76,14 +76,14 @@ export default function SupportPage() {
                     <button
                         onClick={() => setFilterStatus('open')}
                         className={`flex items-center gap-2 text-sm transition-colors ${filterStatus === 'open'
-                            ? 'font-bold text-slate-900 dark:text-white'
-                            : 'font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                            ? 'font-bold text-primary'
+                            : 'font-medium text-muted hover:text-secondary-text'
                             }`}
                     >
                         Open / Pending
                         <span className={`px-2 py-0.5 rounded-md text-xs font-bold ${filterStatus === 'open'
-                            ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                            : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                            ? 'bg-primary text-inverse'
+                            : 'surface-glass-soft text-muted'
                             }`}>
                             {openCount}
                         </span>
@@ -92,14 +92,14 @@ export default function SupportPage() {
                     <button
                         onClick={() => setFilterStatus('resolved')}
                         className={`flex items-center gap-2 text-sm transition-colors ${filterStatus === 'resolved'
-                            ? 'font-bold text-slate-900 dark:text-white'
-                            : 'font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                            ? 'font-bold text-primary'
+                            : 'font-medium text-muted hover:text-secondary-text'
                             }`}
                     >
                         Resolved
                         <span className={`px-2 py-0.5 rounded-md text-xs font-bold ${filterStatus === 'resolved'
-                            ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                            : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                            ? 'bg-primary text-inverse'
+                            : 'surface-glass-soft text-muted'
                             }`}>
                             {MOCK_TICKETS.length - openCount}
                         </span>
@@ -111,23 +111,23 @@ export default function SupportPage() {
                     {filteredTickets.map((ticket) => (
                         <div key={ticket.id} onClick={() => setSelectedTicket(ticket)}>
                             <GlassCard
-                                className="p-5 hover:border-emerald-500/30 cursor-pointer transition-all group"
+                                className="p-5 glass-hover cursor-pointer transition-all group"
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className={`w-2 h-2 rounded-full ${ticket.priority === 'critical' || ticket.priority === 'high' ? 'bg-rose-500' : 'bg-blue-500'}`} />
-                                            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">{ticket.ticketNumber}</span>
-                                            <span className="text-xs text-slate-400">•</span>
-                                            <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{ticket.hotelName}</span>
+                                            <span className={`w-2 h-2 rounded-full ${ticket.priority === 'critical' || ticket.priority === 'high' ? 'bg-danger' : 'bg-info'}`} />
+                                            <span className="text-xs font-mono text-muted">{ticket.ticketNumber}</span>
+                                            <span className="text-xs text-muted">•</span>
+                                            <span className="text-xs font-medium text-secondary-text">{ticket.hotelName}</span>
                                         </div>
-                                        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                        <h3 className="text-base font-bold text-primary mb-1 group-hover:text-success transition-colors">
                                             {ticket.subject}
                                         </h3>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1">
+                                        <p className="text-sm text-muted line-clamp-1">
                                             {ticket.messages[ticket.messages.length - 1].message}
                                         </p>
-                                        <div className="flex items-center gap-4 mt-3 text-xs text-slate-400">
+                                        <div className="flex items-center gap-4 mt-3 text-xs text-muted">
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-3 h-3" /> {ticket.lastUpdate}
                                             </span>
@@ -137,9 +137,9 @@ export default function SupportPage() {
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end gap-2">
-                                        <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${ticket.status === 'open' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
-                                            ticket.status === 'new' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                                                'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                                        <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${ticket.status === 'open' ? 'badge-success' :
+                                            ticket.status === 'new' ? 'badge-default' :
+                                                'badge-default'
                                             }`}>
                                             {ticket.status}
                                         </div>

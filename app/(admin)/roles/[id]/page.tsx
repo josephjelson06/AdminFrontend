@@ -91,21 +91,21 @@ export default function RoleEditorPage({ params }: { params: Promise<{ id: strin
     };
 
     return (
-        <div className="p-6 max-w-5xl mx-auto space-y-6">
+        <div className="p-6 max-w-5xl mx-auto space-y-6 animate-in fade-in duration-normal">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => router.back()}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        className="p-2 glass-hover rounded-lg transition-colors"
                     >
-                        <ArrowLeft className="w-5 h-5 text-slate-500" />
+                        <ArrowLeft className="w-5 h-5 text-muted" />
                     </button>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                        <h1 className="text-2xl font-bold text-primary">
                             {isNew ? 'Create New Role' : 'Edit Role'}
                         </h1>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                        <p className="text-sm text-muted">
                             Define access levels and functional permissions.
                         </p>
                     </div>
@@ -113,14 +113,14 @@ export default function RoleEditorPage({ params }: { params: Promise<{ id: strin
                 <div className="flex gap-3">
                     <button
                         onClick={() => router.back()}
-                        className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                        className="btn-ghost"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="flex items-center gap-2 px-6 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-70"
+                        className="btn-primary disabled:opacity-70"
                     >
                         {isSaving ? 'Saving...' : (
                             <>
@@ -136,61 +136,61 @@ export default function RoleEditorPage({ params }: { params: Promise<{ id: strin
                 {/* Left Column: Meta Data */}
                 <div className="space-y-6">
                     <GlassCard className="p-5 space-y-4">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
-                            <Shield className="w-4 h-4 text-emerald-500" />
+                        <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                            <Shield className="w-4 h-4 text-success" />
                             Role Details
                         </div>
 
                         <div>
-                            <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Role Name</label>
+                            <label className="block text-xs font-medium text-muted mb-1">Role Name</label>
                             <input
                                 type="text"
                                 value={formData.name}
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 placeholder="e.g. Support Specialist"
-                                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="input-glass"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Description</label>
+                            <label className="block text-xs font-medium text-muted mb-1">Description</label>
                             <textarea
                                 value={formData.description}
                                 onChange={e => setFormData({ ...formData, description: e.target.value })}
                                 placeholder="Describe the purpose of this role..."
                                 rows={4}
-                                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                                className="input-glass resize-none"
                             />
                         </div>
                     </GlassCard>
 
                     <GlassCard className="p-5">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white mb-4">
-                            <Users className="w-4 h-4 text-blue-500" />
+                        <div className="flex items-center gap-2 text-sm font-semibold text-primary mb-4">
+                            <Users className="w-4 h-4 text-info" />
                             Quick Templates
                         </div>
                         <div className="space-y-2">
                             <button
                                 onClick={() => applyPreset('readonly')}
-                                className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                                className="w-full text-left px-3 py-2 text-sm rounded-lg glass-hover transition-colors border border-transparent hover:border-glass"
                             >
-                                <span className="block font-medium text-slate-700 dark:text-slate-200">Read Only</span>
-                                <span className="text-xs text-slate-500">View access to all modules</span>
+                                <span className="block font-medium text-secondary-text">Read Only</span>
+                                <span className="text-xs text-muted">View access to all modules</span>
                             </button>
                             <button
                                 onClick={() => applyPreset('admin')}
-                                className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                                className="w-full text-left px-3 py-2 text-sm rounded-lg glass-hover transition-colors border border-transparent hover:border-glass"
                             >
-                                <span className="block font-medium text-slate-700 dark:text-slate-200">Full Admin</span>
-                                <span className="text-xs text-slate-500">Full access to everything</span>
+                                <span className="block font-medium text-secondary-text">Full Admin</span>
+                                <span className="text-xs text-muted">Full access to everything</span>
                             </button>
                         </div>
                     </GlassCard>
 
                     {!isNew && (
-                        <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl flex gap-3">
-                            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-                            <div className="text-xs text-amber-800 dark:text-amber-300">
+                        <div className="p-4 bg-warning/10 border border-warning/30 rounded-xl flex gap-3">
+                            <AlertCircle className="w-5 h-5 text-warning flex-shrink-0" />
+                            <div className="text-xs text-warning">
                                 <span className="font-bold block mb-1">Impact Warning</span>
                                 Updating this role will immediately affect <strong>12 users</strong> currently assigned to it.
                             </div>

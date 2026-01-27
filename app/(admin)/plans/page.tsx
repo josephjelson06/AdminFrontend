@@ -111,12 +111,12 @@ export default function PlansPage() {
     const canEdit = hasPermission('finance');
 
     return (
-        <div className="p-4 sm:p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-6 animate-in fade-in duration-normal">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <CreditCard className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                    <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+                        <CreditCard className="w-6 h-6 text-primary" />
                         <VerticalCutReveal
                             splitBy="words"
                             staggerDuration={0.15}
@@ -135,7 +135,7 @@ export default function PlansPage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="text-sm text-slate-500 dark:text-slate-400 mt-1"
+                        className="text-sm text-muted mt-1"
                     >
                         Manage pricing tiers, entitlements, and features.
                     </motion.p>
@@ -146,7 +146,7 @@ export default function PlansPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.3 }}
                         onClick={() => { setEditingPlan(null); setIsEditorOpen(true); }}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                        className="btn-primary"
                     >
                         <Plus className="w-4 h-4" />
                         Create New Plan
@@ -168,28 +168,28 @@ export default function PlansPage() {
                         >
                             {/* Popular Badge */}
                             {plan.popular && plan.status === 'active' && (
-                                <div className="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl shadow-sm z-10">
+                                <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl shadow-sm z-10">
                                     POPULAR
                                 </div>
                             )}
 
                             {/* Card Header */}
-                            <div className="p-6 border-b border-slate-100 dark:border-slate-700/50">
+                            <div className="p-6 border-b border-glass">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
-                                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">{plan.name}</h3>
+                                        <h3 className="text-lg font-bold text-primary">{plan.name}</h3>
                                         <div className="mt-2 flex items-baseline gap-1">
-                                            <span className="text-3xl font-bold text-slate-900 dark:text-white">
+                                            <span className="text-3xl font-bold text-primary">
                                                 {plan.currency === 'INR' ? '₹' : '$'}{plan.price.toLocaleString()}
                                             </span>
-                                            <span className="text-sm text-slate-500 dark:text-slate-400">/{plan.billingCycle}</span>
+                                            <span className="text-sm text-muted">/{plan.billingCycle}</span>
                                         </div>
                                     </div>
                                     {canEdit && (
                                         <Dropdown
                                             trigger={
-                                                <button className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors">
-                                                    <MoreHorizontal className="w-5 h-5 text-slate-400" />
+                                                <button className="p-1.5 glass-hover rounded-lg transition-all duration-fast">
+                                                    <MoreHorizontal className="w-5 h-5 text-muted" />
                                                 </button>
                                             }
                                             align="right"
@@ -198,44 +198,44 @@ export default function PlansPage() {
                                                 <Edit2 className="w-4 h-4" />
                                                 Edit Plan
                                             </DropdownItem>
-                                            <DropdownItem onClick={() => handleArchive(plan.id)} className="text-rose-600">
+                                            <DropdownItem onClick={() => handleArchive(plan.id)} className="text-danger">
                                                 <Archive className="w-4 h-4" />
                                                 Archive
                                             </DropdownItem>
                                         </Dropdown>
                                     )}
                                 </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                                <p className="text-sm text-muted leading-relaxed">
                                     {plan.description}
                                 </p>
                             </div>
 
                             {/* Limits Grid */}
-                            <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700/50 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/30">
+                            <div className="grid grid-cols-3 divide-x divide-glass border-b border-glass surface-glass-soft">
                                 <div className="p-3 text-center">
-                                    <Monitor className="w-4 h-4 mx-auto text-slate-400 mb-1" />
-                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{plan.limits.kiosks}</div>
-                                    <div className="text-[10px] text-slate-500 uppercase tracking-wide">Kiosks</div>
+                                    <Monitor className="w-4 h-4 mx-auto text-muted mb-1" />
+                                    <div className="text-sm font-bold text-secondary-text">{plan.limits.kiosks}</div>
+                                    <div className="text-[10px] text-muted uppercase tracking-wide">Kiosks</div>
                                 </div>
                                 <div className="p-3 text-center">
-                                    <Users className="w-4 h-4 mx-auto text-slate-400 mb-1" />
-                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{plan.limits.users}</div>
-                                    <div className="text-[10px] text-slate-500 uppercase tracking-wide">Users</div>
+                                    <Users className="w-4 h-4 mx-auto text-muted mb-1" />
+                                    <div className="text-sm font-bold text-secondary-text">{plan.limits.users}</div>
+                                    <div className="text-[10px] text-muted uppercase tracking-wide">Users</div>
                                 </div>
                                 <div className="p-3 text-center">
-                                    <HardDrive className="w-4 h-4 mx-auto text-slate-400 mb-1" />
-                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{plan.limits.storage}</div>
-                                    <div className="text-[10px] text-slate-500 uppercase tracking-wide">Storage</div>
+                                    <HardDrive className="w-4 h-4 mx-auto text-muted mb-1" />
+                                    <div className="text-sm font-bold text-secondary-text">{plan.limits.storage}</div>
+                                    <div className="text-[10px] text-muted uppercase tracking-wide">Storage</div>
                                 </div>
                             </div>
 
                             {/* Features List */}
                             <div className="p-6 flex-1">
-                                <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Included Features</h4>
+                                <h4 className="text-xs font-semibold text-primary uppercase tracking-wider mb-4">Included Features</h4>
                                 <ul className="space-y-3">
                                     {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                            <div className="mt-0.5 p-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+                                        <li key={i} className="flex items-start gap-3 text-sm text-secondary-text">
+                                            <div className="mt-0.5 p-0.5 rounded-full bg-success/10 text-success flex-shrink-0">
                                                 <Check className="w-3 h-3" />
                                             </div>
                                             {feature}

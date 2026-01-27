@@ -12,16 +12,14 @@ import {
     UserCog,
     CreditCard,
     LifeBuoy,
-    LogOut,
     X,
     Cpu,
-    Shield,
     AlertTriangle,
     PanelLeft,
     PanelLeftClose,
 } from 'lucide-react';
-import { useAuth, HOTEL_PAGE_ACCESS, HotelUserRole } from '@/lib/shared/auth';
-import { HOTEL_ROLE_LABELS, MOCK_GUEST_CHECKINS, MOCK_ROOMS } from '@/lib/hotel/hotel-data';
+import { useAuth } from '@/lib/shared/auth';
+import { MOCK_GUEST_CHECKINS, MOCK_ROOMS } from '@/lib/hotel/hotel-data';
 
 interface NavItem {
     id: string;
@@ -73,7 +71,7 @@ interface HotelSidebarProps {
 
 export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleCollapse, sidebarWidth, setSidebarWidth }: HotelSidebarProps) {
     const pathname = usePathname();
-    const { user, logout, canAccessPage } = useAuth();
+    const { user, canAccessPage } = useAuth();
     const [isResizing, setIsResizing] = useState(false);
 
     // Resizing logic
@@ -129,8 +127,6 @@ export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleColl
         return pathname === href || pathname.startsWith(href + '/');
     };
 
-    const roleLabel = user?.role ? HOTEL_ROLE_LABELS[user.role as HotelUserRole] || user.role : '';
-
     return (
         <>
             {/* Mobile Overlay */}
@@ -156,74 +152,41 @@ export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleColl
                 }}
             >
                 {/* Logo Area */}
-                <div className={`h-16 flex items-center ${isCollapsed ? 'justify-center mx-2' : 'justify-between px-6'} border-b border-slate-200/50 dark:border-slate-700/50 flex-shrink-0`}>
-                    <Link href="/hotel" className="flex items-center gap-3 overflow-hidden" onClick={handleLinkClick}>
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-500/30 flex items-center justify-center flex-shrink-0">
-                            <Cpu className="w-4 h-4 text-white" />
-                        </div>
-                        {!isCollapsed && (
-                            <div className="whitespace-nowrap overflow-hidden">
-                                <span className="text-sm font-bold text-slate-900 dark:text-white block">Hotel Panel</span>
-                                <span className="text-xs text-slate-500 dark:text-slate-400 block truncate max-w-[140px]">
-                                    {user?.hotelName || 'My Hotel'}
-                                </span>
+                <div className={`flex-shrink-0 flex flex-col ${isCollapsed ? 'items-center px-2 py-4' : 'px-6 py-4'} border-b border-slate-200/50 dark:border-slate-700/50`}>
+                    <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} w-full`}>
+                        <Link href="/hotel" className="flex items-center gap-3 overflow-hidden" onClick={handleLinkClick}>
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-500/30 flex items-center justify-center flex-shrink-0">
+                                <Cpu className="w-4 h-4 text-white" />
                             </div>
-                        )}
-                    </Link>
-                    <button
-                        onClick={onClose}
-                        className="p-1.5 hover:bg-slate-500/10 rounded-md lg:hidden transition-colors"
-                    >
-                        <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                    </button>
-                </div>
-
-                {/* User Role Badge & Collapse Toggle */}
-                {user && (
-                    <div className={`flex-shrink-0 ${isCollapsed ? 'py-3' : 'px-4 py-3'} border-b border-slate-200/50 dark:border-slate-700/50`}>
-                        {isCollapsed ? (
-                            <div className="flex flex-col items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-indigo-100/80 dark:bg-indigo-900/50 flex items-center justify-center" title={`${user.name} - ${roleLabel}`}>
-                                    <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">
-                                        {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
+                            {!isCollapsed && (
+                                <div className="whitespace-nowrap overflow-hidden">
+                                    <span className="text-sm font-bold text-slate-900 dark:text-white block">Hotel Panel</span>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400 block truncate max-w-[140px]">
+                                        {user?.hotelName || 'My Hotel'}
                                     </span>
                                 </div>
-                                <button
-                                    onClick={onToggleCollapse}
-                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-500/10 rounded-md transition-colors hidden lg:block"
-                                    title="Expand sidebar"
-                                >
-                                    <PanelLeft className="w-4 h-4" />
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2 min-w-0">
-                                    <div className="w-8 h-8 rounded-full bg-indigo-100/80 dark:bg-indigo-900/50 flex items-center justify-center flex-shrink-0">
-                                        <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">
-                                            {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
-                                        </span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                                            {user.name}
-                                        </p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">
-                                            {roleLabel}
-                                        </p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={onToggleCollapse}
-                                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-500/10 rounded-md transition-colors hidden lg:block flex-shrink-0"
-                                    title="Collapse sidebar"
-                                >
-                                    <PanelLeftClose className="w-4 h-4" />
-                                </button>
-                            </div>
+                            )}
+                        </Link>
+                        {/* Close button - Mobile */}
+                        {!isCollapsed && (
+                            <button
+                                onClick={onClose}
+                                className="p-1.5 hover:bg-slate-500/10 rounded-md lg:hidden transition-colors"
+                            >
+                                <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                            </button>
                         )}
                     </div>
-                )}
+                    {/* Collapse/Expand Toggle - Desktop */}
+                    <button
+                        onClick={onToggleCollapse}
+                        className={`mt-3 p-1.5 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors hidden lg:flex items-center ${isCollapsed ? 'justify-center' : 'gap-2'}`}
+                        title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    >
+                        {isCollapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+                        {!isCollapsed && <span className="text-xs">Collapse</span>}
+                    </button>
+                </div>
 
                 {/* Nav Groups */}
                 <nav className={`flex-1 overflow-y-auto ${isCollapsed ? 'px-2 py-4' : 'p-4 space-y-6'}`}>
@@ -290,21 +253,6 @@ export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleColl
                             </div>
                         </div>
                     ))}
-
-                    {/* Log Out Button at Bottom of Nav */}
-                    <div className={`mt-auto pt-6 border-t border-slate-200/50 dark:border-slate-700/50 ${isCollapsed ? 'flex justify-center' : ''}`}>
-                        <button
-                            onClick={logout}
-                            className={`
-                                flex items-center gap-2 text-sm text-slate-500 hover:text-rose-600 transition-colors w-full
-                                ${isCollapsed ? 'p-2 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/20 justify-center' : 'px-3.5 py-2.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20'}
-                            `}
-                            title="Log Out"
-                        >
-                            <LogOut className="w-4 h-4 flex-shrink-0" />
-                            {!isCollapsed && <span className="font-medium">Log Out</span>}
-                        </button>
-                    </div>
                 </nav>
 
                 {/* Resize Handle - Desktop Only */}

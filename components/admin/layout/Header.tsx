@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Bell,
@@ -106,19 +106,35 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
         ? notifications
         : notifications.filter(n => n.type === notificationFilter);
 
-    const roleInfo = user ? ROLE_LABELS[user.role] : { label: 'User', color: 'text-slate-600' };
+    const roleInfo = user ? ROLE_LABELS[user.role] : { label: 'User', color: 'text-secondary' };
+
+    // Scroll detection for transparency effect
+    const [scrolled, setScrolled] = useState(false);
+    
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     return (
-        <header className="glass sticky top-4 mx-4 z-[99] h-14 rounded-2xl transition-all duration-300 ease-in-out lg:ml-[calc(var(--sidebar-width)+1rem)] bg-white/60 dark:bg-slate-900/60 backdrop-blur-md">
+        <header className={`sticky top-4 mx-4 z-[99] h-14 rounded-2xl lg:ml-[calc(var(--sidebar-width)+1rem)] transition-all duration-slow ease-smooth ${
+            scrolled 
+                ? 'opacity-0 pointer-events-none translate-y-[-8px]' 
+                : 'surface-glass-soft opacity-100 translate-y-0'
+        }`}>
             <div className="h-full flex items-center justify-between px-4 lg:px-6">
                 {/* Left side */}
                 <div className="flex items-center gap-3">
                     {/* Mobile menu button */}
                     <button
                         onClick={onMenuClick}
-                        className="p-2 hover:bg-slate-500/10 rounded-lg lg:hidden transition-colors"
+                        className="p-2 btn-ghost rounded-lg lg:hidden"
                     >
-                        <Menu className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                        <Menu className="w-5 h-5" />
                     </button>
 
                     {/* Global Search - hidden on mobile */}
@@ -128,15 +144,15 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                 </div>
 
                 {/* Right side */}
-                <div className="flex items-center gap-2 sm:gap-4">
+                <div className="flex items-center gap-2 sm:gap-3">
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
-                        className="p-2 hover:bg-slate-500/10 rounded-lg transition-colors"
+                        className="p-2.5 btn-ghost rounded-xl"
                         title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
                     >
                         {theme === 'light' ? (
-                            <Moon className="w-5 h-5 text-slate-600" />
+                            <Moon className="w-5 h-5 text-secondary" />
                         ) : (
                             <Sun className="w-5 h-5 text-amber-400" />
                         )}
@@ -149,11 +165,11 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                 setShowNotifications(!showNotifications);
                                 setShowUserMenu(false);
                             }}
-                            className="relative p-2 hover:bg-slate-500/10 rounded-lg transition-colors"
+                            className="relative p-2.5 btn-ghost rounded-xl"
                         >
-                            <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                            <Bell className="w-5 h-5 text-secondary" />
                             {unreadCount > 0 && (
-                                <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 rounded-full text-[10px] text-white font-bold flex items-center justify-center shadow-[0_0_8px_rgba(244,63,94,0.6)]">
+                                <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-danger rounded-full text-[10px] text-white font-bold flex items-center justify-center shadow-lg shadow-danger/40 animate-pulse-slow">
                                     {unreadCount}
                                 </span>
                             )}
@@ -161,14 +177,14 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
 
                         {/* Notifications Dropdown */}
                         {showNotifications && (
-                            <div className="absolute right-0 mt-2 w-80 glass-elevated rounded-xl overflow-hidden">
-                                <div className="px-4 py-3 border-b border-slate-200/50 dark:border-slate-700/50">
+                            <div className="absolute right-0 mt-2 w-80 glass-elevated rounded-2xl overflow-hidden animate-scale-in">
+                                <div className="px-4 py-3 border-b border-glass">
                                     <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Notifications</h3>
+                                        <h3 className="text-sm font-semibold text-primary">Notifications</h3>
                                         {unreadCount > 0 && (
                                             <button
                                                 onClick={markAllRead}
-                                                className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                                                className="text-xs text-muted hover:text-primary transition-colors duration-normal"
                                             >
                                                 Mark all read
                                             </button>
@@ -180,9 +196,9 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                             <button
                                                 key={filter}
                                                 onClick={() => setNotificationFilter(filter)}
-                                                className={`px-2 py-1 text-xs rounded-lg transition-colors ${notificationFilter === filter
-                                                    ? 'bg-slate-900/90 dark:bg-slate-100/90 text-white dark:text-slate-900 backdrop-blur-sm'
-                                                    : 'text-slate-500 hover:bg-white/50 dark:hover:bg-slate-700/50'
+                                                className={`px-2.5 py-1.5 text-xs rounded-lg transition-all duration-normal ${notificationFilter === filter
+                                                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm'
+                                                    : 'text-muted hover:text-primary hover:bg-glass-soft'
                                                     }`}
                                             >
                                                 {filter === 'all' ? 'All' : filter === 'alert' ? 'Kiosk' : filter === 'payment' ? 'Billing' : 'Contract'}
@@ -193,13 +209,13 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                 <div className="max-h-80 overflow-y-auto">
                                     {filteredNotifications.length === 0 ? (
                                         <div className="px-4 py-8 text-center">
-                                            <p className="text-sm text-slate-500 dark:text-slate-400">No notifications</p>
+                                            <p className="text-sm text-muted">No notifications</p>
                                         </div>
                                     ) : (
                                         filteredNotifications.map((notif) => (
                                             <div
                                                 key={notif.id}
-                                                className={`px-4 py-3 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer ${!notif.read ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
+                                                className={`px-4 py-3 border-b border-glass hover:bg-glass-soft transition-colors duration-normal cursor-pointer ${!notif.read ? 'bg-info/5' : ''
                                                     }`}
                                             >
                                                 <div className="flex items-start gap-3">
@@ -208,21 +224,21 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center justify-between">
-                                                            <p className="text-sm font-medium text-slate-900 dark:text-white">{notif.title}</p>
+                                                            <p className="text-sm font-medium text-primary">{notif.title}</p>
                                                             {!notif.read && (
-                                                                <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                                                                <span className="w-2 h-2 bg-info rounded-full animate-pulse" />
                                                             )}
                                                         </div>
-                                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{notif.message}</p>
-                                                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{notif.time}</p>
+                                                        <p className="text-xs text-secondary mt-0.5">{notif.message}</p>
+                                                        <p className="text-xs text-muted mt-1">{notif.time}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         ))
                                     )}
                                 </div>
-                                <div className="px-4 py-2 border-t border-slate-200/50 dark:border-slate-700/50">
-                                    <button className="w-full text-center text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
+                                <div className="px-4 py-2.5 border-t border-glass">
+                                    <button className="w-full text-center text-xs text-accent hover:text-primary transition-colors duration-normal font-medium">
                                         View all notifications
                                     </button>
                                 </div>
@@ -237,46 +253,46 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                 setShowUserMenu(!showUserMenu);
                                 setShowNotifications(false);
                             }}
-                            className="flex items-center gap-2 pl-2 sm:pl-4 sm:border-l border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-500/10 rounded-lg py-1 pr-2 transition-colors"
+                            className="flex items-center gap-2 pl-3 sm:border-l border-glass btn-ghost rounded-xl py-1.5 pr-2"
                         >
-                            <div className="w-8 h-8 rounded-full bg-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25 flex items-center justify-center">
                                 <span className="text-sm font-medium text-white">
                                     {user?.name.split(' ').map(n => n[0]).join('') || 'U'}
                                 </span>
                             </div>
                             <div className="text-sm text-left hidden sm:block">
-                                <div className="font-medium text-slate-900 dark:text-white">{user?.name || 'User'}</div>
+                                <div className="font-medium text-primary">{user?.name || 'User'}</div>
                                 <div className={`text-xs ${roleInfo.color}`}>{roleInfo.label}</div>
                             </div>
-                            <ChevronDown className="w-4 h-4 text-slate-400 hidden sm:block" />
+                            <ChevronDown className="w-4 h-4 text-muted hidden sm:block" />
                         </button>
 
                         {/* User Dropdown */}
                         {showUserMenu && (
-                            <div className="absolute right-0 mt-2 w-48 glass-elevated rounded-xl py-1">
+                            <div className="absolute right-0 mt-2 w-52 glass-elevated rounded-2xl py-2 animate-scale-in">
                                 <Link
                                     href="/profile"
-                                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50 transition-colors"
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary hover:text-primary hover:bg-glass-soft transition-all duration-normal"
                                     onClick={() => setShowUserMenu(false)}
                                 >
-                                    <UserCircle className="w-4 h-4 text-slate-400" />
+                                    <UserCircle className="w-4 h-4" />
                                     My Profile
                                 </Link>
                                 <Link
                                     href="/settings"
-                                    className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50 transition-colors"
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary hover:text-primary hover:bg-glass-soft transition-all duration-normal"
                                     onClick={() => setShowUserMenu(false)}
                                 >
-                                    <Settings className="w-4 h-4 text-slate-400" />
+                                    <Settings className="w-4 h-4" />
                                     Settings
                                 </Link>
-                                <div className="my-1 border-t border-slate-100/50 dark:border-slate-700/50" />
+                                <div className="my-2 border-t border-glass mx-2" />
                                 <button
                                     onClick={() => {
                                         setShowUserMenu(false);
                                         logout();
                                     }}
-                                    className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50/50 dark:hover:bg-rose-900/20 w-full transition-colors"
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-danger hover:bg-danger/10 w-full transition-all duration-normal"
                                 >
                                     <LogOut className="w-4 h-4" />
                                     Logout

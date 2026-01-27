@@ -43,64 +43,64 @@ export default function GeographicReportsPage() {
     const totalCheckins = MOCK_STATE_DATA.reduce((sum, s) => sum + s.checkins, 0);
 
     return (
-        <div className="p-4 sm:p-6">
+        <div className="p-4 sm:p-6 animate-in fade-in duration-normal">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm mb-4">
-                <Link href="/reports" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
+                <Link href="/reports" className="text-muted hover:text-secondary-text">
                     Reports
                 </Link>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-                <span className="font-medium text-slate-900 dark:text-white">Geographic Insights</span>
+                <ChevronRight className="w-4 h-4 text-muted" />
+                <span className="font-medium text-primary">Geographic Insights</span>
             </div>
 
-            <h1 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">Geographic & Demographic Insights</h1>
+            <h1 className="text-xl font-semibold text-primary mb-6">Geographic & Demographic Insights</h1>
 
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">States Covered</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{MOCK_STATE_DATA.length}</p>
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">States Covered</p>
+                    <p className="text-2xl font-bold text-primary mt-1">{MOCK_STATE_DATA.length}</p>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Total Kiosks</p>
-                    <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{totalKiosks}</p>
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Total Kiosks</p>
+                    <p className="text-2xl font-bold text-success mt-1">{totalKiosks}</p>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Total Check-ins</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{totalCheckins.toLocaleString()}</p>
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Total Check-ins</p>
+                    <p className="text-2xl font-bold text-primary mt-1">{totalCheckins.toLocaleString()}</p>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Non-English Usage</p>
-                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">72%</p>
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">Non-English Usage</p>
+                    <p className="text-2xl font-bold text-info mt-1">72%</p>
                 </div>
             </div>
 
             {/* Main Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* India Heatmap */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                        <MapPin className="w-4 h-4 text-slate-400" />
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <h3 className="text-sm font-semibold text-primary flex items-center gap-2 mb-4">
+                        <MapPin className="w-4 h-4 text-muted" />
                         Regional Coverage
                     </h3>
                     <IndiaHeatmap data={MOCK_STATE_DATA} />
                     <div className="flex justify-center gap-4 mt-4">
-                        <span className="flex items-center gap-1.5 text-xs text-slate-500">
-                            <span className="w-3 h-3 rounded bg-emerald-600" /> High density
+                        <span className="flex items-center gap-1.5 text-xs text-muted">
+                            <span className="w-3 h-3 rounded bg-success" /> High density
                         </span>
-                        <span className="flex items-center gap-1.5 text-xs text-slate-500">
-                            <span className="w-3 h-3 rounded bg-emerald-400" /> Medium
+                        <span className="flex items-center gap-1.5 text-xs text-muted">
+                            <span className="w-3 h-3 rounded bg-success/60" /> Medium
                         </span>
-                        <span className="flex items-center gap-1.5 text-xs text-slate-500">
-                            <span className="w-3 h-3 rounded bg-emerald-200" /> Low
+                        <span className="flex items-center gap-1.5 text-xs text-muted">
+                            <span className="w-3 h-3 rounded bg-success/30" /> Low
                         </span>
                     </div>
                 </div>
 
                 {/* Language Distribution */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                        <Languages className="w-4 h-4 text-slate-400" />
+                <div className="surface-glass-strong rounded-lg border border-glass p-4">
+                    <h3 className="text-sm font-semibold text-primary flex items-center gap-2 mb-4">
+                        <Languages className="w-4 h-4 text-muted" />
                         Language Distribution
                     </h3>
                     <DonutChartComponent data={MOCK_LANGUAGE_DATA} height={200} />
@@ -111,8 +111,8 @@ export default function GeographicReportsPage() {
                                     className="w-3 h-3 rounded-full"
                                     style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }}
                                 />
-                                <span className="text-xs text-slate-600 dark:text-slate-400">{lang.name}</span>
-                                <span className="text-xs font-medium text-slate-900 dark:text-white ml-auto">{lang.value}%</span>
+                                <span className="text-xs text-secondary-text">{lang.name}</span>
+                                <span className="text-xs font-medium text-primary ml-auto">{lang.value}%</span>
                             </div>
                         ))}
                     </div>
@@ -120,33 +120,33 @@ export default function GeographicReportsPage() {
             </div>
 
             {/* State Performance Table */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-slate-400" />
+            <div className="surface-glass-strong rounded-lg border border-glass">
+                <div className="px-4 py-3 border-b border-glass">
+                    <h3 className="text-sm font-semibold text-primary flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-muted" />
                         State-wise Performance
                     </h3>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="table-glass">
                         <thead>
-                            <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">State</th>
-                                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Kiosks</th>
-                                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Check-ins</th>
-                                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Avg/Kiosk</th>
-                                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Growth</th>
+                            <tr className="surface-glass-soft border-b border-glass">
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">State</th>
+                                <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase">Kiosks</th>
+                                <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase">Check-ins</th>
+                                <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase">Avg/Kiosk</th>
+                                <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase">Growth</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                        <tbody className="divide-y divide-glass">
                             {MOCK_STATE_DATA.map((state) => (
-                                <tr key={state.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                                    <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white">{state.name}</td>
-                                    <td className="px-4 py-3 text-right text-sm text-slate-700 dark:text-slate-300">{state.kiosks}</td>
-                                    <td className="px-4 py-3 text-right text-sm font-medium text-emerald-600 dark:text-emerald-400">{state.checkins.toLocaleString()}</td>
-                                    <td className="px-4 py-3 text-right text-sm text-slate-500 dark:text-slate-400">{Math.round(state.checkins / state.kiosks)}</td>
+                                <tr key={state.id} className="glass-hover">
+                                    <td className="px-4 py-3 text-sm font-medium text-primary">{state.name}</td>
+                                    <td className="px-4 py-3 text-right text-sm text-secondary-text">{state.kiosks}</td>
+                                    <td className="px-4 py-3 text-right text-sm font-medium text-success">{state.checkins.toLocaleString()}</td>
+                                    <td className="px-4 py-3 text-right text-sm text-muted">{Math.round(state.checkins / state.kiosks)}</td>
                                     <td className="px-4 py-3 text-right">
-                                        <span className="inline-flex items-center gap-1 text-sm text-emerald-600 dark:text-emerald-400">
+                                        <span className="inline-flex items-center gap-1 text-sm text-success">
                                             <TrendingUp className="w-3 h-3" />
                                             +{state.growth}%
                                         </span>
