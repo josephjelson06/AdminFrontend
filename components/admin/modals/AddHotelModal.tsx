@@ -40,7 +40,7 @@ export function AddHotelModal({ isOpen, onClose, onSubmit }: AddHotelModalProps)
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Add New Hotel" size="lg">
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="col-span-2">
                         <label className="block text-sm font-medium text-slate-700 mb-1">Hotel Name *</label>
                         <input
@@ -104,7 +104,7 @@ export function AddHotelModal({ isOpen, onClose, onSubmit }: AddHotelModalProps)
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-4 border-t border-slate-200">
                     <button
                         type="button"
                         onClick={onClose}

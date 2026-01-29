@@ -41,7 +41,7 @@ export function InvoiceDetailSlideOver({
     return (
         <div className="fixed inset-0 z-50 overflow-hidden">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-            <div className="absolute inset-y-0 right-0 w-full max-w-md surface-glass-strong shadow-elevated">
+            <div className="absolute inset-y-0 right-0 w-full sm:max-w-md surface-glass-strong shadow-elevated">
                 <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="px-6 py-4 border-b border-glass flex items-center justify-between">

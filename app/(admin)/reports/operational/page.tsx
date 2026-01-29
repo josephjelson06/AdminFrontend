@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     ChevronLeft,
@@ -13,42 +13,13 @@ import {
     Building2,
     MapPin,
     Play,
-    TrendingUp,
-    TrendingDown,
 } from 'lucide-react';
 import { useToast } from '@/components/shared/ui/Toast';
 import { exportToCSV } from '@/lib/shared/export';
-
-// Mock kiosk operational data
-const MOCK_KIOSK_DATA = [
-    { id: 'K-001', hotelId: 'h-001', hotelName: 'Royal Orchid Bangalore', state: 'Karnataka', checkins: 245, avgPerDay: 35, utilization: 82, status: 'active' },
-    { id: 'K-002', hotelId: 'h-001', hotelName: 'Royal Orchid Bangalore', state: 'Karnataka', checkins: 198, avgPerDay: 28, utilization: 75, status: 'active' },
-    { id: 'K-003', hotelId: 'h-002', hotelName: 'Lemon Tree Premier', state: 'Maharashtra', checkins: 156, avgPerDay: 22, utilization: 68, status: 'active' },
-    { id: 'K-004', hotelId: 'h-003', hotelName: 'Ginger Hotel Panjim', state: 'Goa', checkins: 89, avgPerDay: 13, utilization: 45, status: 'maintenance' },
-    { id: 'K-005', hotelId: 'h-005', hotelName: 'ITC Maratha', state: 'Maharashtra', checkins: 312, avgPerDay: 45, utilization: 92, status: 'active' },
-    { id: 'K-006', hotelId: 'h-006', hotelName: 'Marriott Suites', state: 'Delhi NCR', checkins: 178, avgPerDay: 25, utilization: 71, status: 'active' },
-    { id: 'K-007', hotelId: 'h-007', hotelName: 'The Leela Palace', state: 'Karnataka', checkins: 267, avgPerDay: 38, utilization: 85, status: 'active' },
-    { id: 'K-008', hotelId: 'h-001', hotelName: 'Royal Orchid Bangalore', state: 'Karnataka', checkins: 145, avgPerDay: 21, utilization: 62, status: 'active' },
-];
-
-const STATES = [
-    { id: 'all', name: 'All States' },
-    { id: 'Karnataka', name: 'Karnataka' },
-    { id: 'Maharashtra', name: 'Maharashtra' },
-    { id: 'Goa', name: 'Goa' },
-    { id: 'Delhi NCR', name: 'Delhi NCR' },
-    { id: 'Tamil Nadu', name: 'Tamil Nadu' },
-];
-
-const HOTELS = [
-    { id: 'all', name: 'All Hotels' },
-    { id: 'h-001', name: 'Royal Orchid Bangalore' },
-    { id: 'h-002', name: 'Lemon Tree Premier' },
-    { id: 'h-003', name: 'Ginger Hotel Panjim' },
-    { id: 'h-005', name: 'ITC Maratha' },
-    { id: 'h-006', name: 'Marriott Suites' },
-    { id: 'h-007', name: 'The Leela Palace' },
-];
+import {
+    reportsService,
+    type OperationalKioskMetrics
+} from '@/lib/services/reportsService';
 
 function UtilizationBar({ value }: { value: number }) {
     const getColor = (v: number) => {
@@ -66,8 +37,8 @@ function UtilizationBar({ value }: { value: number }) {
                 />
             </div>
             <span className={`text-xs font-medium ${value >= 80 ? 'text-success' :
-                    value >= 60 ? 'text-warning' :
-                        'text-danger'
+                value >= 60 ? 'text-warning' :
+                    'text-danger'
                 }`}>
                 {value}%
             </span>
@@ -79,8 +50,8 @@ function StatusBadge({ status }: { status: string }) {
     const isActive = status === 'active';
     return (
         <span className={`px-2 py-0.5 rounded text-xs font-medium ${isActive
-                ? 'badge-success'
-                : 'badge-warning'
+            ? 'badge-success'
+            : 'badge-warning'
             }`}>
             {isActive ? 'Active' : 'Maintenance'}
         </span>
@@ -90,29 +61,69 @@ function StatusBadge({ status }: { status: string }) {
 export default function OperationalReportsPage() {
     const { addToast } = useToast();
     const [isGenerated, setIsGenerated] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Filters State
     const [searchQuery, setSearchQuery] = useState('');
     const [stateFilter, setStateFilter] = useState('all');
     const [hotelFilter, setHotelFilter] = useState('all');
     const [dateFrom, setDateFrom] = useState('2026-01-01');
     const [dateTo, setDateTo] = useState('2026-01-20');
 
-    const filteredData = MOCK_KIOSK_DATA
-        .filter(item => {
-            if (searchQuery) {
-                const query = searchQuery.toLowerCase();
-                return item.id.toLowerCase().includes(query) || item.hotelName.toLowerCase().includes(query);
+    // Data State
+    const [reportData, setReportData] = useState<OperationalKioskMetrics[]>([]);
+    const [availableFilters, setAvailableFilters] = useState<{
+        states: { id: string; name: string }[];
+        hotels: { id: string; name: string }[];
+    }>({ states: [], hotels: [] });
+
+    // Load available filters on mount
+    useEffect(() => {
+        const loadFilters = async () => {
+            try {
+                const filters = await reportsService.getOperationalFilters();
+                setAvailableFilters(filters);
+            } catch (err) {
+                console.error('Failed to load filters', err);
             }
-            return true;
-        })
-        .filter(item => stateFilter === 'all' || item.state === stateFilter)
-        .filter(item => hotelFilter === 'all' || item.hotelId === hotelFilter);
+        };
+        loadFilters();
+    }, []);
+
+    // Filter displayed data locally for search (post-fetch filtering for responsiveness)
+    const filteredData = reportData.filter(item => {
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            return item.id.toLowerCase().includes(query) ||
+                item.hotelName.toLowerCase().includes(query);
+        }
+        return true;
+    });
 
     const totalCheckins = filteredData.reduce((sum, k) => sum + k.checkins, 0);
-    const avgUtilization = Math.round(filteredData.reduce((sum, k) => sum + k.utilization, 0) / filteredData.length);
+    const avgUtilization = filteredData.length > 0
+        ? Math.round(filteredData.reduce((sum, k) => sum + k.utilization, 0) / filteredData.length)
+        : 0;
 
-    const handleGenerateReport = () => {
-        setIsGenerated(true);
-        addToast('success', 'Report Generated', `Found ${filteredData.length} kiosks matching your criteria.`);
+    const handleGenerateReport = async () => {
+        setIsLoading(true);
+        setIsGenerated(false);
+        try {
+            const data = await reportsService.getOperationalReport({
+                state: stateFilter,
+                hotelId: hotelFilter,
+                dateFrom,
+                dateTo
+            });
+            setReportData(data);
+            setIsGenerated(true);
+            addToast('success', 'Report Generated', `Found ${data.length} kiosks matching your criteria.`);
+        } catch (err) {
+            addToast('error', 'Error', 'Failed to generate report');
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleExportCSV = () => {
@@ -144,7 +155,7 @@ export default function OperationalReportsPage() {
     };
 
     return (
-        <div className="p-6 animate-in fade-in duration-normal">
+        <div className="p-4 sm:p-6 animate-in fade-in duration-normal">
             {/* Page Header */}
             <div className="flex items-center gap-4 mb-6">
                 <Link
@@ -176,7 +187,7 @@ export default function OperationalReportsPage() {
                                 type="date"
                                 value={dateFrom}
                                 onChange={(e) => setDateFrom(e.target.value)}
-                                className="input-glass pl-10"
+                                className="input-glass pl-10 w-full"
                             />
                         </div>
                     </div>
@@ -188,7 +199,7 @@ export default function OperationalReportsPage() {
                                 type="date"
                                 value={dateTo}
                                 onChange={(e) => setDateTo(e.target.value)}
-                                className="input-glass pl-10"
+                                className="input-glass pl-10 w-full"
                             />
                         </div>
                     </div>
@@ -199,9 +210,9 @@ export default function OperationalReportsPage() {
                         <select
                             value={stateFilter}
                             onChange={(e) => setStateFilter(e.target.value)}
-                            className="input-glass"
+                            className="input-glass w-full"
                         >
-                            {STATES.map(state => (
+                            {availableFilters.states.map(state => (
                                 <option key={state.id} value={state.id}>{state.name}</option>
                             ))}
                         </select>
@@ -213,9 +224,9 @@ export default function OperationalReportsPage() {
                         <select
                             value={hotelFilter}
                             onChange={(e) => setHotelFilter(e.target.value)}
-                            className="input-glass"
+                            className="input-glass w-full"
                         >
-                            {HOTELS.map(hotel => (
+                            {availableFilters.hotels.map(hotel => (
                                 <option key={hotel.id} value={hotel.id}>{hotel.name}</option>
                             ))}
                         </select>
@@ -226,9 +237,14 @@ export default function OperationalReportsPage() {
                     <button
                         onClick={handleGenerateReport}
                         className="btn-primary"
+                        disabled={isLoading}
                     >
-                        <Play className="w-4 h-4" />
-                        Generate Report
+                        {isLoading ? (
+                            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                        ) : (
+                            <Play className="w-4 h-4 mr-2" />
+                        )}
+                        {isLoading ? 'Generating...' : 'Generate Report'}
                     </button>
                 </div>
             </div>
@@ -280,14 +296,14 @@ export default function OperationalReportsPage() {
                                     onClick={handleExportPDF}
                                     className="btn-secondary"
                                 >
-                                    <FileText className="w-4 h-4" />
+                                    <FileText className="w-4 h-4 mr-2" />
                                     Export PDF
                                 </button>
                                 <button
                                     onClick={handleExportCSV}
                                     className="btn-secondary"
                                 >
-                                    <FileSpreadsheet className="w-4 h-4" />
+                                    <FileSpreadsheet className="w-4 h-4 mr-2" />
                                     Export Excel
                                 </button>
                             </div>
@@ -295,55 +311,63 @@ export default function OperationalReportsPage() {
 
                         {/* Results Table */}
                         <div className="overflow-x-auto">
-                            <table className="table-glass">
+                            <table className="table-glass w-full">
                                 <thead>
                                     <tr className="surface-glass-soft border-b border-glass">
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Kiosk ID</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Hotel</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">State</th>
-                                        <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase">Check-ins</th>
-                                        <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase">Avg/Day</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Utilization</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase">Status</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase whitespace-nowrap">Kiosk ID</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase whitespace-nowrap">Hotel</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase whitespace-nowrap">State</th>
+                                        <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase whitespace-nowrap">Check-ins</th>
+                                        <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase whitespace-nowrap">Avg/Day</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase whitespace-nowrap">Utilization</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted uppercase whitespace-nowrap">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-glass">
-                                    {filteredData.map((item) => (
-                                        <tr key={item.id} className="glass-hover transition-colors">
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-2">
-                                                    <Cpu className="w-4 h-4 text-muted" />
-                                                    <span className="text-sm font-mono text-primary">{item.id}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-2">
-                                                    <Building2 className="w-4 h-4 text-muted" />
-                                                    <span className="text-sm text-secondary-text">{item.hotelName}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-1.5">
-                                                    <MapPin className="w-3.5 h-3.5 text-muted" />
-                                                    <span className="text-sm text-secondary-text">{item.state}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-3 text-right">
-                                                <span className="text-sm font-semibold text-success">
-                                                    {item.checkins.toLocaleString()}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3 text-right">
-                                                <span className="text-sm text-secondary-text">{item.avgPerDay}</span>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <UtilizationBar value={item.utilization} />
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <StatusBadge status={item.status} />
+                                    {filteredData.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={7} className="px-4 py-8 text-center text-muted">
+                                                No kiosks found matching your search.
                                             </td>
                                         </tr>
-                                    ))}
+                                    ) : (
+                                        filteredData.map((item) => (
+                                            <tr key={item.id} className="glass-hover transition-colors">
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <Cpu className="w-4 h-4 text-muted" />
+                                                        <span className="text-sm font-mono text-primary whitespace-nowrap">{item.id}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <Building2 className="w-4 h-4 text-muted" />
+                                                        <span className="text-sm text-secondary-text truncate max-w-[150px]">{item.hotelName}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <MapPin className="w-3.5 h-3.5 text-muted" />
+                                                        <span className="text-sm text-secondary-text whitespace-nowrap">{item.state}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-3 text-right">
+                                                    <span className="text-sm font-semibold text-success">
+                                                        {item.checkins.toLocaleString()}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3 text-right">
+                                                    <span className="text-sm text-secondary-text">{item.avgPerDay}</span>
+                                                </td>
+                                                <td className="px-4 py-3 min-w-[120px]">
+                                                    <UtilizationBar value={item.utilization} />
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <StatusBadge status={item.status} />
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -359,7 +383,7 @@ export default function OperationalReportsPage() {
             )}
 
             {/* Empty State */}
-            {!isGenerated && (
+            {!isGenerated && !isLoading && (
                 <div className="surface-glass-strong rounded-lg border border-glass p-12 text-center">
                     <Cpu className="w-12 h-12 mx-auto text-muted mb-4" />
                     <h3 className="text-lg font-medium text-primary mb-2">No Report Generated</h3>

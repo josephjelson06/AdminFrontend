@@ -135,7 +135,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
 
                 {/* Pricing */}
                 <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Price</label>
                             <input
@@ -188,7 +188,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                 {/* Limits */}
                 <div className="space-y-4">
                     <h3 className="text-sm font-medium text-slate-900 dark:text-white">Plan Limits</h3>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Max Kiosks</label>
                             <input
@@ -276,7 +276,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                 </div>
 
                 {/* Footer Buttons */}
-                <div className="fixed bottom-0 right-0 w-full md:max-w-md p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex items-center justify-end gap-3 z-10">
+                <div className="fixed bottom-0 right-0 w-full sm:max-w-md p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 z-10">
                     <button
                         type="button"
                         onClick={onClose}

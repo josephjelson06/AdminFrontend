@@ -11,75 +11,104 @@
   /* ----------------------------------------
      CORE COLOR TOKENS - LIGHT MODE
      ---------------------------------------- */
-  
+
   /* Backgrounds */
-  --bg-base: 241 245 249;           /* slate-100 - page background */
-  --bg-elevated: 248 250 252;       /* slate-50 - elevated surfaces */
-  --bg-overlay: 255 255 255;        /* white - overlays */
-  
+  --bg-base: 241 245 249;
+  /* slate-100 - page background */
+  --bg-elevated: 248 250 252;
+  /* slate-50 - elevated surfaces */
+  --bg-overlay: 255 255 255;
+  /* white - overlays */
+
   /* Glass Surfaces */
-  --glass-bg: 255 255 255;          /* white base for glass */
+  --glass-bg: 255 255 255;
+  /* white base for glass */
   --glass-opacity-soft: 0.65;
   --glass-opacity-strong: 0.80;
   --glass-opacity-solid: 0.95;
-  
+
   /* Text Colors */
-  --text-primary: 15 23 42;         /* slate-900 */
-  --text-secondary: 71 85 105;      /* slate-600 */
-  --text-muted: 148 163 184;        /* slate-400 */
-  --text-inverted: 248 250 252;     /* slate-50 */
-  
+  --text-primary: 15 23 42;
+  /* slate-900 */
+  --text-secondary: 71 85 105;
+  /* slate-600 */
+  --text-muted: 148 163 184;
+  /* slate-400 */
+  --text-inverted: 248 250 252;
+  /* slate-50 */
+
   /* Borders */
-  --border-subtle: 226 232 240;     /* slate-200 */
-  --border-default: 203 213 225;    /* slate-300 */
-  --border-strong: 148 163 184;     /* slate-400 */
-  --border-glass: 255 255 255;      /* white for glass borders */
+  --border-subtle: 226 232 240;
+  /* slate-200 */
+  --border-default: 203 213 225;
+  /* slate-300 */
+  --border-strong: 148 163 184;
+  /* slate-400 */
+  --border-glass: 255 255 255;
+  /* white for glass borders */
   --border-glass-opacity: 0.25;
-  
+
   /* Accent Colors */
-  --accent-primary: 16 185 129;     /* emerald-500 */
-  --accent-primary-soft: 209 250 229; /* emerald-100 */
-  --accent-secondary: 99 102 241;   /* indigo-500 */
-  --accent-secondary-soft: 224 231 255; /* indigo-100 */
-  
+  --accent-primary: 16 185 129;
+  /* emerald-500 */
+  --accent-primary-soft: 209 250 229;
+  /* emerald-100 */
+  --accent-secondary: 99 102 241;
+  /* indigo-500 */
+  --accent-secondary-soft: 224 231 255;
+  /* indigo-100 */
+
   /* Status Colors */
-  --success: 34 197 94;             /* green-500 */
-  --success-soft: 220 252 231;      /* green-100 */
-  --warning: 245 158 11;            /* amber-500 */
-  --warning-soft: 254 243 199;      /* amber-100 */
-  --danger: 239 68 68;              /* red-500 */
-  --danger-soft: 254 226 226;       /* red-100 */
-  --info: 59 130 246;               /* blue-500 */
-  --info-soft: 219 234 254;         /* blue-100 */
-  
+  --success: 34 197 94;
+  /* green-500 */
+  --success-soft: 220 252 231;
+  /* green-100 */
+  --warning: 245 158 11;
+  /* amber-500 */
+  --warning-soft: 254 243 199;
+  /* amber-100 */
+  --danger: 239 68 68;
+  /* red-500 */
+  --danger-soft: 254 226 226;
+  /* red-100 */
+  --info: 59 130 246;
+  /* blue-500 */
+  --info-soft: 219 234 254;
+  /* blue-100 */
+
   /* Shadows */
   --shadow-color: 0 0 0;
   --shadow-opacity-soft: 0.04;
   --shadow-opacity-strong: 0.08;
   --shadow-opacity-glow: 0.15;
-  
+
   /* Blur Levels */
   --blur-none: 0px;
   --blur-sm: 8px;
   --blur-md: 16px;
   --blur-lg: 24px;
   --blur-xl: 40px;
-  
+
   /* Border Radius */
-  --radius-sm: 0.375rem;            /* 6px */
-  --radius-md: 0.5rem;              /* 8px */
-  --radius-lg: 0.75rem;             /* 12px */
-  --radius-xl: 1rem;                /* 16px */
-  --radius-2xl: 1.5rem;             /* 24px */
+  --radius-sm: 0.375rem;
+  /* 6px */
+  --radius-md: 0.5rem;
+  /* 8px */
+  --radius-lg: 0.75rem;
+  /* 12px */
+  --radius-xl: 1rem;
+  /* 16px */
+  --radius-2xl: 1.5rem;
+  /* 24px */
   --radius-full: 9999px;
-  
+
   /* Motion / Transitions */
   --transition-fast: 150ms;
   --transition-normal: 200ms;
   --transition-slow: 300ms;
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-  
+
   /* Spacing Scale */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -87,7 +116,7 @@
   --space-lg: 1.5rem;
   --space-xl: 2rem;
   --space-2xl: 3rem;
-  
+
   /* SHADCN COMPATIBILITY */
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
@@ -115,47 +144,71 @@
   /* ----------------------------------------
      CORE COLOR TOKENS - DARK MODE
      ---------------------------------------- */
-  
+
   /* Backgrounds */
-  --bg-base: 15 23 42;              /* slate-900 - page background */
-  --bg-elevated: 30 41 59;          /* slate-800 - elevated surfaces */
-  --bg-overlay: 51 65 85;           /* slate-700 - overlays */
-  
+  --bg-base: 15 23 42;
+  /* slate-900 - page background */
+  --bg-elevated: 30 41 59;
+  /* slate-800 - elevated surfaces */
+  --bg-overlay: 51 65 85;
+  /* slate-700 - overlays */
+
   /* Glass Surfaces - Light glass over dark */
-  --glass-bg: 248 250 252;          /* slate-50 for light-tinted glass */
+  --glass-bg: 248 250 252;
+  /* slate-50 for light-tinted glass */
   --glass-opacity-soft: 0.06;
   --glass-opacity-strong: 0.10;
   --glass-opacity-solid: 0.85;
-  
+
   /* Text Colors */
-  --text-primary: 248 250 252;      /* slate-50 */
-  --text-secondary: 203 213 225;    /* slate-300 */
-  --text-muted: 148 163 184;        /* slate-400 */
-  --text-inverted: 15 23 42;        /* slate-900 */
-  
+  --text-primary: 248 250 252;
+  /* slate-50 */
+  --text-secondary: 203 213 225;
+  /* slate-300 */
+  --text-muted: 148 163 184;
+  /* slate-400 */
+  --text-inverted: 15 23 42;
+  /* slate-900 */
+
   /* Borders */
-  --border-subtle: 51 65 85;        /* slate-700 */
-  --border-default: 71 85 105;      /* slate-600 */
-  --border-strong: 100 116 139;     /* slate-500 */
-  --border-glass: 248 250 252;      /* slate-50 for glass borders */
+  --border-subtle: 51 65 85;
+  /* slate-700 */
+  --border-default: 71 85 105;
+  /* slate-600 */
+  --border-strong: 100 116 139;
+  /* slate-500 */
+  --border-glass: 248 250 252;
+  /* slate-50 for glass borders */
   --border-glass-opacity: 0.12;
-  
+
   /* Accent Colors */
-  --accent-primary: 52 211 153;     /* emerald-400 */
-  --accent-primary-soft: 6 78 59;   /* emerald-900 */
-  --accent-secondary: 129 140 248;  /* indigo-400 */
-  --accent-secondary-soft: 49 46 129; /* indigo-900 */
-  
+  --accent-primary: 52 211 153;
+  /* emerald-400 */
+  --accent-primary-soft: 6 78 59;
+  /* emerald-900 */
+  --accent-secondary: 129 140 248;
+  /* indigo-400 */
+  --accent-secondary-soft: 49 46 129;
+  /* indigo-900 */
+
   /* Status Colors */
-  --success: 74 222 128;            /* green-400 */
-  --success-soft: 20 83 45;         /* green-900 */
-  --warning: 251 191 36;            /* amber-400 */
-  --warning-soft: 120 53 15;        /* amber-900 */
-  --danger: 248 113 113;            /* red-400 */
-  --danger-soft: 127 29 29;         /* red-900 */
-  --info: 96 165 250;               /* blue-400 */
-  --info-soft: 30 58 138;           /* blue-900 */
-  
+  --success: 74 222 128;
+  /* green-400 */
+  --success-soft: 20 83 45;
+  /* green-900 */
+  --warning: 251 191 36;
+  /* amber-400 */
+  --warning-soft: 120 53 15;
+  /* amber-900 */
+  --danger: 248 113 113;
+  /* red-400 */
+  --danger-soft: 127 29 29;
+  /* red-900 */
+  --info: 96 165 250;
+  /* blue-400 */
+  --info-soft: 30 58 138;
+  /* blue-900 */
+
   /* Shadows */
   --shadow-color: 0 0 0;
   --shadow-opacity-soft: 0.20;
@@ -192,15 +245,15 @@
 body {
   background: rgb(var(--bg-base));
   color: rgb(var(--text-primary));
-  transition: background var(--transition-slow) var(--ease-smooth), 
-              color var(--transition-normal) var(--ease-smooth);
+  transition: background var(--transition-slow) var(--ease-smooth),
+    color var(--transition-normal) var(--ease-smooth);
   min-height: 100vh;
 }
 
 /* Admin Gradient Mesh Background - Frosted Dark Glass */
 .bg-gradient-mesh {
   background-color: rgb(241 245 249);
-  background-image: 
+  background-image:
     /* Soft warm ambient light */
     radial-gradient(ellipse at 70% 20%, rgba(251, 191, 36, 0.08) 0px, transparent 50%),
     radial-gradient(ellipse at 30% 80%, rgba(236, 72, 153, 0.06) 0px, transparent 50%),
@@ -212,7 +265,7 @@ body {
 
 .dark .bg-gradient-mesh {
   background-color: rgb(30 41 59);
-  background-image: 
+  background-image:
     /* Subtle ambient glow in dark mode */
     radial-gradient(ellipse at 70% 20%, rgba(251, 191, 36, 0.06) 0px, transparent 50%),
     radial-gradient(ellipse at 30% 80%, rgba(236, 72, 153, 0.05) 0px, transparent 50%),
@@ -244,6 +297,7 @@ body {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -258,7 +312,7 @@ body {
    ============================================ */
 
 @layer utilities {
-  
+
   /* -----------------------------------------
      SURFACE GLASS SOFT (Frosted Dark)
      Use for: Sidebars, top navigation, secondary panels
@@ -269,25 +323,25 @@ body {
     backdrop-filter: blur(var(--blur-lg)) saturate(1.4);
     -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(1.4);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 
+    box-shadow:
       0 4px 24px rgba(0, 0, 0, 0.15),
       0 1px 2px rgba(0, 0, 0, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.05),
       inset 0 0 0 1px rgba(255, 255, 255, 0.02);
     color: rgb(248 250 252);
   }
-  
+
   .surface-glass-soft .text-primary,
   .surface-glass-soft .text-secondary,
   .surface-glass-soft .text-muted {
     color: inherit;
   }
-  
+
   .dark .surface-glass-soft {
     background: rgba(15, 23, 42, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
-  
+
   /* -----------------------------------------
      SURFACE GLASS STRONG (Frosted Dark)
      Use for: Cards, metrics, modals, main content blocks
@@ -299,23 +353,23 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
     outline: 1px solid rgba(255, 255, 255, 0.03);
     outline-offset: -1px;
-    box-shadow: 
+    box-shadow:
       0 8px 40px rgba(0, 0, 0, 0.2),
       0 4px 12px rgba(0, 0, 0, 0.12),
       inset 0 1px 0 rgba(255, 255, 255, 0.08),
       inset 0 -1px 0 rgba(0, 0, 0, 0.15);
     color: rgb(248 250 252);
   }
-  
+
   .dark .surface-glass-strong {
     background: rgba(15, 23, 42, 0.9);
-    box-shadow: 
+    box-shadow:
       0 8px 40px rgba(0, 0, 0, 0.35),
       0 4px 12px rgba(0, 0, 0, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.06),
       inset 0 -1px 0 rgba(0, 0, 0, 0.2);
   }
-  
+
   /* -----------------------------------------
      SURFACE SOLID (Frosted Dark)
      Use for: Tables, long forms, complex data containers
@@ -327,176 +381,170 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.08);
     outline: 1px solid rgba(255, 255, 255, 0.02);
     outline-offset: -1px;
-    box-shadow: 
+    box-shadow:
       0 2px 12px rgba(0, 0, 0, 0.12),
       inset 0 1px 0 rgba(255, 255, 255, 0.04);
     color: rgb(248 250 252);
   }
-  
+
   .dark .surface-solid {
     background: rgba(15, 23, 42, 0.95);
   }
-  
+
   /* -----------------------------------------
      LEGACY GLASS UTILITIES (backwards compatible)
      ----------------------------------------- */
   .glass {
     @apply surface-glass-strong;
   }
-  
+
   .glass-elevated {
     background: rgba(var(--glass-bg), calc(var(--glass-opacity-strong) * 1.2));
     backdrop-filter: blur(var(--blur-xl));
     -webkit-backdrop-filter: blur(var(--blur-xl));
     border: 1px solid rgba(var(--border-glass), calc(var(--border-glass-opacity) * 1.5));
-    box-shadow: 
+    box-shadow:
       0 16px 48px rgba(var(--shadow-color), var(--shadow-opacity-strong)),
       0 4px 16px rgba(var(--shadow-color), var(--shadow-opacity-soft)),
       inset 0 1px 0 rgba(var(--border-glass), calc(var(--border-glass-opacity) * 2.5));
   }
-  
+
   .glass-sidebar {
     @apply surface-glass-soft;
     border-right: 1px solid rgba(var(--border-glass), var(--border-glass-opacity));
   }
-  
+
   /* -----------------------------------------
      INTERACTIVE GLASS STATES - AURORA
      ----------------------------------------- */
   .glass-hover {
-    transition: 
+    transition:
       transform var(--transition-normal) var(--ease-smooth),
       box-shadow var(--transition-normal) var(--ease-smooth),
       border-color var(--transition-normal) var(--ease-smooth),
       outline-color var(--transition-normal) var(--ease-smooth);
     position: relative;
   }
-  
+
   .glass-hover::before {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0) 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
     z-index: 0;
   }
-  
+
   .glass-hover:hover::before {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.03) 0%,
-      rgba(255, 255, 255, 0.02) 50%,
-      rgba(255, 255, 255, 0.03) 100%
-    );
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.03) 0%,
+        rgba(255, 255, 255, 0.02) 50%,
+        rgba(255, 255, 255, 0.03) 100%);
     opacity: 1;
   }
-  
+
   .dark .glass-hover:hover::before {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.04) 0%,
-      rgba(255, 255, 255, 0.02) 50%,
-      rgba(255, 255, 255, 0.04) 100%
-    );
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(255, 255, 255, 0.02) 50%,
+        rgba(255, 255, 255, 0.04) 100%);
   }
 
   .glass-hover:hover {
     transform: translateY(-2px);
     border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 
+    box-shadow:
       0 16px 48px rgba(0, 0, 0, 0.25),
       0 8px 16px rgba(0, 0, 0, 0.15),
       0 0 0 1px rgba(255, 255, 255, 0.08),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
-  
+
   .dark .glass-hover:hover {
-    box-shadow: 
+    box-shadow:
       0 16px 48px rgba(0, 0, 0, 0.4),
       0 8px 16px rgba(0, 0, 0, 0.25),
       0 0 0 1px rgba(255, 255, 255, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
-  
+
   .glass-active {
-    box-shadow: 
+    box-shadow:
       0 0 0 2px rgba(var(--accent-primary), 0.3),
       0 4px 16px rgba(var(--shadow-color), var(--shadow-opacity-soft));
   }
-  
+
   /* -----------------------------------------
      ACCENT GLOW EFFECTS
      ----------------------------------------- */
   .glow-accent {
-    box-shadow: 
+    box-shadow:
       0 0 20px rgba(var(--accent-primary), var(--shadow-opacity-glow)),
       0 4px 16px rgba(var(--shadow-color), var(--shadow-opacity-soft));
   }
-  
+
   .glow-accent-soft {
-    box-shadow: 
+    box-shadow:
       0 0 12px rgba(var(--accent-primary), calc(var(--shadow-opacity-glow) * 0.5)),
       0 2px 8px rgba(var(--shadow-color), var(--shadow-opacity-soft));
   }
-  
+
   /* -----------------------------------------
      TEXT UTILITIES
      ----------------------------------------- */
   .text-primary {
     color: rgb(var(--text-primary));
   }
-  
+
   .text-secondary {
     color: rgb(var(--text-secondary));
   }
-  
+
   .text-muted {
     color: rgb(var(--text-muted));
   }
-  
+
   .text-accent {
     color: rgb(var(--accent-primary));
   }
-  
+
   /* -----------------------------------------
      BACKGROUND UTILITIES
      ----------------------------------------- */
   .bg-base {
     background-color: rgb(var(--bg-base));
   }
-  
+
   .bg-elevated {
     background-color: rgb(var(--bg-elevated));
   }
-  
+
   .bg-accent-soft {
     background-color: rgb(var(--accent-primary-soft));
   }
-  
+
   /* -----------------------------------------
      BORDER UTILITIES
      ----------------------------------------- */
   .border-subtle {
     border-color: rgb(var(--border-subtle));
   }
-  
+
   .border-glass {
     border-color: rgba(255, 255, 255, 0.1);
   }
 
   /* Divide utilities for list/table separators - Frosted Dark */
-  .divide-glass > * + * {
+  .divide-glass>*+* {
     border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  .divide-subtle > * + * {
+  .divide-subtle>*+* {
     border-top: 1px solid rgba(255, 255, 255, 0.04);
   }
 
@@ -508,17 +556,17 @@ body {
   .ring-accent {
     box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.35);
   }
-  
+
   /* -----------------------------------------
      FROSTED DARK ACCENT EFFECTS
      ----------------------------------------- */
-  
+
   /* Accent stripe for featured cards - subtle white glow */
   .aurora-accent {
     position: relative;
     overflow: hidden;
   }
-  
+
   .aurora-accent::after {
     content: '';
     position: absolute;
@@ -526,41 +574,46 @@ body {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.4) 20%,
-      rgba(52, 211, 153, 0.5) 50%,
-      rgba(255, 255, 255, 0.4) 80%,
-      rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.4) 20%,
+        rgba(52, 211, 153, 0.5) 50%,
+        rgba(255, 255, 255, 0.4) 80%,
+        rgba(255, 255, 255, 0) 100%);
     background-size: 200% 100%;
     animation: accent-shimmer 6s ease-in-out infinite;
   }
-  
+
   @keyframes accent-shimmer {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
   }
-  
+
   /* Subtle ambient glow for highlighted elements */
   .aurora-glow {
-    box-shadow: 
+    box-shadow:
       0 12px 40px rgba(0, 0, 0, 0.25),
       0 0 60px rgba(52, 211, 153, 0.08);
   }
-  
+
   .dark .aurora-glow {
-    box-shadow: 
+    box-shadow:
       0 12px 40px rgba(0, 0, 0, 0.4),
       0 0 60px rgba(52, 211, 153, 0.12);
   }
-  
+
   /* Frosted light leak effect on edges */
   .frosted-edge {
     position: relative;
   }
-  
+
   .frosted-edge::before {
     content: '';
     position: absolute;
@@ -568,29 +621,25 @@ body {
     left: 10%;
     right: 10%;
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      transparent 100%
-    );
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 100%);
     border-radius: 50%;
   }
-  
+
   /* Subtle inner glow */
   .aurora-tint {
     position: relative;
   }
-  
+
   .aurora-tint::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-      ellipse at 50% 0%,
-      rgba(255, 255, 255, 0.03) 0%,
-      transparent 50%
-    );
+    background: radial-gradient(ellipse at 50% 0%,
+        rgba(255, 255, 255, 0.03) 0%,
+        transparent 50%);
     pointer-events: none;
     border-radius: inherit;
   }
@@ -628,46 +677,46 @@ body {
    ============================================ */
 
 @layer components {
-  
+
   /* -----------------------------------------
      PAGE CONTAINER
      ----------------------------------------- */
   .page-container {
     @apply p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto;
   }
-  
+
   /* -----------------------------------------
      GLASS CARDS
      ----------------------------------------- */
   .card {
     @apply surface-glass-strong rounded-2xl;
-    transition: 
+    transition:
       transform var(--transition-normal) var(--ease-smooth),
       box-shadow var(--transition-normal) var(--ease-smooth),
       border-color var(--transition-normal) var(--ease-smooth);
   }
-  
+
   .card:hover {
     transform: translateY(-2px);
     border-color: rgba(255, 255, 255, 0.15);
   }
-  
+
   .card-header {
     @apply px-5 py-4;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     background: rgba(0, 0, 0, 0.15);
   }
-  
+
   .card-body {
     @apply px-5 py-4;
   }
-  
+
   .card-footer {
     @apply px-5 py-4;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     background: rgba(0, 0, 0, 0.1);
   }
-  
+
   /* -----------------------------------------
      GLASS INPUT FIELDS - FROSTED DARK
      ----------------------------------------- */
@@ -678,88 +727,84 @@ body {
     color: rgb(248, 250, 252);
     backdrop-filter: blur(var(--blur-md));
     -webkit-backdrop-filter: blur(var(--blur-md));
-    box-shadow: 
+    box-shadow:
       inset 0 2px 4px rgba(0, 0, 0, 0.15),
       0 1px 0 rgba(255, 255, 255, 0.03);
-    transition: 
+    transition:
       border-color var(--transition-normal) var(--ease-smooth),
       box-shadow var(--transition-normal) var(--ease-smooth),
       background var(--transition-normal) var(--ease-smooth);
   }
-  
+
   .input-glass::placeholder {
     color: rgba(148, 163, 184, 0.8);
   }
-  
+
   .input-glass:hover {
     border-color: rgba(255, 255, 255, 0.18);
     background: rgba(15, 23, 42, 0.7);
-    box-shadow: 
+    box-shadow:
       inset 0 2px 4px rgba(0, 0, 0, 0.15),
       0 0 0 1px rgba(255, 255, 255, 0.05);
   }
-  
+
   .input-glass:focus {
     outline: none;
     border-color: rgba(52, 211, 153, 0.5);
     background: rgba(15, 23, 42, 0.75);
-    box-shadow: 
+    box-shadow:
       0 0 0 3px rgba(52, 211, 153, 0.15),
       0 0 0 1px rgba(52, 211, 153, 0.3),
       inset 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   .dark .input-glass:focus {
-    box-shadow: 
+    box-shadow:
       0 0 0 3px rgba(52, 211, 153, 0.2),
       0 0 0 1px rgba(52, 211, 153, 0.4),
       inset 0 2px 4px rgba(0, 0, 0, 0.15);
   }
-  
+
   /* -----------------------------------------
      GLASS BUTTONS - FROSTED DARK
      ----------------------------------------- */
   .btn {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium;
-    transition: 
+    transition:
       transform var(--transition-fast) var(--ease-smooth),
       box-shadow var(--transition-normal) var(--ease-smooth),
       background var(--transition-normal) var(--ease-smooth);
   }
-  
+
   .btn:active {
     transform: scale(0.97);
   }
-  
+
   .btn-primary {
     @apply btn;
-    background: linear-gradient(
-      135deg, 
-      rgb(52, 211, 153) 0%, 
-      rgb(16, 185, 129) 100%
-    );
+    background: linear-gradient(135deg,
+        rgb(52, 211, 153) 0%,
+        rgb(16, 185, 129) 100%);
     color: rgb(15, 23, 42);
     font-weight: 600;
-    box-shadow: 
+    box-shadow:
       0 4px 20px rgba(52, 211, 153, 0.35),
       0 2px 4px rgba(0, 0, 0, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
   }
-  
+
   .btn-primary:hover {
-    background: linear-gradient(
-      135deg, 
-      rgb(74, 222, 170) 0%, 
-      rgb(52, 211, 153) 100%
-    );
-    box-shadow: 
+    background: linear-gradient(135deg,
+        rgb(74, 222, 170) 0%,
+        rgb(52, 211, 153) 100%);
+    box-shadow:
       0 6px 28px rgba(52, 211, 153, 0.45),
       0 4px 8px rgba(0, 0, 0, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
   }
-  
+
   .btn-secondary {
     @apply btn;
     background: rgba(15, 23, 42, 0.6);
@@ -767,45 +812,45 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(var(--blur-sm));
   }
-  
+
   .btn-secondary:hover {
     background: rgba(15, 23, 42, 0.75);
     border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-1px);
-    box-shadow: 
+    box-shadow:
       0 4px 16px rgba(0, 0, 0, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
-  
+
   .btn-ghost {
     @apply btn;
     background: transparent;
     color: rgba(248, 250, 252, 0.7);
     border: 1px solid transparent;
   }
-  
+
   .btn-ghost:hover {
     background: rgba(15, 23, 42, 0.4);
     color: rgb(248, 250, 252);
     border-color: rgba(255, 255, 255, 0.1);
   }
-  
+
   .btn-danger {
     @apply btn;
     background: linear-gradient(135deg, rgb(239, 68, 68) 0%, rgb(220, 38, 38) 100%);
     color: white;
-    box-shadow: 
+    box-shadow:
       0 4px 16px rgba(239, 68, 68, 0.3),
       0 2px 4px rgba(0, 0, 0, 0.15);
   }
-  
+
   .btn-danger:hover {
-    box-shadow: 
+    box-shadow:
       0 6px 24px rgba(var(--danger), 0.4),
       0 4px 8px rgba(var(--shadow-color), var(--shadow-opacity-soft));
     transform: translateY(-1px);
   }
-  
+
   /* -----------------------------------------
      GLASS BADGES - FROSTED DARK
      ----------------------------------------- */
@@ -814,7 +859,7 @@ body {
     backdrop-filter: blur(var(--blur-sm));
     -webkit-backdrop-filter: blur(var(--blur-sm));
   }
-  
+
   .badge-success {
     @apply badge;
     background: rgba(52, 211, 153, 0.2);
@@ -822,7 +867,7 @@ body {
     border: 1px solid rgba(52, 211, 153, 0.3);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
-  
+
   .badge-warning {
     @apply badge;
     background: rgba(251, 191, 36, 0.2);
@@ -830,7 +875,7 @@ body {
     border: 1px solid rgba(251, 191, 36, 0.3);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
-  
+
   .badge-danger {
     @apply badge;
     background: rgba(248, 113, 113, 0.2);
@@ -838,7 +883,7 @@ body {
     border: 1px solid rgba(248, 113, 113, 0.3);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
-  
+
   .badge-info {
     @apply badge;
     background: rgba(96, 165, 250, 0.2);
@@ -846,44 +891,45 @@ body {
     border: 1px solid rgba(96, 165, 250, 0.3);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
-  
-  .badge-neutral, .badge-default {
+
+  .badge-neutral,
+  .badge-default {
     @apply badge;
     background: rgba(148, 163, 184, 0.15);
     color: rgb(203, 213, 225);
     border: 1px solid rgba(148, 163, 184, 0.25);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
-  
+
   /* -----------------------------------------
      GLASS NAVIGATION ITEMS - FROSTED DARK
      ----------------------------------------- */
   .nav-item {
     @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium;
     color: rgba(203, 213, 225, 0.8);
-    transition: 
+    transition:
       background var(--transition-normal) var(--ease-smooth),
       color var(--transition-normal) var(--ease-smooth),
       transform var(--transition-fast) var(--ease-smooth);
   }
-  
+
   .nav-item:hover {
     background: rgba(255, 255, 255, 0.05);
     color: rgb(248, 250, 252);
   }
-  
+
   .nav-item-active {
     @apply nav-item;
     background: rgba(52, 211, 153, 0.15);
     color: rgb(52, 211, 153);
     box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.2);
   }
-  
+
   .nav-item-active:hover {
     background: rgba(52, 211, 153, 0.2);
     color: rgb(52, 211, 153);
   }
-  
+
   /* -----------------------------------------
      TABLE STYLES - FROSTED DARK
      ----------------------------------------- */
@@ -892,56 +938,56 @@ body {
     border-collapse: separate;
     border-spacing: 0;
   }
-  
+
   .table-glass thead {
     background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(var(--blur-md));
   }
-  
+
   .table-glass th {
     @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider;
     color: rgba(148, 163, 184, 0.9);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
-  
+
   .table-glass th:first-child {
     border-top-left-radius: var(--radius-lg);
   }
-  
+
   .table-glass th:last-child {
     border-top-right-radius: var(--radius-lg);
   }
-  
+
   .table-glass tbody {
     background: rgba(30, 41, 59, 0.75);
     backdrop-filter: blur(var(--blur-sm));
   }
-  
+
   .table-glass td {
     @apply px-4 py-3 text-sm;
     color: rgb(248, 250, 252);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
-  
+
   .table-glass tbody tr {
-    transition: 
+    transition:
       background var(--transition-normal) var(--ease-smooth),
       box-shadow var(--transition-normal) var(--ease-smooth);
   }
-  
+
   .table-glass tbody tr:hover {
     background: rgba(255, 255, 255, 0.03);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   }
-  
+
   .table-glass tbody tr:last-child td {
     border-bottom: none;
   }
-  
+
   .table-glass tbody tr:last-child td:first-child {
     border-bottom-left-radius: var(--radius-lg);
   }
-  
+
   .table-glass tbody tr:last-child td:last-child {
     border-bottom-right-radius: var(--radius-lg);
   }
@@ -958,4 +1004,218 @@ body {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+/* ============================================
+   MOBILE RESPONSIVE UTILITIES
+   ============================================ */
+
+@layer utilities {
+
+  /* -----------------------------------------
+     RESPONSIVE GRID SYSTEM
+     Mobile-first grid patterns for common layouts
+     ----------------------------------------- */
+  .grid-responsive-1 {
+    @apply grid grid-cols-1;
+    gap: var(--space-md);
+  }
+
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2;
+    gap: var(--space-md);
+  }
+
+  .grid-responsive-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+    gap: var(--space-md);
+  }
+
+  .grid-responsive-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
+    gap: var(--space-md);
+  }
+
+  .grid-responsive-5 {
+    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5;
+    gap: var(--space-md);
+  }
+
+  .grid-responsive-6 {
+    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6;
+    gap: var(--space-md);
+  }
+
+  /* -----------------------------------------
+     TOUCH-FRIENDLY SIZING
+     Minimum 44px for touch targets (WCAG 2.1)
+     ----------------------------------------- */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  .touch-target-lg {
+    @apply min-h-[48px] min-w-[48px];
+  }
+
+  /* -----------------------------------------
+     MOBILE STACK PATTERNS
+     Flex layouts that stack on mobile
+     ----------------------------------------- */
+  .mobile-stack {
+    @apply flex flex-col sm:flex-row;
+    gap: var(--space-md);
+  }
+
+  .mobile-stack-reverse {
+    @apply flex flex-col-reverse sm:flex-row;
+    gap: var(--space-md);
+  }
+
+  .mobile-stack-center {
+    @apply flex flex-col sm:flex-row items-center;
+    gap: var(--space-md);
+  }
+
+  .mobile-stack-between {
+    @apply flex flex-col sm:flex-row sm:items-center sm:justify-between;
+    gap: var(--space-md);
+  }
+
+  /* -----------------------------------------
+     MOBILE TABLE UTILITIES
+     Handle tables on mobile screens
+     ----------------------------------------- */
+  .table-scroll-mobile {
+    @apply overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-scroll-mobile::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .table-scroll-mobile::-webkit-scrollbar-thumb {
+    background: rgba(var(--text-muted), 0.3);
+    border-radius: var(--radius-full);
+  }
+
+  /* -----------------------------------------
+     MOBILE MODAL/SLIDEOVER UTILITIES
+     Full-screen patterns for mobile
+     ----------------------------------------- */
+  .modal-mobile-full {
+    @apply w-full h-full sm:w-auto sm:h-auto;
+    @apply rounded-none sm:rounded-2xl;
+    @apply max-h-full sm:max-h-[85vh];
+  }
+
+  .modal-mobile-bottom {
+    @apply w-full rounded-t-2xl sm:rounded-2xl;
+    @apply max-h-[90vh] sm:max-h-[85vh];
+  }
+
+  .slideover-mobile-full {
+    @apply w-full sm:w-[480px] sm:max-w-[90vw];
+    @apply h-full;
+  }
+
+  /* -----------------------------------------
+     MOBILE TEXT UTILITIES
+     Responsive text sizing
+     ----------------------------------------- */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl lg:text-4xl;
+  }
+
+  /* -----------------------------------------
+     MOBILE SPACING UTILITIES
+     Responsive padding and margins
+     ----------------------------------------- */
+  .p-responsive {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+
+  .px-responsive {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .py-responsive {
+    @apply py-4 sm:py-6 lg:py-8;
+  }
+
+  .gap-responsive {
+    @apply gap-3 sm:gap-4 lg:gap-6;
+  }
+
+  /* -----------------------------------------
+     MOBILE VISIBILITY UTILITIES
+     Enhanced show/hide patterns
+     ----------------------------------------- */
+  .mobile-only {
+    @apply block sm:hidden;
+  }
+
+  .tablet-up {
+    @apply hidden sm:block;
+  }
+
+  .desktop-only {
+    @apply hidden lg:block;
+  }
+
+  .mobile-hide {
+    @apply hidden sm:flex;
+  }
+
+  /* -----------------------------------------
+     MOBILE CARD UTILITIES
+     Card patterns for mobile
+     ----------------------------------------- */
+  .card-mobile-compact {
+    @apply p-3 sm:p-4 lg:p-5;
+  }
+
+  .card-header-mobile {
+    @apply flex flex-col sm:flex-row sm:items-center sm:justify-between;
+    @apply gap-2 sm:gap-4;
+  }
+
+  /* -----------------------------------------
+     MOBILE FORM UTILITIES
+     Form patterns for mobile
+     ----------------------------------------- */
+  .form-grid-mobile {
+    @apply grid grid-cols-1 sm:grid-cols-2;
+    gap: var(--space-md);
+  }
+
+  .form-actions-mobile {
+    @apply flex flex-col-reverse sm:flex-row sm:justify-end;
+    @apply gap-2 sm:gap-3;
+  }
+
+  .form-actions-mobile>button {
+    @apply w-full sm:w-auto;
+  }
 }
