@@ -234,7 +234,13 @@ export interface KioskConfig {
     logoUrl?: string;
 }
 
-export const AVAILABLE_LANGUAGES = [
+export interface Language {
+    id: string;
+    name: string;
+    native: string;
+}
+
+export const AVAILABLE_LANGUAGES: Language[] = [
     { id: 'en', name: 'English', native: 'English' },
     { id: 'hi', name: 'Hindi', native: 'हिंदी' },
     { id: 'ta', name: 'Tamil', native: 'தமிழ்' },
