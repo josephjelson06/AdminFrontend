@@ -5,10 +5,15 @@ import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { GlassCalendar, ViewMode } from "@/components/shared/ui/glass-calendar";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
+import { useOnClickOutside } from "@/hooks/use-on-click-outside";
 
 export function DashboardFilter() {
     const [viewMode, setViewMode] = React.useState<ViewMode>("Day");
     const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
+    const [isViewModeOpen, setIsViewModeOpen] = React.useState(false);
+
+    const viewModeRef = React.useRef<HTMLDivElement>(null);
+    useOnClickOutside(viewModeRef, () => setIsViewModeOpen(false));
 
     // Date selection state
     const [selectedRange, setSelectedRange] = React.useState<{ from: Date | undefined; to: Date | undefined }>({
@@ -25,21 +30,50 @@ export function DashboardFilter() {
         return `${format(selectedRange.from, 'MMM d')} - ${format(selectedRange.to, 'MMM d, yyyy')}`;
     };
 
+    const viewModes: ViewMode[] = ["Day", "Weekly", "Monthly", "Yearly"];
+
     return (
-        <div className="relative z-50 flex items-center gap-3">
-            {/* 1. View Mode Select using standard select for now to control the calendar view prop */}
-            <div className="relative">
-                <select
-                    value={viewMode}
-                    onChange={(e) => setViewMode(e.target.value as ViewMode)}
-                    className="appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg pl-3 pr-8 py-2 font-medium focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer"
+        <div className="relative z-40 flex items-center gap-3">
+            {/* 1. View Mode Select (glassy dropdown) */}
+            <div className="relative" ref={viewModeRef}>
+                <button
+                    onClick={() => setIsViewModeOpen((open) => !open)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm font-medium ${isViewModeOpen
+                        ? "bg-emerald-50/80 dark:bg-emerald-900/20 border-emerald-200/70 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-200 shadow-sm"
+                        : "surface-glass-soft border-glass text-slate-700 dark:text-slate-200 hover:bg-glass-soft"
+                        }`}
                 >
-                    <option value="Day">Day</option>
-                    <option value="Weekly">Weekly</option>
-                    <option value="Monthly">Monthly</option>
-                    <option value="Yearly">Yearly</option>
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
+                    <span>{viewMode}</span>
+                    <ChevronDown className={`h-4 w-4 text-slate-500 transition-transform ${isViewModeOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                <AnimatePresence>
+                    {isViewModeOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute left-0 mt-2 w-36 z-50 surface-glass-strong rounded-xl border border-glass overflow-hidden"
+                        >
+                            {viewModes.map((mode) => (
+                                <button
+                                    key={mode}
+                                    onClick={() => {
+                                        setViewMode(mode);
+                                        setIsViewModeOpen(false);
+                                    }}
+                                    className={`w-full text-left px-3 py-2 text-sm transition-colors ${viewMode === mode
+                                        ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-200"
+                                        : "text-slate-700 dark:text-slate-200 hover:bg-glass-soft"
+                                        }`}
+                                >
+                                    {mode}
+                                </button>
+                            ))}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* 2. Calendar Toggle Button */}

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { MOCK_SUBSCRIPTIONS, MOCK_FINANCIAL_METRICS } from '@/lib/admin/finance-data';
 import type { HotelSubscription } from '@/types/finance';
+import { SelectDropdown } from '@/components/shared/ui/Dropdown';
 
 function formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-IN', {
@@ -205,15 +206,17 @@ function PaginationFooter({
         <div className="px-4 py-3 border-t border-glass flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2">
                 <span className="text-sm text-muted">Rows per page:</span>
-                <select
-                    value={rowsPerPage}
-                    onChange={(e) => onRowsPerPageChange(Number(e.target.value))}
-                    className="input-glass py-1"
-                >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={15}>15</option>
-                </select>
+                <div className="w-20">
+                    <SelectDropdown
+                        value={String(rowsPerPage)}
+                        onChange={(val) => onRowsPerPageChange(Number(val))}
+                        options={[
+                            { value: '5', label: '5' },
+                            { value: '10', label: '10' },
+                            { value: '15', label: '15' },
+                        ]}
+                    />
+                </div>
             </div>
             <div className="flex items-center gap-4">
                 <span className="text-sm text-muted">
@@ -390,25 +393,29 @@ export default function SubscriptionsPage() {
                             className="input-glass pl-10"
                         />
                     </div>
-                    <select
-                        value={planFilter}
-                        onChange={(e) => setPlanFilter(e.target.value as typeof planFilter)}
-                        className="input-glass"
-                    >
-                        <option value="all">All Plans</option>
-                        <option value="standard">Standard</option>
-                        <option value="advanced">Advanced</option>
-                    </select>
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-                        className="input-glass"
-                    >
-                        <option value="all">All Status</option>
-                        <option value="active">Active</option>
-                        <option value="suspended">Suspended</option>
-                        <option value="grace_period">Grace Period</option>
-                    </select>
+                    <div className="w-40">
+                        <SelectDropdown
+                            value={planFilter}
+                            onChange={(val) => setPlanFilter(val as typeof planFilter)}
+                            options={[
+                                { value: 'all', label: 'All Plans' },
+                                { value: 'standard', label: 'Standard' },
+                                { value: 'advanced', label: 'Advanced' },
+                            ]}
+                        />
+                    </div>
+                    <div className="w-40">
+                        <SelectDropdown
+                            value={statusFilter}
+                            onChange={(val) => setStatusFilter(val as typeof statusFilter)}
+                            options={[
+                                { value: 'all', label: 'All Status' },
+                                { value: 'active', label: 'Active' },
+                                { value: 'suspended', label: 'Suspended' },
+                                { value: 'grace_period', label: 'Grace Period' },
+                            ]}
+                        />
+                    </div>
                 </div>
 
                 {/* Table */}

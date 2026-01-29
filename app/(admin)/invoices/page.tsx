@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { MOCK_INVOICES } from '@/lib/admin/finance-data';
 import type { Invoice } from '@/types/finance';
-import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
+import { Dropdown, DropdownItem, SelectDropdown } from '@/components/shared/ui/Dropdown';
 import { useToast } from '@/components/shared/ui/Toast';
 
 function formatCurrency(amount: number): string {
@@ -149,19 +149,18 @@ function NewInvoiceModal({ onClose, onSubmit }: { onClose: () => void; onSubmit:
                             <label className="block text-sm font-medium text-secondary-text mb-1">
                                 Hotel
                             </label>
-                            <select
+                            <SelectDropdown
                                 value={hotelName}
-                                onChange={(e) => setHotelName(e.target.value)}
-                                required
-                                className="input-glass"
-                            >
-                                <option value="">Select a hotel...</option>
-                                <option value="Royal Orchid Bangalore">Royal Orchid Bangalore</option>
-                                <option value="Lemon Tree Premier">Lemon Tree Premier</option>
-                                <option value="Ginger Hotel, Panjim">Ginger Hotel, Panjim</option>
-                                <option value="Taj Palace">Taj Palace</option>
-                                <option value="ITC Maratha">ITC Maratha</option>
-                            </select>
+                                onChange={(val) => setHotelName(val)}
+                                placeholder="Select a hotel..."
+                                options={[
+                                    { value: 'Royal Orchid Bangalore', label: 'Royal Orchid Bangalore' },
+                                    { value: 'Lemon Tree Premier', label: 'Lemon Tree Premier' },
+                                    { value: 'Ginger Hotel, Panjim', label: 'Ginger Hotel, Panjim' },
+                                    { value: 'Taj Palace', label: 'Taj Palace' },
+                                    { value: 'ITC Maratha', label: 'ITC Maratha' },
+                                ]}
+                            />
                         </div>
 
                         <div>
@@ -251,15 +250,17 @@ function PaginationFooter({
         <div className="px-4 py-3 border-t border-glass flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2">
                 <span className="text-sm text-muted">Rows per page:</span>
-                <select
-                    value={rowsPerPage}
-                    onChange={(e) => onRowsPerPageChange(Number(e.target.value))}
-                    className="input-glass !w-auto !py-1"
-                >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={15}>15</option>
-                </select>
+                <div className="w-20">
+                    <SelectDropdown
+                        value={String(rowsPerPage)}
+                        onChange={(val) => onRowsPerPageChange(Number(val))}
+                        options={[
+                            { value: '5', label: '5' },
+                            { value: '10', label: '10' },
+                            { value: '15', label: '15' },
+                        ]}
+                    />
+                </div>
             </div>
             <div className="flex items-center gap-4">
                 <span className="text-sm text-muted">
@@ -443,16 +444,18 @@ export default function InvoicesPage() {
                             className="input-glass pl-10"
                         />
                     </div>
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-                        className="input-glass !w-auto"
-                    >
-                        <option value="all">All Status</option>
-                        <option value="paid">Paid</option>
-                        <option value="pending">Pending</option>
-                        <option value="overdue">Overdue</option>
-                    </select>
+                    <div className="w-40">
+                        <SelectDropdown
+                            value={statusFilter}
+                            onChange={(val) => setStatusFilter(val as typeof statusFilter)}
+                            options={[
+                                { value: 'all', label: 'All Status' },
+                                { value: 'paid', label: 'Paid' },
+                                { value: 'pending', label: 'Pending' },
+                                { value: 'overdue', label: 'Overdue' },
+                            ]}
+                        />
+                    </div>
                 </div>
 
                 {/* Table */}
@@ -483,7 +486,9 @@ export default function InvoicesPage() {
                                         onClick={() => setSelectedInvoice(invoice)}
                                     >
                                         <td className="px-4 py-3">
-                                            <span className="text-sm font-mono font-medium text-primary">{invoice.invoiceNumber}</span>
+                                            <span className="text-sm font-mono font-medium text-primary">
+                                                {invoice.invoiceNumber || invoice.id}
+                                            </span>
                                         </td>
                                         <td className="px-4 py-3">
                                             <span className="text-sm text-secondary-text">{invoice.hotelName}</span>
@@ -682,32 +687,36 @@ export default function InvoicesPage() {
 
                                 {/* Record Payment Section */}
                                 {selectedInvoice.status !== 'paid' && (
-                                    <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
-                                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Record Payment</h3>
+                                    <div className="mt-6 pt-4 border-t border-glass">
+                                        <h3 className="text-sm font-semibold text-primary mb-3">Record Payment</h3>
                                         <div className="space-y-3">
                                             <div>
-                                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Amount</label>
+                                                <label className="block text-xs font-medium text-muted mb-1">Amount</label>
                                                 <input
                                                     type="text"
                                                     defaultValue={formatCurrency(selectedInvoice.totalAmount)}
-                                                    className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                                                    className="input-glass"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Payment Method</label>
-                                                <select className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm">
-                                                    <option>Bank Transfer</option>
-                                                    <option>Card Payment</option>
-                                                    <option>UPI</option>
-                                                    <option>Cheque</option>
-                                                </select>
+                                                <label className="block text-xs font-medium text-muted mb-1">Payment Method</label>
+                                                <SelectDropdown
+                                                    value="Bank Transfer"
+                                                    onChange={() => {}}
+                                                    options={[
+                                                        { value: 'Bank Transfer', label: 'Bank Transfer' },
+                                                        { value: 'Card Payment', label: 'Card Payment' },
+                                                        { value: 'UPI', label: 'UPI' },
+                                                        { value: 'Cheque', label: 'Cheque' },
+                                                    ]}
+                                                />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Reference Number</label>
+                                                <label className="block text-xs font-medium text-muted mb-1">Reference Number</label>
                                                 <input
                                                     type="text"
                                                     placeholder="UTR / Transaction ID"
-                                                    className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                                                    className="input-glass"
                                                 />
                                             </div>
                                         </div>

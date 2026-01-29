@@ -73,9 +73,9 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                     transition={{ duration: 0.2 }}
                     className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
                     style={{
-                        background: 'rgba(var(--shadow-color), 0.5)',
-                        backdropFilter: 'blur(8px)',
-                        WebkitBackdropFilter: 'blur(8px)',
+                        background: 'rgba(var(--shadow-color), 0.7)',
+                        backdropFilter: 'blur(4px)',
+                        WebkitBackdropFilter: 'blur(4px)',
                     }}
                     onClick={(e) => e.target === overlayRef.current && onClose()}
                 >
@@ -85,10 +85,10 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                         animate="animate"
                         exit="exit"
                         transition={smoothTransition}
-                        className={`w-full ${sizeClasses[size]} glass-elevated rounded-2xl overflow-hidden`}
+                        className={`w-full ${sizeClasses[size]} modal-surface rounded-2xl overflow-hidden shadow-2xl`}
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-glass">
+                        <div className="flex items-center justify-between px-6 py-4 border-b modal-divider">
                             <h2 className="text-lg font-semibold text-primary">{title}</h2>
                             <motion.button
                                 whileHover={{ scale: 1.1 }}

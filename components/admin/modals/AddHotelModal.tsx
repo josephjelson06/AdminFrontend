@@ -42,38 +42,38 @@ export function AddHotelModal({ isOpen, onClose, onSubmit }: AddHotelModalProps)
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Hotel Name *</label>
+                        <label className="block text-sm font-medium text-secondary mb-1">Hotel Name *</label>
                         <input
                             type="text"
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             placeholder="e.g., Royal Orchid Bangalore"
-                            className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                            className="input-glass-strong"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Location *</label>
+                        <label className="block text-sm font-medium text-secondary mb-1">Location *</label>
                         <input
                             type="text"
                             required
                             value={formData.location}
                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                             placeholder="e.g., Mumbai, MH"
-                            className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                            className="input-glass-strong"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Contact Email *</label>
+                        <label className="block text-sm font-medium text-secondary mb-1">Contact Email *</label>
                         <input
                             type="email"
                             required
                             value={formData.contactEmail}
                             onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
                             placeholder="e.g., manager@hotel.com"
-                            className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                            className="input-glass-strong"
                         />
                     </div>
 

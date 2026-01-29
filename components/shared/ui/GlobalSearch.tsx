@@ -3,21 +3,19 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-    Search,
-    Command,
+    ArrowRight,
     Building2,
-    Users,
+    Command,
     Cpu,
-    FileText,
-    Settings,
-    LifeBuoy,
     CreditCard,
-    ArrowRight
+    FileText,
+    LifeBuoy,
+    Search,
+    Settings,
+    Users,
 } from 'lucide-react';
-import { MOCK_HOTELS } from '@/lib/admin/mock-data';
+import { MOCK_HOTELS, MOCK_KIOSKS } from '@/lib/admin/mock-data';
 import { MOCK_ADMIN_USERS } from '@/lib/admin/users-data';
-import { MOCK_KIOSKS } from '@/lib/admin/mock-data';
-import { MOCK_INVOICES } from '@/lib/admin/finance-data';
 
 interface SearchGroup {
     category: string;
@@ -190,16 +188,16 @@ export function GlobalSearch() {
                 onClick={() => setOpen(true)}
                 className={`group flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 border w-full sm:w-64 ${
                     scrolled
-                        ? 'bg-transparent border-transparent hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
-                        : 'bg-slate-100 dark:bg-slate-800 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                        ? 'bg-transparent border-transparent hover:bg-slate-200/50 dark:bg-slate-900/40 dark:border-slate-700/50 dark:hover:bg-slate-800/70'
+                        : 'bg-slate-100 dark:bg-slate-900/60 border-transparent hover:bg-slate-200 dark:hover:bg-slate-800/80 hover:border-slate-300 dark:border-slate-700/60 dark:hover:border-slate-500/80'
                 }`}
             >
-                <Search className={`w-4 h-4 transition-colors duration-300 ${scrolled ? 'text-slate-400' : 'text-slate-500'} group-hover:text-slate-700 dark:group-hover:text-slate-300`} />
-                <span className={`text-sm transition-colors duration-300 ${scrolled ? 'text-slate-400' : 'text-slate-500'} group-hover:text-slate-700 dark:group-hover:text-slate-300`}>Search...</span>
+                <Search className={`w-4 h-4 transition-colors duration-300 ${scrolled ? 'text-slate-400 dark:text-slate-300' : 'text-slate-500 dark:text-slate-200'} group-hover:text-slate-700 dark:group-hover:text-slate-100`} />
+                <span className={`text-sm transition-colors duration-300 ${scrolled ? 'text-slate-400 dark:text-slate-300' : 'text-slate-500 dark:text-slate-200'} group-hover:text-slate-700 dark:group-hover:text-slate-100`}>Search...</span>
                 <span className={`ml-auto text-xs px-1.5 py-0.5 rounded border font-mono hidden sm:inline-block transition-all duration-300 ${
                     scrolled 
-                        ? 'bg-transparent border-slate-300/50 dark:border-slate-600/50 text-slate-400' 
-                        : 'bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-slate-700 text-slate-400'
+                        ? 'bg-transparent border-slate-300/50 dark:border-slate-500/60 text-slate-400 dark:text-slate-300' 
+                        : 'bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-slate-600/70 text-slate-400 dark:text-slate-300'
                 }`}>
                     ⌘K
                 </span>

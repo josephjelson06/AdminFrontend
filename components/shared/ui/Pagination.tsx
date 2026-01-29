@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { SelectDropdown } from './Dropdown';
 
 interface PaginationProps {
     currentPage: number;
@@ -114,19 +115,15 @@ export function PageSizeSelector({
 }: PageSizeSelectorProps) {
     return (
         <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-500 dark:text-slate-400">Show</span>
-            <select
-                value={value}
-                onChange={(e) => onChange(Number(e.target.value))}
-                className="px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
-            >
-                {options.map((opt) => (
-                    <option key={opt} value={opt}>
-                        {opt}
-                    </option>
-                ))}
-            </select>
-            <span className="text-sm text-slate-500 dark:text-slate-400">entries</span>
+            <span className="text-sm text-muted">Show</span>
+            <div className="w-20">
+                <SelectDropdown
+                    value={String(value)}
+                    onChange={(val) => onChange(Number(val))}
+                    options={options.map((opt) => ({ value: String(opt), label: String(opt) }))}
+                />
+            </div>
+            <span className="text-sm text-muted">entries</span>
         </div>
     );
 }

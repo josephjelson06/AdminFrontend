@@ -37,7 +37,7 @@ const NAV_GROUPS: NavGroup[] = [
     {
         title: 'Operations',
         items: [
-            { id: 'dashboard', name: 'Dashboard', href: '/', icon: LayoutDashboard },
+            { id: 'dashboard', name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
             { id: 'hotels', name: 'Hotels', href: '/hotels', icon: Building2 },
             { id: 'fleet', name: 'Kiosk Fleet', href: '/fleet', icon: Cpu },
         ],

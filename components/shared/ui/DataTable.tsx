@@ -9,6 +9,7 @@ import {
     ChevronRight,
     MoreHorizontal,
 } from 'lucide-react';
+import { SelectDropdown } from './Dropdown';
 
 // ============================================
 // TYPES
@@ -109,7 +110,7 @@ export function DataTable<T>({
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
                         placeholder={searchPlaceholder}
-                        className="input-glass pl-10"
+                        className="input-glass-strong pl-10"
                     />
                 </div>
 
@@ -196,15 +197,13 @@ export function DataTable<T>({
                         {/* Page Size */}
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-muted">Rows:</span>
-                            <select
-                                value={pageSize}
-                                onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-                                className="input-glass py-1.5 px-2 w-auto"
-                            >
-                                {[5, 10, 25, 50].map((size) => (
-                                    <option key={size} value={size}>{size}</option>
-                                ))}
-                            </select>
+                            <div className="w-20">
+                                <SelectDropdown
+                                    value={String(pageSize)}
+                                    onChange={(val) => { setPageSize(Number(val)); setCurrentPage(1); }}
+                                    options={[5, 10, 25, 50].map((size) => ({ value: String(size), label: String(size) }))}
+                                />
+                            </div>
                         </div>
 
                         {/* Page Navigation */}

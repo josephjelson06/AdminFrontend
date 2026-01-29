@@ -177,7 +177,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
 
                         {/* Notifications Dropdown */}
                         {showNotifications && (
-                            <div className="absolute right-0 mt-2 w-80 glass-elevated rounded-2xl overflow-hidden animate-scale-in">
+                            <div className="absolute right-0 mt-2 w-80 surface-glass-strong rounded-2xl overflow-hidden animate-scale-in z-[120]">
                                 <div className="px-4 py-3 border-b border-glass">
                                     <div className="flex items-center justify-between mb-2">
                                         <h3 className="text-sm font-semibold text-primary">Notifications</h3>
@@ -269,7 +269,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
 
                         {/* User Dropdown */}
                         {showUserMenu && (
-                            <div className="absolute right-0 mt-2 w-52 glass-elevated rounded-2xl py-2 animate-scale-in">
+                            <div className="absolute right-0 mt-2 w-52 surface-glass-strong rounded-2xl py-2 animate-scale-in z-[120]">
                                 <Link
                                     href="/profile"
                                     className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary hover:text-primary hover:bg-glass-soft transition-all duration-normal"

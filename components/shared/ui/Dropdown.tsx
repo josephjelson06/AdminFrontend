@@ -126,14 +126,14 @@ export function SelectDropdown({ value, options, onChange, placeholder = 'Select
         <div ref={dropdownRef} className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/60 dark:border-slate-600/60 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:border-slate-300/70 dark:hover:border-slate-500/70 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-2.5 surface-glass-strong border border-glass rounded-xl text-sm text-secondary-text hover:border-primary/30 transition-all duration-fast"
             >
-                <span className={value ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400'}>{selectedLabel}</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <span className={value ? 'text-primary' : 'text-muted'}>{selectedLabel}</span>
+                <ChevronDown className={`w-4 h-4 text-muted transition-transform duration-fast ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 glass-elevated rounded-xl py-1 max-h-48 overflow-auto">
+                <div className="absolute z-50 w-full mt-1 surface-glass-strong border border-glass rounded-xl py-1 max-h-48 overflow-auto shadow-elevated">
                     {options.map((option) => (
                         <button
                             key={option.value}
@@ -141,9 +141,9 @@ export function SelectDropdown({ value, options, onChange, placeholder = 'Select
                                 onChange(option.value);
                                 setIsOpen(false);
                             }}
-                            className={`w-full text-left px-3 py-2 text-sm transition-colors ${option.value === value
-                                ? 'bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 font-medium'
-                                : 'text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50'
+                            className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-fast ${option.value === value
+                                ? 'bg-primary/15 text-primary font-medium'
+                                : 'text-secondary-text hover:bg-glass-soft hover:text-primary'
                                 }`}
                         >
                             {option.label}

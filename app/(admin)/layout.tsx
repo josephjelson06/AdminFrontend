@@ -71,7 +71,7 @@ export default function AdminLayout({
                     onMenuClick={() => setSidebarOpen(true)}
                     sidebarCollapsed={isCollapsed}
                 />
-                <main className="pt-20 min-h-screen transition-all duration-normal ease-smooth lg:ml-[var(--sidebar-width)]">
+                <main className="min-h-screen transition-all duration-normal ease-smooth lg:ml-[var(--sidebar-width)]">
                     <div className="p-4 sm:p-6 lg:p-8">
                         {children}
                     </div>
