@@ -250,10 +250,12 @@ export function TableActions({ children }: { children: ReactNode }) {
 
 export function TableBadge({
     children,
-    variant = 'default'
+    variant = 'default',
+    className = ''
 }: {
     children: ReactNode;
     variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
+    className?: string;
 }) {
     const styles = {
         default: 'badge-neutral',
@@ -264,7 +266,7 @@ export function TableBadge({
     };
 
     return (
-        <span className={`${styles[variant]}`}>
+        <span className={`${styles[variant]} ${className || ''}`}>
             {children}
         </span>
     );

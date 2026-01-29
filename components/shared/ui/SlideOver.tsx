@@ -10,6 +10,7 @@ interface SlideOverProps {
     onClose: () => void;
     title: string;
     description?: string;
+    subtitle?: string; // Alias for description
     size?: 'sm' | 'md' | 'lg' | 'xl';
     children: React.ReactNode;
 }
@@ -44,9 +45,11 @@ export function SlideOver({
     onClose,
     title,
     description,
+    subtitle, // Alias for description
     size = 'md',
     children
 }: SlideOverProps) {
+    const displayDescription = description || subtitle;
     const panelRef = useRef<HTMLDivElement>(null);
 
     const [mounted, setMounted] = useState(false);
@@ -110,9 +113,9 @@ export function SlideOver({
                                             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                                                 {title}
                                             </h2>
-                                            {description && (
+                                            {displayDescription && (
                                                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                                                    {description}
+                                                    {displayDescription}
                                                 </p>
                                             )}
                                         </div>
