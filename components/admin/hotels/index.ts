@@ -5,6 +5,7 @@
  */
 
 export { HotelList } from './HotelList';
+export { HotelCard } from './HotelCard';
 export { HotelStatusBadge } from './HotelStatusBadge';
 export { HotelFiltersBar } from './HotelFilters';
 export { HotelActionsMenu } from './HotelActionsMenu';

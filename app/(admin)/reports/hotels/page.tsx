@@ -1,40 +1,65 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
     ChevronRight,
-    Building2,
     Trophy,
     AlertTriangle,
     TrendingUp,
-    TrendingDown,
-    Star,
     Percent,
 } from 'lucide-react';
-import { BarChartComponent } from '@/components/shared/ui/Charts';
-
-// Mock hotel performance data
-const MOCK_TOP_HOTELS = [
-    { id: 'h-001', name: 'Royal Orchid Bangalore', checkins: 1250, selfCheckInRate: 78, trend: 12.5, category: 'Luxury' },
-    { id: 'h-010', name: 'The Leela Palace', checkins: 1180, selfCheckInRate: 85, trend: 15.2, category: 'Luxury' },
-    { id: 'h-005', name: 'Taj Palace', checkins: 980, selfCheckInRate: 82, trend: 8.3, category: 'Luxury' },
-    { id: 'h-003', name: 'Ginger Hotel, Panjim', checkins: 520, selfCheckInRate: 72, trend: 5.1, category: 'Budget' },
-    { id: 'h-008', name: 'Marriott Suites', checkins: 890, selfCheckInRate: 76, trend: 10.8, category: 'Business' },
-];
-
-const MOCK_UNDERPERFORMING = [
-    { id: 'h-009', name: 'Holiday Inn', checkins: 180, selfCheckInRate: 42, issue: 'Low adoption rate', severity: 'warning' },
-    { id: 'h-007', name: 'Radisson Blu', checkins: 220, selfCheckInRate: 38, issue: 'Declining usage -15%', severity: 'critical' },
-    { id: 'h-012', name: 'Trident Nariman', checkins: 290, selfCheckInRate: 55, issue: 'Below average', severity: 'info' },
-];
-
-const CATEGORY_PERFORMANCE = [
-    { name: 'Luxury', value: 85 },
-    { name: 'Business', value: 70 },
-    { name: 'Budget', value: 62 },
-];
+import {
+    reportsService,
+    type TopHotel,
+    type UnderperformingHotel,
+    type CategoryPerformance
+} from '@/lib/services/reportsService';
 
 export default function HotelPerformancePage() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [topHotels, setTopHotels] = useState<TopHotel[]>([]);
+    const [underperforming, setUnderperforming] = useState<UnderperformingHotel[]>([]);
+    const [categories, setCategories] = useState<CategoryPerformance[]>([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const [top, bad, cats] = await Promise.all([
+                    reportsService.getTopHotels(),
+                    reportsService.getUnderperformingHotels(),
+                    reportsService.getCategoryPerformance(),
+                ]);
+                setTopHotels(top);
+                setUnderperforming(bad);
+                setCategories(cats);
+            } catch (error) {
+                console.error('Failed to fetch report data', error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchData();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="p-4 sm:p-6 animate-in fade-in duration-normal">
+                <div className="flex items-center gap-2 text-sm mb-4">
+                    <span className="text-muted">Reports</span>
+                    <ChevronRight className="w-4 h-4 text-muted" />
+                    <span className="font-medium text-primary">Hotel Performance</span>
+                </div>
+                <div className="h-8 w-64 bg-slate-200 dark:bg-slate-800 rounded animate-pulse mb-6" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+                    <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+                </div>
+                <div className="h-48 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+            </div>
+        );
+    }
+
     return (
         <div className="p-4 sm:p-6 animate-in fade-in duration-normal">
             {/* Breadcrumb */}
@@ -57,16 +82,16 @@ export default function HotelPerformancePage() {
                         <h3 className="text-sm font-semibold text-primary">Top Performing Hotels</h3>
                     </div>
                     <div className="divide-y divide-glass">
-                        {MOCK_TOP_HOTELS.map((hotel, idx) => (
+                        {topHotels.map((hotel, idx) => (
                             <Link
                                 key={hotel.id}
                                 href={`/hotels/${hotel.id}`}
                                 className="flex items-center gap-4 px-4 py-3 glass-hover transition-colors"
                             >
                                 <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${idx === 0 ? 'bg-warning/20 text-warning' :
-                                        idx === 1 ? 'surface-glass-soft text-secondary-text' :
-                                            idx === 2 ? 'bg-warning/10 text-warning' :
-                                                'surface-glass-soft text-muted'
+                                    idx === 1 ? 'surface-glass-soft text-secondary-text' :
+                                        idx === 2 ? 'bg-warning/10 text-warning' :
+                                            'surface-glass-soft text-muted'
                                     }`}>
                                     {idx + 1}
                                 </span>
@@ -96,25 +121,25 @@ export default function HotelPerformancePage() {
                         <AlertTriangle className="w-4 h-4 text-warning" />
                         <h3 className="text-sm font-semibold text-primary">Needs Attention</h3>
                         <span className="ml-auto badge-warning">
-                            {MOCK_UNDERPERFORMING.length}
+                            {underperforming.length}
                         </span>
                     </div>
                     <div className="divide-y divide-glass">
-                        {MOCK_UNDERPERFORMING.map((hotel) => (
+                        {underperforming.map((hotel) => (
                             <Link
                                 key={hotel.id}
                                 href={`/hotels/${hotel.id}`}
                                 className="flex items-center gap-4 px-4 py-3 glass-hover transition-colors"
                             >
                                 <div className={`w-2 h-2 rounded-full ${hotel.severity === 'critical' ? 'bg-danger' :
-                                        hotel.severity === 'warning' ? 'bg-warning' :
-                                            'bg-info'
+                                    hotel.severity === 'warning' ? 'bg-warning' :
+                                        'bg-info'
                                     }`} />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-primary truncate">{hotel.name}</p>
                                     <p className={`text-xs ${hotel.severity === 'critical' ? 'text-danger' :
-                                            hotel.severity === 'warning' ? 'text-warning' :
-                                                'text-info'
+                                        hotel.severity === 'warning' ? 'text-warning' :
+                                            'text-info'
                                         }`}>{hotel.issue}</p>
                                 </div>
                                 <div className="text-right">
@@ -140,14 +165,14 @@ export default function HotelPerformancePage() {
                     Self Check-in Rate by Hotel Category
                 </h3>
                 <div className="space-y-4">
-                    {CATEGORY_PERFORMANCE.map((cat) => (
-                        <div key={cat.name} className="flex items-center gap-4">
+                    {categories.map((cat) => (
+                        <div key={cat.name} className="flex flex-wrap items-center gap-4">
                             <span className="w-20 text-sm text-secondary-text">{cat.name}</span>
-                            <div className="flex-1 surface-glass-soft rounded-full h-4 relative overflow-hidden">
+                            <div className="flex-1 min-w-[200px] surface-glass-soft rounded-full h-4 relative overflow-hidden">
                                 <div
                                     className={`h-4 rounded-full ${cat.value >= 80 ? 'bg-success' :
-                                            cat.value >= 65 ? 'bg-info' :
-                                                'bg-warning'
+                                        cat.value >= 65 ? 'bg-info' :
+                                            'bg-warning'
                                         }`}
                                     style={{ width: `${cat.value}%` }}
                                 />
@@ -156,7 +181,7 @@ export default function HotelPerformancePage() {
                         </div>
                     ))}
                 </div>
-                <div className="mt-4 pt-4 border-t border-glass flex items-center justify-between text-xs text-muted">
+                <div className="mt-4 pt-4 border-t border-glass flex flex-wrap gap-4 items-center justify-between text-xs text-muted">
                     <span>Benchmark: 70% for optimal kiosk ROI</span>
                     <span className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-success" /> Excellent

@@ -11,11 +11,14 @@ import type { ServiceResponse, PaginatedResult } from './hotelService';
 // Simulate network delay
 const delay = (ms: number = 200) => new Promise(resolve => setTimeout(resolve, ms));
 
+// ... existing imports ...
+
 export interface InvoiceQueryParams {
     page?: number;
     pageSize?: number;
     search?: string;
     status?: Invoice['status'] | 'all';
+    hotelId?: string;
 }
 
 export interface InvoiceSummary {
@@ -44,6 +47,7 @@ function paginate<T>(data: T[], page: number = 1, pageSize: number = 10): Pagina
 }
 
 export const invoiceService = {
+    // ... existing list method ...
     /**
      * Fetch paginated list of invoices with optional filters
      */
@@ -51,6 +55,11 @@ export const invoiceService = {
         await delay();
 
         let data = [...MOCK_INVOICES];
+
+        // Apply hotelId filter
+        if (params?.hotelId) {
+            data = data.filter(inv => inv.hotelId === params.hotelId);
+        }
 
         // Apply search
         if (params?.search) {

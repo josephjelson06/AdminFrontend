@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Building2,
@@ -17,11 +17,15 @@ import {
     Send,
     Pause,
     ArrowUpRight,
-    Shield,
     Wallet,
+    Loader2,
 } from 'lucide-react';
-import { MOCK_SUBSCRIPTIONS, MOCK_INVOICES } from '@/lib/admin/finance-data';
-import { MOCK_HOTELS } from '@/lib/admin/mock-data';
+import { hotelService } from '@/lib/services/hotelService';
+import { subscriptionService } from '@/lib/services/subscriptionService';
+import { invoiceService } from '@/lib/services/invoiceService';
+import { useToast } from '@/components/shared/ui/Toast';
+import type { Hotel } from '@/types/schema';
+import type { HotelSubscription, Invoice } from '@/types/finance';
 
 function formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-IN', {
@@ -65,15 +69,56 @@ interface PageProps {
 
 export default function HotelFinanceDetailPage({ params }: PageProps) {
     const { hotelId } = use(params);
+    const { addToast } = useToast();
 
-    const subscription = MOCK_SUBSCRIPTIONS.find(s => s.hotelId === hotelId);
-    const hotel = MOCK_HOTELS.find(h => h.id === hotelId);
-    const hotelInvoices = MOCK_INVOICES.filter(inv => inv.hotelId === hotelId);
+    const [isLoading, setIsLoading] = useState(true);
+    const [hotel, setHotel] = useState<Hotel | null>(null);
+    const [subscription, setSubscription] = useState<HotelSubscription | null>(null);
+    const [invoices, setInvoices] = useState<Invoice[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const [hotelRes, subRes, invoicesRes] = await Promise.all([
+                    hotelService.get(hotelId),
+                    subscriptionService.get(hotelId),
+                    invoiceService.list({ hotelId }),
+                ]);
+
+                if (hotelRes.success && hotelRes.data) {
+                    setHotel(hotelRes.data);
+                }
+                if (subRes.success && subRes.data) {
+                    setSubscription(subRes.data);
+                }
+                if (invoicesRes.data) {
+                    setInvoices(invoicesRes.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch finance details:', error);
+                addToast('error', 'Error', 'Failed to load subscription details');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [hotelId, addToast]);
+
+    if (isLoading) {
+        return (
+            <div className="h-96 flex flex-col items-center justify-center">
+                <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
+                <p className="text-muted">Loading subscription details...</p>
+            </div>
+        );
+    }
 
     if (!subscription || !hotel) {
         return (
             <div className="p-6">
-                <div className="text-center py-12">
+                <div className="text-center py-12 surface-glass-strong rounded-lg border border-glass">
                     <Building2 className="w-12 h-12 text-muted mx-auto mb-4" />
                     <h2 className="text-lg font-semibold text-primary">Hotel not found</h2>
                     <p className="text-sm text-muted mt-1">The requested hotel subscription could not be found.</p>
@@ -87,7 +132,7 @@ export default function HotelFinanceDetailPage({ params }: PageProps) {
 
     const tenure = getMonthsCustomer(subscription.startDate);
     const daysToRenewal = getDaysFromNow(subscription.contractEndDate);
-    const outstandingBalance = hotelInvoices
+    const outstandingBalance = invoices
         .filter(inv => inv.status === 'pending' || inv.status === 'overdue')
         .reduce((sum, inv) => sum + inv.totalAmount, 0);
 
@@ -105,7 +150,7 @@ export default function HotelFinanceDetailPage({ params }: PageProps) {
         cancelled: { icon: Clock, style: 'badge-default' },
     };
 
-    // Mock payment history
+    // Mock payment history (keep internal until API endpoint exists)
     const paymentHistory = [
         { date: '2026-01-12', amount: 59000, status: 'success', method: 'Card •••• 4242' },
         { date: '2025-12-10', amount: 59000, status: 'success', method: 'Card •••• 4242' },
@@ -302,14 +347,14 @@ export default function HotelFinanceDetailPage({ params }: PageProps) {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-glass">
-                            {hotelInvoices.length === 0 ? (
+                            {invoices.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-8 text-center text-sm text-muted">
                                         No invoices found for this hotel.
                                     </td>
                                 </tr>
                             ) : (
-                                hotelInvoices.map((invoice) => {
+                                invoices.map((invoice) => {
                                     const StatusIcon = invoiceStatusConfig[invoice.status].icon;
                                     return (
                                         <tr key={invoice.id} className="glass-hover">

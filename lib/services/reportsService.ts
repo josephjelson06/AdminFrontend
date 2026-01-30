@@ -22,9 +22,26 @@ export interface LanguageDataPoint {
 }
 
 export interface TopHotel {
+    id: string;
     name: string;
     checkins: number;
     selfCheckInRate: number;
+    trend: number;
+    category: 'Luxury' | 'Business' | 'Budget';
+}
+
+export interface UnderperformingHotel {
+    id: string;
+    name: string;
+    checkins: number;
+    selfCheckInRate: number;
+    issue: string;
+    severity: 'critical' | 'warning' | 'info';
+}
+
+export interface CategoryPerformance {
+    name: string;
+    value: number;
 }
 
 export interface StateData {
@@ -47,6 +64,25 @@ export interface ReportsMetrics {
     nonEnglishUsage: number;
 }
 
+export interface OperationalKioskMetrics {
+    id: string;
+    hotelId: string;
+    hotelName: string;
+    state: string;
+    checkins: number;
+    avgPerDay: number;
+    utilization: number;
+    status: 'active' | 'maintenance';
+}
+
+export interface OperationalFilters {
+    search?: string;
+    state?: string;
+    hotelId?: string;
+    dateFrom?: string;
+    dateTo?: string;
+}
+
 // Mock data
 const MOCK_CHECKIN_DATA: CheckinDataPoint[] = [
     { name: 'Aug', checkins: 1240, aiSessions: 890 },
@@ -67,10 +103,23 @@ const MOCK_LANGUAGE_DATA: LanguageDataPoint[] = [
 ];
 
 const MOCK_TOP_HOTELS: TopHotel[] = [
-    { name: 'Royal Orchid Bangalore', checkins: 1250, selfCheckInRate: 78 },
-    { name: 'Lemon Tree Premier', checkins: 890, selfCheckInRate: 65 },
-    { name: 'Ginger Hotel, Panjim', checkins: 520, selfCheckInRate: 82 },
-    { name: 'Taj Palace Mumbai', checkins: 490, selfCheckInRate: 71 },
+    { id: 'h-001', name: 'Royal Orchid Bangalore', checkins: 1250, selfCheckInRate: 78, trend: 12.5, category: 'Luxury' },
+    { id: 'h-010', name: 'The Leela Palace', checkins: 1180, selfCheckInRate: 85, trend: 15.2, category: 'Luxury' },
+    { id: 'h-005', name: 'Taj Palace', checkins: 980, selfCheckInRate: 82, trend: 8.3, category: 'Luxury' },
+    { id: 'h-003', name: 'Ginger Hotel, Panjim', checkins: 520, selfCheckInRate: 72, trend: 5.1, category: 'Budget' },
+    { id: 'h-008', name: 'Marriott Suites', checkins: 890, selfCheckInRate: 76, trend: 10.8, category: 'Business' },
+];
+
+const MOCK_UNDERPERFORMING: UnderperformingHotel[] = [
+    { id: 'h-009', name: 'Holiday Inn', checkins: 180, selfCheckInRate: 42, issue: 'Low adoption rate', severity: 'warning' },
+    { id: 'h-007', name: 'Radisson Blu', checkins: 220, selfCheckInRate: 38, issue: 'Declining usage -15%', severity: 'critical' },
+    { id: 'h-012', name: 'Trident Nariman', checkins: 290, selfCheckInRate: 55, issue: 'Below average', severity: 'info' },
+];
+
+const CATEGORY_PERFORMANCE: CategoryPerformance[] = [
+    { name: 'Luxury', value: 85 },
+    { name: 'Business', value: 70 },
+    { name: 'Budget', value: 62 },
 ];
 
 const MOCK_STATE_DATA: StateData[] = [
@@ -96,6 +145,17 @@ const DAILY_DATA: DailyDataPoint[] = [
     { name: 'Fri', value: 234 },
     { name: 'Sat', value: 267 },
     { name: 'Sun', value: 198 },
+];
+
+const MOCK_OPERATIONAL_DATA: OperationalKioskMetrics[] = [
+    { id: 'K-001', hotelId: 'h-001', hotelName: 'Royal Orchid Bangalore', state: 'Karnataka', checkins: 245, avgPerDay: 35, utilization: 82, status: 'active' },
+    { id: 'K-002', hotelId: 'h-001', hotelName: 'Royal Orchid Bangalore', state: 'Karnataka', checkins: 198, avgPerDay: 28, utilization: 75, status: 'active' },
+    { id: 'K-003', hotelId: 'h-002', hotelName: 'Lemon Tree Premier', state: 'Maharashtra', checkins: 156, avgPerDay: 22, utilization: 68, status: 'active' },
+    { id: 'K-004', hotelId: 'h-003', hotelName: 'Ginger Hotel Panjim', state: 'Goa', checkins: 89, avgPerDay: 13, utilization: 45, status: 'maintenance' },
+    { id: 'K-005', hotelId: 'h-005', hotelName: 'ITC Maratha', state: 'Maharashtra', checkins: 312, avgPerDay: 45, utilization: 92, status: 'active' },
+    { id: 'K-006', hotelId: 'h-006', hotelName: 'Marriott Suites', state: 'Delhi NCR', checkins: 178, avgPerDay: 25, utilization: 71, status: 'active' },
+    { id: 'K-007', hotelId: 'h-007', hotelName: 'The Leela Palace', state: 'Karnataka', checkins: 267, avgPerDay: 38, utilization: 85, status: 'active' },
+    { id: 'K-008', hotelId: 'h-001', hotelName: 'Royal Orchid Bangalore', state: 'Karnataka', checkins: 145, avgPerDay: 21, utilization: 62, status: 'active' },
 ];
 
 export const reportsService = {
@@ -135,8 +195,24 @@ export const reportsService = {
      * Get top performing hotels
      */
     async getTopHotels(): Promise<TopHotel[]> {
-        await delay(100);
+        await delay(300);
         return [...MOCK_TOP_HOTELS];
+    },
+
+    /**
+     * Get underperforming hotels
+     */
+    async getUnderperformingHotels(): Promise<UnderperformingHotel[]> {
+        await delay(400);
+        return [...MOCK_UNDERPERFORMING];
+    },
+
+    /**
+     * Get category performance
+     */
+    async getCategoryPerformance(): Promise<CategoryPerformance[]> {
+        await delay(200);
+        return [...CATEGORY_PERFORMANCE];
     },
 
     /**
@@ -153,6 +229,53 @@ export const reportsService = {
     async getDailyPattern(): Promise<DailyDataPoint[]> {
         await delay(100);
         return [...DAILY_DATA];
+    },
+
+    /**
+     * Get operational metrics report
+     */
+    async getOperationalReport(filters?: OperationalFilters): Promise<OperationalKioskMetrics[]> {
+        await delay(500); // Simulate processing time
+
+        let data = [...MOCK_OPERATIONAL_DATA];
+
+        if (filters?.search) {
+            const query = filters.search.toLowerCase();
+            data = data.filter(item =>
+                item.id.toLowerCase().includes(query) ||
+                item.hotelName.toLowerCase().includes(query)
+            );
+        }
+
+        if (filters?.state && filters.state !== 'all') {
+            data = data.filter(item => item.state === filters.state);
+        }
+
+        if (filters?.hotelId && filters.hotelId !== 'all') {
+            data = data.filter(item => item.hotelId === filters.hotelId);
+        }
+
+        return data;
+    },
+
+    /**
+     * Get available filters for operational report
+     */
+    async getOperationalFilters() {
+        await delay(100);
+
+        // Extract unique states
+        const states = Array.from(new Set(MOCK_OPERATIONAL_DATA.map(d => d.state)))
+            .map(state => ({ id: state, name: state }));
+
+        // Extract unique hotels
+        const hotels = Array.from(new Set(MOCK_OPERATIONAL_DATA.map(d => JSON.stringify({ id: d.hotelId, name: d.hotelName }))))
+            .map(str => JSON.parse(str));
+
+        return {
+            states: [{ id: 'all', name: 'All States' }, ...states],
+            hotels: [{ id: 'all', name: 'All Hotels' }, ...hotels],
+        };
     },
 
     /**
