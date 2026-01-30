@@ -119,9 +119,8 @@ export function useHotels(options: UseHotelsOptions = {}): UseHotelsReturn {
 
     // Reset to page 1 when filters change
     useEffect(() => {
-        if (pagination.page !== 1) {
-            pagination.setPage(1);
-        }
+        pagination.setPage(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedSearch, filters.status, filters.plan]);
 
     return {

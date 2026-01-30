@@ -7,9 +7,8 @@
  * Features quick action buttons for location, phone, and email.
  */
 
-import { Search, Plus, Grid, List } from 'lucide-react';
-import { useState } from 'react';
-import { Card } from '@/components/shared/ui/Card';
+import { Search, Plus, Building2 } from 'lucide-react';
+import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { useHotels } from './useHotels';
 import { useHotelActions } from './useHotelActions';
 import { HotelCard } from './HotelCard';
@@ -28,6 +27,7 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
         error,
         page,
         totalPages,
+        totalItems,
         setPage,
         filters,
         setFilter,
@@ -42,18 +42,18 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
     const hasActiveFilters = Boolean(filters.search || filters.status || filters.plan);
 
     return (
-        <>
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <div>
-                    <h1 className="text-xl font-semibold text-primary">Hotels Registry</h1>
+        <div className="space-y-6">
+            {/* Page Header */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-bold text-primary">Hotels Registry</h1>
                     <p className="text-sm text-muted">
-                        Manage hotel tenants and subscriptions
+                        Manage hotel tenants, subscriptions, and kiosk deployments
                     </p>
                 </div>
                 <button
                     onClick={actions.openAddModal}
-                    className="btn-primary"
+                    className="btn-primary shrink-0"
                 >
                     <Plus className="w-4 h-4" />
                     Add Hotel
@@ -61,28 +61,33 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
             </div>
 
             {/* Filters Card */}
-            <Card padding="none" className="mb-6">
+            <GlassCard padding="none">
                 <HotelFiltersBar
                     filters={filters}
                     onFilterChange={setFilter}
                     onClearFilters={clearFilters}
                     hasActiveFilters={hasActiveFilters}
                 />
-            </Card>
+            </GlassCard>
 
             {/* Hotels Card Grid */}
             {isLoading ? (
-                <div className="flex items-center justify-center py-16">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <div className="flex items-center justify-center py-24">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent" />
+                        <p className="text-sm text-muted">Loading hotels...</p>
+                    </div>
                 </div>
             ) : hotels.length === 0 ? (
-                <Card className="py-16 text-center">
-                    <Search className="w-12 h-12 text-muted mx-auto mb-4" />
+                <GlassCard className="py-20 text-center">
+                    <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center mb-6">
+                        <Building2 className="w-8 h-8 text-indigo-500" />
+                    </div>
                     <h3 className="text-lg font-semibold text-primary mb-2">No hotels found</h3>
-                    <p className="text-sm text-muted mb-4">
+                    <p className="text-sm text-muted mb-6 max-w-sm mx-auto">
                         {hasActiveFilters
-                            ? 'Try adjusting your search filters'
-                            : 'Get started by adding your first hotel'
+                            ? 'Try adjusting your search filters to find what you\'re looking for'
+                            : 'Get started by adding your first hotel to the registry'
                         }
                     </p>
                     {hasActiveFilters ? (
@@ -98,19 +103,27 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
                             className="btn-primary"
                         >
                             <Plus className="w-4 h-4" />
-                            Add Hotel
+                            Add Your First Hotel
                         </button>
                     )}
-                </Card>
+                </GlassCard>
             ) : (
                 <>
+                    {/* Results Count */}
+                    <div className="flex items-center justify-between">
+                        <p className="text-sm text-muted">
+                            Showing <span className="font-medium text-primary">{hotels.length}</span> of{' '}
+                            <span className="font-medium text-primary">{totalItems}</span> hotels
+                        </p>
+                    </div>
+
                     {/* Cards Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                         {hotels.map((hotel, index) => (
                             <div
                                 key={hotel.id}
                                 className="animate-in fade-in slide-in-from-bottom-2"
-                                style={{ animationDelay: `${index * 50}ms` }}
+                                style={{ animationDelay: `${index * 40}ms`, animationFillMode: 'both' }}
                             >
                                 <HotelCard
                                     hotel={hotel}
@@ -124,27 +137,30 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-elevated rounded-xl">
-                            <span className="text-sm text-muted">
-                                Page {page} of {totalPages}
-                            </span>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setPage(page - 1)}
-                                    disabled={page <= 1}
-                                    className="px-4 py-2 text-sm font-medium glass-hover rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                >
-                                    Previous
-                                </button>
-                                <button
-                                    onClick={() => setPage(page + 1)}
-                                    disabled={page >= totalPages}
-                                    className="px-4 py-2 text-sm font-medium glass-hover rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                >
-                                    Next
-                                </button>
+                        <GlassCard padding="sm" className="mt-6">
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <span className="text-sm text-muted">
+                                    Page <span className="font-medium text-primary">{page}</span> of{' '}
+                                    <span className="font-medium text-primary">{totalPages}</span>
+                                </span>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => setPage(page - 1)}
+                                        disabled={page <= 1}
+                                        className="btn-secondary px-5 py-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        Previous
+                                    </button>
+                                    <button
+                                        onClick={() => setPage(page + 1)}
+                                        disabled={page >= totalPages}
+                                        className="btn-secondary px-5 py-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        </GlassCard>
                     )}
                 </>
             )}
@@ -154,10 +170,13 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
 
             {/* Error display */}
             {error && (
-                <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400">
-                    {error.message}
-                </div>
+                <GlassCard className="border-red-500/30 bg-red-500/5">
+                    <div className="flex items-center gap-3 text-red-500 dark:text-red-400">
+                        <div className="shrink-0 w-2 h-2 rounded-full bg-red-500" />
+                        <p className="text-sm">{error.message}</p>
+                    </div>
+                </GlassCard>
             )}
-        </>
+        </div>
     );
 }
