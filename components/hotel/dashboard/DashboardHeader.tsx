@@ -58,7 +58,7 @@ export function DashboardHeader({ userName, lastUpdated, onRefresh }: DashboardH
             </div>
 
             <div className="flex items-center gap-2">
-                <div className="relative z-50">
+                <div className="relative z-20">
                     <select
                         value={dateRange}
                         onChange={(e) => handleDateRangeChange(e.target.value)}
@@ -78,14 +78,14 @@ export function DashboardHeader({ userName, lastUpdated, onRefresh }: DashboardH
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute top-full right-0 mt-2 z-50 origin-top-right"
+                                className="absolute top-full right-0 mt-2 z-30 origin-top-right"
                             >
                                 <div className="relative">
                                     <div
-                                        className="fixed inset-0 z-40"
+                                        className="fixed inset-0 z-20"
                                         onClick={() => setIsCalendarOpen(false)}
                                     />
-                                    <div className="relative z-50">
+                                    <div className="relative z-30">
                                         <GlassCalendar
                                             viewMode={viewMode}
                                             onViewModeChange={setViewMode}

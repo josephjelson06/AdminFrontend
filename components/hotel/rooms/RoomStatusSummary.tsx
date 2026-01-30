@@ -23,14 +23,14 @@ const statItems = [
 
 export function RoomStatusSummary({ stats, activeFilter, onFilterChange }: RoomStatusSummaryProps) {
     return (
-        <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             {statItems.map((stat) => (
                 <button
                     key={stat.key}
                     onClick={() => onFilterChange(activeFilter === stat.key ? 'all' : stat.key)}
                     className={`relative overflow-hidden rounded-xl p-4 text-center transition-all hover:scale-105 ${activeFilter === stat.key
-                            ? `bg-gradient-to-br ${stat.color} text-white shadow-lg`
-                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
+                        ? `bg-gradient-to-br ${stat.color} text-white shadow-lg`
+                        : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
                         }`}
                 >
                     <div className={`text-2xl sm:text-3xl font-bold ${activeFilter === stat.key ? 'text-white' : stat.textColor}`}>

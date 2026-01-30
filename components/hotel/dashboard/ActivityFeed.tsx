@@ -22,7 +22,7 @@ const filters: ActivityFilter[] = ['All', 'Failed', 'Success'];
 
 export function ActivityFeed({ activity, filter, onFilterChange, getKioskName }: ActivityFeedProps) {
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 flex flex-col h-[500px]">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 flex flex-col min-h-[400px] max-h-[600px]">
             <div className="flex items-center justify-between mb-4 flex-shrink-0">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Recent Activity</h2>
                 <div className="flex bg-slate-100 dark:bg-slate-700/50 rounded-lg p-1">
@@ -31,8 +31,8 @@ export function ActivityFeed({ activity, filter, onFilterChange, getKioskName }:
                             key={f}
                             onClick={() => onFilterChange(f)}
                             className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${filter === f
-                                    ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm'
-                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm'
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                                 }`}
                         >
                             {f}

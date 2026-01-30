@@ -45,7 +45,7 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
     const hasActiveFilters = Boolean(filters.search || filters.status || filters.plan);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Page Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
@@ -63,15 +63,13 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
                 </button>
             </div>
 
-            {/* Filters Card */}
-            <GlassCard padding="none">
-                <HotelFiltersBar
-                    filters={filters}
-                    onFilterChange={setFilter}
-                    onClearFilters={clearFilters}
-                    hasActiveFilters={hasActiveFilters}
-                />
-            </GlassCard>
+            {/* Filters */}
+            <HotelFiltersBar
+                filters={filters}
+                onFilterChange={setFilter}
+                onClearFilters={clearFilters}
+                hasActiveFilters={hasActiveFilters}
+            />
 
             {/* Hotels Card Grid */}
             {isLoading ? (

@@ -28,35 +28,29 @@ export default function Dashboard() {
 
     if (isLoading) {
         return (
-            <div className="p-4 sm:p-6 flex items-center justify-center min-h-[50vh]">
+            <div className="flex items-center justify-center min-h-[50vh]">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
         );
     }
 
     return (
-        <div className="p-4 sm:p-6 animate-in fade-in duration-normal">
+        <div className="animate-in fade-in duration-normal space-y-4">
             {/* Header */}
-            <div className="mb-6">
-                <DashboardHeader alerts={alerts} />
-            </div>
+            <DashboardHeader alerts={alerts} />
 
             {/* KPI Cards */}
-            <div className="mb-6">
-                <DashboardKPIs metrics={metrics} />
-            </div>
+            <DashboardKPIs metrics={metrics} />
 
             {/* Charts Row */}
-            <div className="mb-6">
-                <DashboardCharts
-                    checkinTrend={checkinTrend}
-                    healthTrend={healthTrend}
-                    kioskStatusDistribution={kioskStatusDistribution}
-                />
-            </div>
+            <DashboardCharts
+                checkinTrend={checkinTrend}
+                healthTrend={healthTrend}
+                kioskStatusDistribution={kioskStatusDistribution}
+            />
 
             {/* Bottom Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <AlertsFeed alerts={alerts} />
                 <QuickAccessGrid />
             </div>

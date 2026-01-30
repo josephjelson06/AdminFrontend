@@ -62,7 +62,7 @@ export function HotelDashboardManager() {
 
     return (
         <HotelLayout>
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-full mx-auto">
                 {/* Header */}
                 <DashboardHeader
                     userName={user?.name || 'User'}

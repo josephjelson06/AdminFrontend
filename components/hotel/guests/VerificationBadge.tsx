@@ -1,25 +1,39 @@
 'use client';
 
+/**
+ * VerificationBadge Component
+ * 
+ * Display guest verification status using the semantic status system.
+ */
+
 import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
-import { getVerificationColor, type VerificationStatus } from '@/lib/hotel/hotel-data';
+import { StatusBadge } from '@/components/hotel/shared';
+import type { VerificationStatus } from '@/lib/hotel/hotel-data';
 
 interface VerificationBadgeProps {
     status: VerificationStatus;
 }
 
+const statusIcons = {
+    verified: CheckCircle2,
+    manual: AlertCircle,
+    failed: XCircle,
+};
+
+const statusLabels: Record<VerificationStatus, string> = {
+    verified: 'Verified',
+    manual: 'Manual',
+    failed: 'Failed',
+};
+
 export function VerificationBadge({ status }: VerificationBadgeProps) {
-    const config = {
-        verified: { icon: CheckCircle2, label: 'Verified' },
-        manual: { icon: AlertCircle, label: 'Manual' },
-        failed: { icon: XCircle, label: 'Failed' },
-    };
-
-    const { icon: Icon, label } = config[status] || config.verified;
-
     return (
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${getVerificationColor(status)}`}>
-            <Icon className="w-3.5 h-3.5" />
-            {label}
-        </span>
+        <StatusBadge
+            status={status}
+            label={statusLabels[status]}
+            icon={statusIcons[status]}
+            showIcon
+            size="md"
+        />
     );
 }

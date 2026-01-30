@@ -3,12 +3,15 @@
 /**
  * HotelCard Component
  * 
- * Card-based display for individual hotel with quick action buttons
- * for location (GPS), phone call, and email.
+ * Card-based display for individual hotel using BaseCard system.
  */
 
 import { MapPin, Phone, Mail, Building2, Cpu } from 'lucide-react';
-import { GlassCard } from '@/components/shared/ui/GlassCard';
+import {
+    BaseCard,
+    CardInfoGrid,
+    CardInfoCell,
+} from '@/components/shared/ui/BaseCard';
 import { HotelStatusBadge } from './HotelStatusBadge';
 import { HotelActionsMenu } from './HotelActionsMenu';
 import type { Hotel } from '@/types/schema';
@@ -21,56 +24,44 @@ interface HotelCardProps {
 }
 
 export function HotelCard({ hotel, onEdit, onDelete, onImpersonate }: HotelCardProps) {
-    // Generate Google Maps URL from location
+    // Generate URLs
     const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.location + ', ' + hotel.city + ', ' + hotel.state)}`;
-
-    // Generate tel: and mailto: links
     const phoneUrl = `tel:${hotel.contactPhone}`;
     const emailUrl = `mailto:${hotel.contactEmail}`;
 
     return (
-        <GlassCard className="group relative overflow-hidden h-full flex flex-col" hover padding="none">
-            {/* Status Badge - Top Right */}
-            <div className="absolute top-5 right-5 z-10">
-                <HotelStatusBadge status={hotel.status} />
-            </div>
-
-            {/* Card Content */}
-            <div className="p-6 flex flex-col flex-1 space-y-6">
-                {/* Header with Hotel Icon and Name */}
-                <div className="flex items-start gap-4 pr-24">
-                    <div className="shrink-0 p-3.5 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/25">
-                        <Building2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0 space-y-1.5">
-                        <h3 className="text-lg font-semibold text-primary truncate leading-tight">
-                            {hotel.name}
-                        </h3>
-                        <p className="text-sm text-muted truncate">
-                            {hotel.city}, {hotel.state}
-                        </p>
-                    </div>
-                </div>
-
-                {/* Info Grid */}
-                <div className="grid grid-cols-2 gap-4 flex-1">
-                    {/* Plan */}
-                    <div className="p-4 rounded-xl surface-glass-soft space-y-2">
-                        <p className="text-xs font-medium text-muted uppercase tracking-wide">Plan</p>
-                        <p className="text-base font-semibold text-primary capitalize">{hotel.plan}</p>
-                    </div>
-                    {/* Kiosks */}
-                    <div className="p-4 rounded-xl surface-glass-soft space-y-2">
-                        <p className="text-xs font-medium text-muted uppercase tracking-wide">Kiosks</p>
-                        <div className="flex items-center gap-2">
-                            <Cpu className="w-4 h-4 text-info" />
-                            <span className="text-base font-semibold text-primary">{hotel.kioskCount}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Quick Action Buttons */}
-                <div className="flex items-center gap-2.5 pt-5 border-t border-glass">
+        <BaseCard
+            variant="entity"
+            header={{
+                icon: <Building2 className="w-6 h-6 text-white" />,
+                iconGradient: "from-indigo-500 to-purple-600",
+                title: hotel.name,
+                subtitle: `${hotel.city}, ${hotel.state}`,
+                badge: <HotelStatusBadge status={hotel.status} />,
+                actionsMenu: (
+                    <HotelActionsMenu
+                        hotel={hotel}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        onImpersonate={onImpersonate}
+                    />
+                ),
+            }}
+            body={
+                <CardInfoGrid>
+                    <CardInfoCell
+                        label="Plan"
+                        value={<span className="capitalize">{hotel.plan}</span>}
+                    />
+                    <CardInfoCell
+                        label="Kiosks"
+                        value={hotel.kioskCount}
+                        icon={<Cpu className="w-4 h-4 text-info" />}
+                    />
+                </CardInfoGrid>
+            }
+            footer={
+                <div className="flex items-center gap-2.5 px-6 pb-5 pt-5 border-t border-glass">
                     {/* Location Button */}
                     <a
                         href={mapsUrl}
@@ -102,19 +93,9 @@ export function HotelCard({ hotel, onEdit, onDelete, onImpersonate }: HotelCardP
                         <Mail className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                         <span className="text-xs font-semibold hidden sm:inline">Email</span>
                     </a>
-
-                    {/* More Actions */}
-                    <HotelActionsMenu
-                        hotel={hotel}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onImpersonate={onImpersonate}
-                    />
                 </div>
-            </div>
-
-            {/* Bottom Border Accent */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        </GlassCard>
+            }
+            accentGradient="from-indigo-500 via-purple-500 to-pink-500"
+        />
     );
 }
