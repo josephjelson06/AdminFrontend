@@ -71,8 +71,18 @@ export default function AdminLayout({
                     onMenuClick={() => setSidebarOpen(true)}
                     sidebarCollapsed={isCollapsed}
                 />
-                <main className="pt-20 min-h-screen transition-all duration-normal ease-smooth lg:ml-[var(--sidebar-width)]">
-                    <div className="p-4 sm:p-6 lg:p-8">
+                
+                {/* UPDATED CLASSNAMES:
+                   1. pt-20 -> pt-16 (Matches header height exactly, removes 16px gap)
+                   2. lg:ml logic remains same
+                */}
+                <main className="pt-6 min-h-screen transition-all duration-normal ease-smooth lg:ml-[var(--sidebar-width)]">
+                    
+                    {/* UPDATED PADDING:
+                       1. lg:p-8 -> px-4 sm:px-6 lg:px-8 (Side padding kept same)
+                       2. Added py-6 (Reduces top/bottom padding from 32px to 24px)
+                    */}
+                    <div className="px-4 sm:px-6 lg:px-8">
                         {children}
                     </div>
                 </main>

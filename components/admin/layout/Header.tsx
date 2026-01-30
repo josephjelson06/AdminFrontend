@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Bell,
-    User,
     Cpu,
     CreditCard,
     AlertTriangle,
@@ -65,15 +64,15 @@ function NotificationIcon({ type }: { type: string }) {
 
 const ROLE_LABELS: Record<string, { label: string; color: string }> = {
     // Admin roles
-    super_admin: { label: 'Super Admin', color: 'text-purple-600 dark:text-purple-400' },
-    operations: { label: 'Operations', color: 'text-blue-600 dark:text-blue-400' },
-    finance: { label: 'Finance', color: 'text-emerald-600 dark:text-emerald-400' },
-    support: { label: 'Support', color: 'text-amber-600 dark:text-amber-400' },
+    super_admin: { label: 'Super Admin', color: 'text-purple-400' },
+    operations: { label: 'Operations', color: 'text-blue-400' },
+    finance: { label: 'Finance', color: 'text-emerald-400' },
+    support: { label: 'Support', color: 'text-amber-400' },
     // Hotel roles
-    hotel_manager: { label: 'Hotel Manager', color: 'text-indigo-600 dark:text-indigo-400' },
-    front_desk: { label: 'Front Desk', color: 'text-blue-600 dark:text-blue-400' },
-    housekeeping: { label: 'Housekeeping', color: 'text-amber-600 dark:text-amber-400' },
-    hotel_finance: { label: 'Finance', color: 'text-emerald-600 dark:text-emerald-400' },
+    hotel_manager: { label: 'Hotel Manager', color: 'text-indigo-400' },
+    front_desk: { label: 'Front Desk', color: 'text-blue-400' },
+    housekeeping: { label: 'Housekeeping', color: 'text-amber-400' },
+    hotel_finance: { label: 'Finance', color: 'text-emerald-400' },
 };
 
 interface HeaderProps {
@@ -106,7 +105,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
         ? notifications
         : notifications.filter(n => n.type === notificationFilter);
 
-    const roleInfo = user ? ROLE_LABELS[user.role] : { label: 'User', color: 'text-secondary' };
+    const roleInfo = user ? ROLE_LABELS[user.role] : { label: 'User', color: 'text-slate-400' };
 
     // Scroll detection for transparency effect
     const [scrolled, setScrolled] = useState(false);
@@ -121,10 +120,10 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
     }, []);
 
     return (
-        <header className={`sticky top-4 mx-4 z-[99] h-14 rounded-2xl lg:ml-[calc(var(--sidebar-width)+1rem)] transition-all duration-slow ease-smooth ${
+        <header className={`sticky top-4 mx-4 z-[99] h-14 rounded-2xl lg:ml-[calc(var(--sidebar-width)+1rem)] transition-all duration-500 ease-out ${
             scrolled 
                 ? 'opacity-0 pointer-events-none translate-y-[-8px]' 
-                : 'surface-glass-soft opacity-100 translate-y-0'
+                : 'surface-glass-strong opacity-100 translate-y-0 shadow-lg shadow-black/5'
         }`}>
             <div className="h-full flex items-center justify-between px-4 lg:px-6">
                 {/* Left side */}
@@ -132,7 +131,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                     {/* Mobile menu button */}
                     <button
                         onClick={onMenuClick}
-                        className="p-2 btn-ghost rounded-lg lg:hidden"
+                        className="p-2 hover:bg-white/10 rounded-lg lg:hidden transition-colors text-white"
                     >
                         <Menu className="w-5 h-5" />
                     </button>
@@ -144,17 +143,17 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                 </div>
 
                 {/* Right side */}
-                <div className="flex items-center gap-2 sm:gap-3">
-                    {/* Theme Toggle */}
+                <div className="flex items-center gap-3">
+                    
+                    {/* Theme Toggle (Optional - since you forced dark mode, maybe keep for fun) */}
                     <button
                         onClick={toggleTheme}
-                        className="p-2.5 btn-ghost rounded-xl"
-                        title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                        className="p-2.5 hover:bg-white/10 rounded-xl transition-all duration-200 text-white/70 hover:text-white"
                     >
                         {theme === 'light' ? (
-                            <Moon className="w-5 h-5 text-secondary" />
+                            <Moon className="w-5 h-5" />
                         ) : (
-                            <Sun className="w-5 h-5 text-amber-400" />
+                            <Sun className="w-5 h-5" />
                         )}
                     </button>
 
@@ -165,26 +164,26 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                 setShowNotifications(!showNotifications);
                                 setShowUserMenu(false);
                             }}
-                            className="relative p-2.5 btn-ghost rounded-xl"
+                            className="relative p-2.5 hover:bg-white/10 rounded-xl transition-all duration-200 text-white/70 hover:text-white"
                         >
-                            <Bell className="w-5 h-5 text-secondary" />
+                            <Bell className="w-5 h-5" />
                             {unreadCount > 0 && (
-                                <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-danger rounded-full text-[10px] text-white font-bold flex items-center justify-center shadow-lg shadow-danger/40 animate-pulse-slow">
+                                <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 rounded-full text-[10px] text-white font-bold flex items-center justify-center shadow-lg shadow-rose-500/40 animate-pulse">
                                     {unreadCount}
                                 </span>
                             )}
                         </button>
 
-                        {/* Notifications Dropdown */}
+                        {/* Notifications Dropdown - FIXED CLASS */}
                         {showNotifications && (
-                            <div className="absolute right-0 mt-2 w-80 glass-elevated rounded-2xl overflow-hidden animate-scale-in">
-                                <div className="px-4 py-3 border-b border-glass">
+                            <div className="absolute right-0 mt-2 w-80 surface-glass-strong rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/10 shadow-2xl shadow-black/50">
+                                <div className="px-4 py-3 border-b border-white/10 bg-black/20">
                                     <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-sm font-semibold text-primary">Notifications</h3>
+                                        <h3 className="text-sm font-semibold text-white">Notifications</h3>
                                         {unreadCount > 0 && (
                                             <button
                                                 onClick={markAllRead}
-                                                className="text-xs text-muted hover:text-primary transition-colors duration-normal"
+                                                className="text-xs text-slate-400 hover:text-white transition-colors"
                                             >
                                                 Mark all read
                                             </button>
@@ -196,9 +195,9 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                             <button
                                                 key={filter}
                                                 onClick={() => setNotificationFilter(filter)}
-                                                className={`px-2.5 py-1.5 text-xs rounded-lg transition-all duration-normal ${notificationFilter === filter
-                                                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm'
-                                                    : 'text-muted hover:text-primary hover:bg-glass-soft'
+                                                className={`px-2.5 py-1.5 text-xs rounded-lg transition-all duration-200 ${notificationFilter === filter
+                                                    ? 'bg-white/10 text-white font-medium border border-white/5'
+                                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                                                     }`}
                                             >
                                                 {filter === 'all' ? 'All' : filter === 'alert' ? 'Kiosk' : filter === 'payment' ? 'Billing' : 'Contract'}
@@ -209,13 +208,13 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                 <div className="max-h-80 overflow-y-auto">
                                     {filteredNotifications.length === 0 ? (
                                         <div className="px-4 py-8 text-center">
-                                            <p className="text-sm text-muted">No notifications</p>
+                                            <p className="text-sm text-slate-400">No notifications</p>
                                         </div>
                                     ) : (
                                         filteredNotifications.map((notif) => (
                                             <div
                                                 key={notif.id}
-                                                className={`px-4 py-3 border-b border-glass hover:bg-glass-soft transition-colors duration-normal cursor-pointer ${!notif.read ? 'bg-info/5' : ''
+                                                className={`px-4 py-3 border-b border-white/5 hover:bg-white/5 transition-colors duration-200 cursor-pointer ${!notif.read ? 'bg-indigo-500/5' : ''
                                                     }`}
                                             >
                                                 <div className="flex items-start gap-3">
@@ -224,21 +223,21 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center justify-between">
-                                                            <p className="text-sm font-medium text-primary">{notif.title}</p>
+                                                            <p className="text-sm font-medium text-slate-200">{notif.title}</p>
                                                             {!notif.read && (
-                                                                <span className="w-2 h-2 bg-info rounded-full animate-pulse" />
+                                                                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full shadow-[0_0_10px_rgba(129,140,248,0.5)]" />
                                                             )}
                                                         </div>
-                                                        <p className="text-xs text-secondary mt-0.5">{notif.message}</p>
-                                                        <p className="text-xs text-muted mt-1">{notif.time}</p>
+                                                        <p className="text-xs text-slate-400 mt-0.5">{notif.message}</p>
+                                                        <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-wide">{notif.time}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         ))
                                     )}
                                 </div>
-                                <div className="px-4 py-2.5 border-t border-glass">
-                                    <button className="w-full text-center text-xs text-accent hover:text-primary transition-colors duration-normal font-medium">
+                                <div className="px-4 py-2.5 border-t border-white/10 bg-black/20">
+                                    <button className="w-full text-center text-xs text-indigo-400 hover:text-indigo-300 transition-colors duration-200 font-medium">
                                         View all notifications
                                     </button>
                                 </div>
@@ -246,53 +245,63 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                         )}
                     </div>
 
-                    {/* User Menu */}
+                    {/* User Menu - FIXED STYLING */}
                     <div className="relative" ref={userMenuRef}>
                         <button
                             onClick={() => {
                                 setShowUserMenu(!showUserMenu);
                                 setShowNotifications(false);
                             }}
-                            className="flex items-center gap-2 pl-3 sm:border-l border-glass btn-ghost rounded-xl py-1.5 pr-2"
+                            // Removed the 'border-l' and 'btn-ghost' classes causing the leak
+                            className="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full hover:bg-white/10 transition-all duration-200 border border-transparent hover:border-white/10 group"
                         >
-                            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25 flex items-center justify-center">
-                                <span className="text-sm font-medium text-white">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20 flex items-center justify-center ring-2 ring-white/10 group-hover:ring-white/20 transition-all">
+                                <span className="text-xs font-bold text-white">
                                     {user?.name.split(' ').map(n => n[0]).join('') || 'U'}
                                 </span>
                             </div>
-                            <div className="text-sm text-left hidden sm:block">
-                                <div className="font-medium text-primary">{user?.name || 'User'}</div>
-                                <div className={`text-xs ${roleInfo.color}`}>{roleInfo.label}</div>
+                            <div className="text-left hidden sm:block">
+                                <div className="text-xs font-semibold text-white leading-tight">{user?.name || 'User'}</div>
+                                <div className={`text-[10px] uppercase tracking-wider font-medium ${roleInfo.color}`}>{roleInfo.label}</div>
                             </div>
-                            <ChevronDown className="w-4 h-4 text-muted hidden sm:block" />
+                            <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`} />
                         </button>
 
-                        {/* User Dropdown */}
+                        {/* User Dropdown - FIXED CLASS */}
                         {showUserMenu && (
-                            <div className="absolute right-0 mt-2 w-52 glass-elevated rounded-2xl py-2 animate-scale-in">
+                            <div className="absolute right-0 mt-2 w-56 surface-glass-strong rounded-2xl py-2 animate-in fade-in zoom-in-95 duration-200 border border-white/10 shadow-2xl shadow-black/50">
+                                
+                                {/* Dropdown Header */}
+                                <div className="px-4 py-2 mb-2 border-b border-white/5 sm:hidden">
+                                    <div className="font-medium text-white">{user?.name}</div>
+                                    <div className="text-xs text-slate-400">{roleInfo.label}</div>
+                                </div>
+
                                 <Link
                                     href="/profile"
-                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary hover:text-primary hover:bg-glass-soft transition-all duration-normal"
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-200"
                                     onClick={() => setShowUserMenu(false)}
                                 >
-                                    <UserCircle className="w-4 h-4" />
+                                    <UserCircle className="w-4 h-4 text-slate-400" />
                                     My Profile
                                 </Link>
                                 <Link
                                     href="/settings"
-                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary hover:text-primary hover:bg-glass-soft transition-all duration-normal"
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-200"
                                     onClick={() => setShowUserMenu(false)}
                                 >
-                                    <Settings className="w-4 h-4" />
+                                    <Settings className="w-4 h-4 text-slate-400" />
                                     Settings
                                 </Link>
-                                <div className="my-2 border-t border-glass mx-2" />
+                                
+                                <div className="my-2 border-t border-white/10 mx-2" />
+                                
                                 <button
                                     onClick={() => {
                                         setShowUserMenu(false);
                                         logout();
                                     }}
-                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-danger hover:bg-danger/10 w-full transition-all duration-normal"
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 w-full transition-all duration-200"
                                 >
                                     <LogOut className="w-4 h-4" />
                                     Logout

@@ -1,12 +1,5 @@
 'use client';
 
-/**
- * HotelList Component
- * 
- * Main component for displaying hotels in a responsive card grid layout.
- * Features quick action buttons for location, phone, and email.
- */
-
 import { Search, Plus, Building2 } from 'lucide-react';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { PaginationBar } from '@/components/shared/ui/Pagination';
@@ -21,7 +14,6 @@ interface HotelListProps {
 }
 
 export function HotelList({ pageSize = 12 }: HotelListProps) {
-    // Data fetching
     const {
         hotels,
         isLoading,
@@ -38,33 +30,38 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
         refresh,
     } = useHotels({ initialPageSize: pageSize });
 
-    // Actions
     const actions = useHotelActions(refresh);
-
-    // Check if any filters are active
     const hasActiveFilters = Boolean(filters.search || filters.status || filters.plan);
 
     return (
         <div className="space-y-6">
-            {/* Page Header */}
+            {/* Header with Premium 'Add Hotel' Button */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
-                    <h1 className="text-2xl font-bold text-primary">Hotels Registry</h1>
-                    <p className="text-sm text-muted">
+                    <h1 className="text-3xl font-bold text-white tracking-tight drop-shadow-md">
+                        Hotels Registry
+                    </h1>
+                    <p className="text-sm text-blue-200/70 font-medium">
                         Manage hotel tenants, subscriptions, and kiosk deployments
                     </p>
                 </div>
+                
+                {/* NEW PREMIUM BUTTON */}
                 <button
                     onClick={actions.openAddModal}
-                    className="btn-primary shrink-0"
+                    className="group relative shrink-0 flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all duration-300 
+                    bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-[length:200%_auto] 
+                    hover:bg-right hover:scale-105 hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] 
+                    active:scale-95 border border-white/20 backdrop-blur-md"
                 >
-                    <Plus className="w-4 h-4" />
-                    Add Hotel
+                    <div className="absolute inset-0 rounded-full bg-white/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Plus className="w-5 h-5 relative z-10" />
+                    <span className="relative z-10">Add New Hotel</span>
                 </button>
             </div>
 
-            {/* Filters Card */}
-            <GlassCard padding="none">
+            {/* Filters */}
+            <GlassCard padding="none" className="border-white/10">
                 <HotelFiltersBar
                     filters={filters}
                     onFilterChange={setFilter}
@@ -73,60 +70,55 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
                 />
             </GlassCard>
 
-            {/* Hotels Card Grid */}
+            {/* Grid */}
             {isLoading ? (
                 <div className="flex items-center justify-center py-24">
                     <div className="flex flex-col items-center gap-4">
-                        <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent" />
-                        <p className="text-sm text-muted">Loading hotels...</p>
+                        <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-400 border-t-transparent shadow-[0_0_15px_rgba(96,165,250,0.5)]" />
+                        <p className="text-sm text-blue-200/80 animate-pulse">Loading hotels...</p>
                     </div>
                 </div>
             ) : hotels.length === 0 ? (
-                <GlassCard className="py-20 text-center">
-                    <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center mb-6">
-                        <Building2 className="w-8 h-8 text-indigo-500" />
+                <GlassCard className="py-20 text-center border-white/10">
+                    <div className="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center mb-6 shadow-inner border border-white/5">
+                        <Building2 className="w-10 h-10 text-indigo-400" />
                     </div>
-                    <h3 className="text-lg font-semibold text-primary mb-2">No hotels found</h3>
-                    <p className="text-sm text-muted mb-6 max-w-sm mx-auto">
+                    <h3 className="text-xl font-bold text-white mb-2">No hotels found</h3>
+                    <p className="text-sm text-blue-200/60 mb-8 max-w-sm mx-auto">
                         {hasActiveFilters
-                            ? 'Try adjusting your search filters to find what you\'re looking for'
+                            ? 'Try adjusting your search filters'
                             : 'Get started by adding your first hotel to the registry'
                         }
                     </p>
                     {hasActiveFilters ? (
-                        <button
-                            onClick={clearFilters}
-                            className="btn-secondary"
-                        >
+                        <button onClick={clearFilters} className="px-6 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all">
                             Clear Filters
                         </button>
                     ) : (
-                        <button
-                            onClick={actions.openAddModal}
-                            className="btn-primary"
-                        >
-                            <Plus className="w-4 h-4" />
+                        <button onClick={actions.openAddModal} className="px-6 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 transition-all">
                             Add Your First Hotel
                         </button>
                     )}
                 </GlassCard>
             ) : (
                 <>
-                    {/* Results Count */}
-                    <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted">
-                            Showing <span className="font-medium text-primary">{hotels.length}</span> of{' '}
-                            <span className="font-medium text-primary">{totalItems}</span> hotels
+                    <div className="flex items-center justify-between px-2">
+                        <p className="text-sm text-blue-200/60">
+                            Showing <span className="font-bold text-white">{hotels.length}</span> of{' '}
+                            <span className="font-bold text-white">{totalItems}</span> properties
                         </p>
                     </div>
 
-                    {/* Cards Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    {/* Cards Grid with Z-Index Fix */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {hotels.map((hotel, index) => (
                             <div
                                 key={hotel.id}
-                                className="animate-in fade-in slide-in-from-bottom-2"
-                                style={{ animationDelay: `${index * 40}ms`, animationFillMode: 'both' }}
+                                // hover:z-50 prevents the card from being clipped by the next one when it scales up
+                                className="relative hover:z-50 transition-all duration-300"
+                                style={{ 
+                                    animation: `fadeInUp 0.5s ease-out ${index * 0.05}s backwards` 
+                                }}
                             >
                                 <HotelCard
                                     hotel={hotel}
@@ -138,30 +130,29 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
                         ))}
                     </div>
 
-                    {/* Pagination */}
                     {hotels.length > 0 && (
-                        <PaginationBar
-                            currentPage={page}
-                            totalPages={totalPages}
-                            totalItems={totalItems}
-                            pageSize={currentPageSize}
-                            onPageChange={setPage}
-                            onPageSizeChange={setPageSize}
-                            pageSizeOptions={[8, 12, 16, 24]}
-                        />
+                        <div className="pt-4">
+                            <PaginationBar
+                                currentPage={page}
+                                totalPages={totalPages}
+                                totalItems={totalItems}
+                                pageSize={currentPageSize}
+                                onPageChange={setPage}
+                                onPageSizeChange={setPageSize}
+                                pageSizeOptions={[8, 12, 16, 24]}
+                            />
+                        </div>
                     )}
                 </>
             )}
 
-            {/* Modals */}
             <HotelModals actions={actions} />
 
-            {/* Error display */}
             {error && (
-                <GlassCard className="border-red-500/30 bg-red-500/5">
-                    <div className="flex items-center gap-3 text-red-500 dark:text-red-400">
-                        <div className="shrink-0 w-2 h-2 rounded-full bg-red-500" />
-                        <p className="text-sm">{error.message}</p>
+                <GlassCard className="border-red-500/30 bg-red-500/10 backdrop-blur-md">
+                    <div className="flex items-center gap-3 text-red-200">
+                        <div className="shrink-0 w-2 h-2 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.5)]" />
+                        <p className="text-sm font-medium">{error.message}</p>
                     </div>
                 </GlassCard>
             )}

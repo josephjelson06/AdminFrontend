@@ -1,11 +1,18 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Outfit } from 'next/font/google'; // Import the new font
 import './globals.css';
 import { ClientLayout } from '@/components/shared/ClientLayout';
 
+// Base font for body text (readable)
 const inter = Inter({ 
     subsets: ['latin'],
     variable: '--font-inter',
+});
+
+// Premium font for Headings (Headers, Titles)
+const outfit = Outfit({ 
+    subsets: ['latin'],
+    variable: '--font-outfit',
 });
 
 export const metadata: Metadata = {
@@ -20,7 +27,8 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={`${inter.className} ${inter.variable} antialiased min-h-screen`}>
+            {/* Load both fonts */}
+            <body className={`${inter.variable} ${outfit.variable} antialiased min-h-screen`}>
                 <ClientLayout>{children}</ClientLayout>
             </body>
         </html>
