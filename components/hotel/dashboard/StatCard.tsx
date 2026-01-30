@@ -4,9 +4,18 @@
  * StatCard Component
  * 
  * KPI card with sparkline and optional click action.
+ * Uses the BaseCard system for consistent styling.
  */
 
 import { TinySparkline } from '@/components/shared/ui/TinySparkline';
+import {
+    BaseCard,
+    CardHeader,
+    CardBody,
+    CardIcon,
+    CardStat,
+    CardBadge,
+} from '@/components/hotel/shared';
 
 interface StatCardProps {
     title: string;
@@ -30,32 +39,33 @@ export function StatCard({
     isAlert,
 }: StatCardProps) {
     return (
-        <div
+        <BaseCard
+            variant="default"
+            density="comfortable"
+            interactivity={onClick ? 'actionable' : 'readOnly'}
             onClick={onClick}
-            className={`bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 transition-all ${onClick ? 'cursor-pointer hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900' : ''
-                }`}
+            className="p-5"
         >
-            <div className="flex items-center justify-between mb-3">
-                <div className={`p-2.5 rounded-xl ${color}`}>
+            <CardHeader className="mb-3">
+                <CardIcon color={color} size="sm" className="p-2.5">
                     <Icon className="w-5 h-5 text-white" />
-                </div>
+                </CardIcon>
                 {trend && (
-                    <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded-full">
+                    <CardBadge variant="success" className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
                         {trend}
-                    </span>
+                    </CardBadge>
                 )}
-            </div>
-            <div className="flex items-end justify-between">
-                <div>
-                    <p className={`text-2xl font-bold ${isAlert ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
-                        {value}
-                    </p>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
-                </div>
+            </CardHeader>
+
+            <CardBody className="flex items-end justify-between">
+                <CardStat value={value} label={title} isAlert={isAlert} />
                 {sparklineData && (
-                    <TinySparkline data={sparklineData} color={isAlert ? 'stroke-rose-500' : 'stroke-emerald-500'} />
+                    <TinySparkline
+                        data={sparklineData}
+                        color={isAlert ? 'stroke-rose-500' : 'stroke-emerald-500'}
+                    />
                 )}
-            </div>
-        </div>
+            </CardBody>
+        </BaseCard>
     );
 }

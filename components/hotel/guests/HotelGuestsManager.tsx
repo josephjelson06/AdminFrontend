@@ -20,6 +20,7 @@ import { GuestQuickStats } from './GuestQuickStats';
 import { GuestFilters } from './GuestFilters';
 import { VerificationBadge } from './VerificationBadge';
 import { GuestDetailModal } from './GuestDetailModal';
+import { GuestMobileCard } from './GuestMobileCard';
 import { useToast } from '@/components/shared/ui/Toast';
 import { DATE_FILTERS } from '@/lib/services/hotelGuestService';
 import type { GuestCheckIn } from '@/lib/hotel/hotel-data';
@@ -115,31 +116,12 @@ export function HotelGuestsManager() {
             {/* Guest Cards (Mobile) */}
             <div className="space-y-3 sm:hidden">
                 {paginatedGuests.map((guest, index) => (
-                    <button
+                    <GuestMobileCard
                         key={guest.id}
+                        guest={guest}
                         onClick={() => setSelectedGuest(guest)}
-                        className="w-full text-left bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:shadow-lg transition-all animate-in fade-in slide-in-from-bottom-2"
-                        style={{ animationDelay: `${index * 30}ms` }}
-                    >
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center">
-                                    <span className="text-sm font-semibold text-white">
-                                        {guest.guestName.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                                    </span>
-                                </div>
-                                <div>
-                                    <p className="font-medium text-slate-900 dark:text-white">{guest.guestName}</p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">Room {guest.roomNumber}</p>
-                                </div>
-                            </div>
-                            <VerificationBadge status={guest.verification} />
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                            <span>{guest.checkInTime}</span>
-                            <span>{guest.language}</span>
-                        </div>
-                    </button>
+                        animationDelay={index * 30}
+                    />
                 ))}
             </div>
 

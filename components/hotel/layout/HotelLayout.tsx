@@ -87,16 +87,15 @@ export function HotelLayout({ children }: HotelLayoutProps) {
             />
 
             {/* Main Content Area */}
-            <div className={`
-                transition-all duration-300 ease-in-out
-                ${isCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
-            `}>
+            <div
+                className="transition-all duration-300 ease-in-out max-lg:!ml-0"
+                style={{ marginLeft: isCollapsed ? 80 : sidebarWidth }}
+            >
                 {/* GLASS HEADER (Floating) */}
                 <header className={`
-                    h-14 sticky top-4 mx-4 z-[100] rounded-2xl transition-all duration-300 ease-in-out
-                    ${isCollapsed ? 'lg:left-20' : 'lg:left-64'}
-                    ${scrolled 
-                        ? 'bg-transparent backdrop-blur-none shadow-none opacity-0 pointer-events-none' 
+                    h-14 sticky top-4 mx-4 z-40 rounded-2xl transition-all duration-300 ease-in-out
+                    ${scrolled
+                        ? 'bg-transparent backdrop-blur-none shadow-none opacity-0 pointer-events-none'
                         : 'glass bg-white/60 dark:bg-slate-900/60 backdrop-blur-md opacity-100'}
                 `}>
                     <div className="h-full px-4 flex items-center justify-between">

@@ -162,8 +162,8 @@ export function HotelTeamManager() {
                                         </td>
                                         <td className="px-5 py-4 hidden md:table-cell">
                                             <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${member.status === 'active'
-                                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400'
-                                                    : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
+                                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400'
+                                                : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
                                                 }`}>
                                                 {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
                                             </span>
