@@ -99,13 +99,6 @@ export function RoomCard({ room, onStatusChange, onViewDetails, getNextStatus }:
                 <Clock className="w-3 h-3" />
                 {room.lastUpdated}
             </div>
-
-            {/* Tap Hint */}
-            {isClickable && (
-                <div className="absolute bottom-2 right-2 text-xs text-slate-400 dark:text-slate-500">
-                    tap
-                </div>
-            )}
         </button>
     );
 }

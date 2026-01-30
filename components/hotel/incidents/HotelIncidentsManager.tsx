@@ -625,7 +625,7 @@ export function HotelIncidentsManager() {
     if (isManager) {
         return (
             <HotelLayout>
-                <div className="max-w-5xl mx-auto">
+                <div className="max-w-full mx-auto">
                     <Breadcrumbs
                         items={[
                             { label: 'Home', href: '/hotel' },
@@ -709,7 +709,7 @@ export function HotelIncidentsManager() {
     // ========== MAINTENANCE STAFF VIEW ==========
     return (
         <HotelLayout>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-full mx-auto">
                 <Breadcrumbs
                     items={[
                         { label: 'Home', href: '/hotel' },

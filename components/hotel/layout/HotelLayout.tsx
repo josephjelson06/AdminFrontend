@@ -93,7 +93,7 @@ export function HotelLayout({ children }: HotelLayoutProps) {
             `}>
                 {/* GLASS HEADER (Floating) */}
                 <header className={`
-                    h-14 sticky top-4 mx-4 z-30 rounded-2xl transition-all duration-300 ease-in-out
+                    h-14 sticky top-4 mx-4 z-[100] rounded-2xl transition-all duration-300 ease-in-out
                     ${isCollapsed ? 'lg:left-20' : 'lg:left-64'}
                     ${scrolled 
                         ? 'bg-transparent backdrop-blur-none shadow-none opacity-0 pointer-events-none' 
@@ -141,7 +141,7 @@ export function HotelLayout({ children }: HotelLayoutProps) {
                             <div className="relative" ref={userMenuRef}>
                                 <button
                                     onClick={() => setShowUserMenu(!showUserMenu)}
-                                    className="flex items-center gap-2 pl-2 sm:pl-4 sm:border-l border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-500/10 rounded-lg py-1 pr-2 transition-colors"
+                                    className="flex items-center gap-2 pl-2 sm:pl-4 hover:bg-slate-500/10 rounded-lg py-1 pr-2 transition-colors"
                                 >
                                     <div className="w-8 h-8 rounded-full bg-indigo-600 shadow-lg shadow-indigo-500/30 flex items-center justify-center">
                                         <span className="text-sm font-medium text-white">
