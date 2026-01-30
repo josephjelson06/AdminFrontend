@@ -16,7 +16,7 @@ export function PreviewModal({ isOpen, onClose, welcomeMessage, languages }: Pre
     const enabledLangs = AVAILABLE_LANGUAGES.filter(l => languages.includes(l.id));
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             <div
                 className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
                 onClick={onClose}

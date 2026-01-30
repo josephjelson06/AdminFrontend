@@ -25,11 +25,15 @@ import {
     Filter,
 } from 'lucide-react';
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import { Breadcrumbs } from '@/components/shared/ui/Breadcrumbs';
 import { useAuth } from '@/lib/shared/auth';
 import { useToast } from '@/components/shared/ui/Toast';
 import { useHotelIncidents } from './useHotelIncidents';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     type Incident,
     type IncidentPriority,
@@ -38,347 +42,12 @@ import {
     getIncidentStatusColor,
 } from '@/lib/hotel/hotel-data';
 import {
-    SORT_OPTIONS,
-    STATUS_OPTIONS,
-    PRIORITY_FILTER_OPTIONS,
-    PRIORITY_OPTIONS,
     type SortOption,
 } from '@/lib/services/hotelIncidentsService';
+import { IncidentCard } from './IncidentCard';
+import { IncidentFilterToolbar } from './IncidentFilterToolbar';
 
-// ============================================
-// FILTER TOOLBAR COMPONENT
-// ============================================
 
-interface FilterToolbarProps {
-    searchQuery: string;
-    onSearchChange: (value: string) => void;
-    sortBy: SortOption;
-    onSortChange: (value: SortOption) => void;
-    statusFilter: IncidentStatus | 'all';
-    onStatusChange: (value: IncidentStatus | 'all') => void;
-    priorityFilter: IncidentPriority | 'all';
-    onPriorityChange: (value: IncidentPriority | 'all') => void;
-    onClearFilters: () => void;
-    activeFilterCount: number;
-}
-
-function FilterToolbar({
-    searchQuery,
-    onSearchChange,
-    sortBy,
-    onSortChange,
-    statusFilter,
-    onStatusChange,
-    priorityFilter,
-    onPriorityChange,
-    onClearFilters,
-    activeFilterCount,
-}: FilterToolbarProps) {
-    const [showSortDropdown, setShowSortDropdown] = useState(false);
-    const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-    const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
-
-    const sortRef = useRef<HTMLDivElement>(null);
-    const statusRef = useRef<HTMLDivElement>(null);
-    const priorityRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
-                setShowSortDropdown(false);
-            }
-            if (statusRef.current && !statusRef.current.contains(event.target as Node)) {
-                setShowStatusDropdown(false);
-            }
-            if (priorityRef.current && !priorityRef.current.contains(event.target as Node)) {
-                setShowPriorityDropdown(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-6">
-            <div className="flex flex-col lg:flex-row gap-3">
-                {/* Search Bar */}
-                <div className="relative flex-1 min-w-0">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => onSearchChange(e.target.value)}
-                        placeholder="Search by room, guest name, or description..."
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                    />
-                    {searchQuery && (
-                        <button
-                            onClick={() => onSearchChange('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-full transition-colors"
-                        >
-                            <X className="w-3.5 h-3.5 text-slate-400" />
-                        </button>
-                    )}
-                </div>
-
-                {/* Filters Row */}
-                <div className="flex flex-wrap items-center gap-2">
-                    {/* Status Filter */}
-                    <div ref={statusRef} className="relative">
-                        <button
-                            onClick={() => setShowStatusDropdown(!showStatusDropdown)}
-                            className={`flex items-center gap-2 px-3 py-2.5 border rounded-lg text-sm transition-colors ${statusFilter !== 'all'
-                                ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300'
-                                : 'bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500'
-                                }`}
-                        >
-                            <Filter className="w-4 h-4" />
-                            <span>{statusFilter === 'all' ? 'Status' : statusFilter}</span>
-                            <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        {showStatusDropdown && (
-                            <div className="absolute z-40 mt-1 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1 min-w-[150px]">
-                                {STATUS_OPTIONS.map(opt => (
-                                    <button
-                                        key={opt.value}
-                                        onClick={() => {
-                                            onStatusChange(opt.value);
-                                            setShowStatusDropdown(false);
-                                        }}
-                                        className={`w-full px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-between ${statusFilter === opt.value ? 'text-indigo-600 dark:text-indigo-400 font-medium' : 'text-slate-700 dark:text-slate-300'
-                                            }`}
-                                    >
-                                        {opt.label}
-                                        {statusFilter === opt.value && <CheckCircle2 className="w-4 h-4" />}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Priority Filter */}
-                    <div ref={priorityRef} className="relative">
-                        <button
-                            onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
-                            className={`flex items-center gap-2 px-3 py-2.5 border rounded-lg text-sm transition-colors ${priorityFilter !== 'all'
-                                ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300'
-                                : 'bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500'
-                                }`}
-                        >
-                            <SlidersHorizontal className="w-4 h-4" />
-                            <span>{priorityFilter === 'all' ? 'Priority' : (priorityFilter === null ? 'Unset' : priorityFilter)}</span>
-                            <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        {showPriorityDropdown && (
-                            <div className="absolute z-40 mt-1 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1 min-w-[160px]">
-                                {PRIORITY_FILTER_OPTIONS.map(opt => (
-                                    <button
-                                        key={String(opt.value)}
-                                        onClick={() => {
-                                            onPriorityChange(opt.value);
-                                            setShowPriorityDropdown(false);
-                                        }}
-                                        className={`w-full px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-between ${priorityFilter === opt.value ? 'text-indigo-600 dark:text-indigo-400 font-medium' : 'text-slate-700 dark:text-slate-300'
-                                            }`}
-                                    >
-                                        {opt.value !== 'all' && opt.value !== null ? (
-                                            <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getIncidentPriorityColor(opt.value)}`}>
-                                                {opt.label}
-                                            </span>
-                                        ) : (
-                                            opt.label
-                                        )}
-                                        {priorityFilter === opt.value && <CheckCircle2 className="w-4 h-4" />}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Sort Dropdown */}
-                    <div ref={sortRef} className="relative">
-                        <button
-                            onClick={() => setShowSortDropdown(!showSortDropdown)}
-                            className="flex items-center gap-2 px-3 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500 transition-colors"
-                        >
-                            <ArrowUpDown className="w-4 h-4" />
-                            <span className="hidden sm:inline">Sort</span>
-                            <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        {showSortDropdown && (
-                            <div className="absolute z-40 mt-1 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1 min-w-[180px]">
-                                {SORT_OPTIONS.map(opt => (
-                                    <button
-                                        key={opt.value}
-                                        onClick={() => {
-                                            onSortChange(opt.value);
-                                            setShowSortDropdown(false);
-                                        }}
-                                        className={`w-full px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-between ${sortBy === opt.value ? 'text-indigo-600 dark:text-indigo-400 font-medium' : 'text-slate-700 dark:text-slate-300'
-                                            }`}
-                                    >
-                                        {opt.label}
-                                        {sortBy === opt.value && <CheckCircle2 className="w-4 h-4" />}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Clear Filters */}
-                    {activeFilterCount > 0 && (
-                        <button
-                            onClick={onClearFilters}
-                            className="flex items-center gap-1.5 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                        >
-                            <X className="w-4 h-4" />
-                            Clear ({activeFilterCount})
-                        </button>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ============================================
-// INCIDENT CARDS
-// ============================================
-
-function IncidentCard({
-    incident,
-    onSetPriority,
-    onAssign,
-    onClick,
-    showActions = false,
-}: {
-    incident: Incident;
-    onSetPriority?: (id: string, priority: IncidentPriority) => void;
-    onAssign?: (id: string) => void;
-    onClick?: () => void;
-    showActions?: boolean;
-}) {
-    const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
-    const priorityColor = getIncidentPriorityColor(incident.priority);
-    const statusColor = getIncidentStatusColor(incident.status);
-    const needsPriority = incident.priority === null;
-    const isResolved = incident.status === 'Resolved';
-
-    return (
-        <div
-            onClick={onClick}
-            className={`bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:shadow-lg transition-all ${onClick ? 'cursor-pointer' : ''} ${isResolved ? 'opacity-60' : ''}`}
-        >
-            <div className="flex gap-4">
-                {/* Guest Photo Thumbnail */}
-                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-700">
-                    <img
-                        src={incident.guestReportPhoto}
-                        alt="Incident"
-                        className="w-full h-full object-cover"
-                    />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg font-bold text-slate-900 dark:text-white">
-                                    #{incident.roomNumber}
-                                </span>
-                                <span className="text-sm text-slate-500 dark:text-slate-400">
-                                    • {incident.guestName}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                                <Clock className="w-3.5 h-3.5" />
-                                {incident.reportedAt}
-                            </div>
-                        </div>
-                        {!showActions && (
-                            <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${statusColor}`}>
-                                {incident.status}
-                            </span>
-                        )}
-                    </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">
-                        {incident.description}
-                    </p>
-
-                    {/* Priority & Actions */}
-                    {showActions ? (
-                        <div className="flex items-center gap-2 flex-wrap">
-                            {needsPriority && onSetPriority ? (
-                                <div className="relative">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowPriorityDropdown(!showPriorityDropdown);
-                                        }}
-                                        className="flex items-center gap-1 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 text-xs font-medium rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
-                                    >
-                                        Set Priority
-                                        <ChevronDown className="w-3.5 h-3.5" />
-                                    </button>
-                                    {showPriorityDropdown && (
-                                        <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1 z-10 min-w-[140px]">
-                                            {PRIORITY_OPTIONS.map(opt => (
-                                                <button
-                                                    key={opt.value}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onSetPriority(incident.id, opt.value);
-                                                        setShowPriorityDropdown(false);
-                                                    }}
-                                                    className="w-full px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                                                >
-                                                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getIncidentPriorityColor(opt.value)}`}>
-                                                        {opt.label}
-                                                    </span>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            ) : incident.priority && (
-                                <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${priorityColor}`}>
-                                    {incident.priority}
-                                </span>
-                            )}
-
-                            {/* Assign Button */}
-                            {onAssign && (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onAssign(incident.id);
-                                    }}
-                                    disabled={needsPriority}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${needsPriority
-                                        ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-                                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                                        }`}
-                                >
-                                    <Send className="w-3.5 h-3.5" />
-                                    Assign to Staff
-                                </button>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-2">
-                            {incident.priority && (
-                                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${priorityColor}`}>
-                                    {incident.priority}
-                                </span>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-}
 
 // ============================================
 // INCIDENT DETAIL MODAL
@@ -419,7 +88,7 @@ function IncidentModal({
     };
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 z-[60] overflow-y-auto">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
             <div className="flex min-h-full items-center justify-center p-4">
                 <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden">
@@ -567,12 +236,8 @@ export function HotelIncidentsManager() {
         setPriority,
         assignIncident,
         resolveIncident,
-        selectedIncident,
-        setSelectedIncident,
         isLoading,
     } = useHotelIncidents();
-
-    const [modalOpen, setModalOpen] = useState(false);
 
     const isManager = user?.role === 'hotel_manager';
 
@@ -606,10 +271,7 @@ export function HotelIncidentsManager() {
         }
     };
 
-    const handleOpenIncident = (incident: Incident) => {
-        setSelectedIncident(incident);
-        setModalOpen(true);
-    };
+
 
     if (isLoading) {
         return (
@@ -625,7 +287,7 @@ export function HotelIncidentsManager() {
     if (isManager) {
         return (
             <HotelLayout>
-                <div className="max-w-5xl mx-auto">
+                <div className="max-w-full mx-auto">
                     <Breadcrumbs
                         items={[
                             { label: 'Home', href: '/hotel' },
@@ -647,7 +309,7 @@ export function HotelIncidentsManager() {
                         </div>
                     </div>
 
-                    <FilterToolbar
+                    <IncidentFilterToolbar
                         searchQuery={searchQuery}
                         onSearchChange={setSearchQuery}
                         sortBy={sortBy}
@@ -671,7 +333,7 @@ export function HotelIncidentsManager() {
                             </h2>
                         </div>
                         {incomingIncidents.length > 0 ? (
-                            <div className="space-y-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {incomingIncidents.map(incident => (
                                     <IncidentCard
                                         key={incident.id}
@@ -695,7 +357,7 @@ export function HotelIncidentsManager() {
                         <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
                             Assigned ({assignedIncidents.length})
                         </h2>
-                        <div className="space-y-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {assignedIncidents.map(incident => (
                                 <IncidentCard key={incident.id} incident={incident} />
                             ))}
@@ -709,7 +371,7 @@ export function HotelIncidentsManager() {
     // ========== MAINTENANCE STAFF VIEW ==========
     return (
         <HotelLayout>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-full mx-auto">
                 <Breadcrumbs
                     items={[
                         { label: 'Home', href: '/hotel' },
@@ -731,7 +393,7 @@ export function HotelIncidentsManager() {
                     </div>
                 </div>
 
-                <FilterToolbar
+                <IncidentFilterToolbar
                     searchQuery={searchQuery}
                     onSearchChange={setSearchQuery}
                     sortBy={sortBy}
@@ -749,12 +411,13 @@ export function HotelIncidentsManager() {
                         <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
                             Active Tasks ({activeStaffIncidents.length})
                         </h2>
-                        <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {activeStaffIncidents.map(incident => (
                                 <IncidentCard
                                     key={incident.id}
                                     incident={incident}
-                                    onClick={() => handleOpenIncident(incident)}
+                                    onResolve={handleResolve}
+                                    showActions
                                 />
                             ))}
                         </div>
@@ -774,12 +437,11 @@ export function HotelIncidentsManager() {
                         <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
                             Completed ({resolvedStaffIncidents.length})
                         </h2>
-                        <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {resolvedStaffIncidents.map(incident => (
                                 <IncidentCard
                                     key={incident.id}
                                     incident={incident}
-                                    onClick={() => handleOpenIncident(incident)}
                                 />
                             ))}
                         </div>
@@ -787,15 +449,6 @@ export function HotelIncidentsManager() {
                 )}
             </div>
 
-            <IncidentModal
-                incident={selectedIncident}
-                isOpen={modalOpen}
-                onClose={() => {
-                    setModalOpen(false);
-                    setSelectedIncident(null);
-                }}
-                onResolve={handleResolve}
-            />
         </HotelLayout>
     );
 }

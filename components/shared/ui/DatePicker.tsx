@@ -73,7 +73,7 @@ export function DatePicker({ value, onChange, placeholder = 'Select date' }: Dat
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg p-3 w-64">
+                <div className="absolute z-30 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg p-3 w-64">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-3">
                         <button onClick={handlePrevMonth} className="p-1 hover:bg-slate-100 rounded">
@@ -104,12 +104,12 @@ export function DatePicker({ value, onChange, placeholder = 'Select date' }: Dat
                                 onClick={() => day && handleSelectDate(day)}
                                 disabled={!day}
                                 className={`text-center text-sm py-1.5 rounded transition-colors ${!day
-                                        ? 'invisible'
-                                        : isSelected(day)
-                                            ? 'bg-slate-900 text-white'
-                                            : isToday(day)
-                                                ? 'bg-emerald-100 text-emerald-700 font-medium'
-                                                : 'hover:bg-slate-100 text-slate-700'
+                                    ? 'invisible'
+                                    : isSelected(day)
+                                        ? 'bg-slate-900 text-white'
+                                        : isToday(day)
+                                            ? 'bg-emerald-100 text-emerald-700 font-medium'
+                                            : 'hover:bg-slate-100 text-slate-700'
                                     }`}
                             >
                                 {day}

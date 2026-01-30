@@ -87,16 +87,15 @@ export function HotelLayout({ children }: HotelLayoutProps) {
             />
 
             {/* Main Content Area */}
-            <div className={`
-                transition-all duration-300 ease-in-out
-                ${isCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
-            `}>
+            <div
+                className="transition-all duration-300 ease-in-out max-lg:!ml-0"
+                style={{ marginLeft: isCollapsed ? 80 : sidebarWidth }}
+            >
                 {/* GLASS HEADER (Floating) */}
                 <header className={`
-                    h-14 sticky top-4 mx-4 z-30 rounded-2xl transition-all duration-300 ease-in-out
-                    ${isCollapsed ? 'lg:left-20' : 'lg:left-64'}
-                    ${scrolled 
-                        ? 'bg-transparent backdrop-blur-none shadow-none opacity-0 pointer-events-none' 
+                    h-14 sticky top-4 mx-4 z-40 rounded-2xl transition-all duration-300 ease-in-out
+                    ${scrolled
+                        ? 'bg-transparent backdrop-blur-none shadow-none opacity-0 pointer-events-none'
                         : 'glass bg-white/60 dark:bg-slate-900/60 backdrop-blur-md opacity-100'}
                 `}>
                     <div className="h-full px-4 flex items-center justify-between">
@@ -141,7 +140,7 @@ export function HotelLayout({ children }: HotelLayoutProps) {
                             <div className="relative" ref={userMenuRef}>
                                 <button
                                     onClick={() => setShowUserMenu(!showUserMenu)}
-                                    className="flex items-center gap-2 pl-2 sm:pl-4 sm:border-l border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-500/10 rounded-lg py-1 pr-2 transition-colors"
+                                    className="flex items-center gap-2 pl-2 sm:pl-4 hover:bg-slate-500/10 rounded-lg py-1 pr-2 transition-colors"
                                 >
                                     <div className="w-8 h-8 rounded-full bg-indigo-600 shadow-lg shadow-indigo-500/30 flex items-center justify-center">
                                         <span className="text-sm font-medium text-white">

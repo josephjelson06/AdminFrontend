@@ -133,7 +133,7 @@ export function SelectDropdown({ value, options, onChange, placeholder = 'Select
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 glass-elevated rounded-xl py-1 max-h-48 overflow-auto">
+                <div className="absolute z-30 w-full mt-1 glass-elevated rounded-xl py-1 max-h-48 overflow-auto">
                     {options.map((option) => (
                         <button
                             key={option.value}

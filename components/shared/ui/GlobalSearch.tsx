@@ -188,26 +188,24 @@ export function GlobalSearch() {
             {/* Trigger Button */}
             <button
                 onClick={() => setOpen(true)}
-                className={`group flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 border w-full sm:w-64 ${
-                    scrolled
-                        ? 'bg-transparent border-transparent hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
-                        : 'bg-slate-100 dark:bg-slate-800 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
-                }`}
+                className={`group flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 border w-full sm:w-64 ${scrolled
+                    ? 'bg-transparent border-transparent hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
+                    : 'bg-slate-100 dark:bg-slate-800 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                    }`}
             >
                 <Search className={`w-4 h-4 transition-colors duration-300 ${scrolled ? 'text-slate-400' : 'text-slate-500'} group-hover:text-slate-700 dark:group-hover:text-slate-300`} />
                 <span className={`text-sm transition-colors duration-300 ${scrolled ? 'text-slate-400' : 'text-slate-500'} group-hover:text-slate-700 dark:group-hover:text-slate-300`}>Search...</span>
-                <span className={`ml-auto text-xs px-1.5 py-0.5 rounded border font-mono hidden sm:inline-block transition-all duration-300 ${
-                    scrolled 
-                        ? 'bg-transparent border-slate-300/50 dark:border-slate-600/50 text-slate-400' 
-                        : 'bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-slate-700 text-slate-400'
-                }`}>
+                <span className={`ml-auto text-xs px-1.5 py-0.5 rounded border font-mono hidden sm:inline-block transition-all duration-300 ${scrolled
+                    ? 'bg-transparent border-slate-300/50 dark:border-slate-600/50 text-slate-400'
+                    : 'bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-slate-700 text-slate-400'
+                    }`}>
                     ⌘K
                 </span>
             </button>
 
             {/* Modal Overlay */}
             {open && (
-                <div className="fixed inset-0 z-[99999] flex items-start justify-center pt-[20vh] px-4">
+                <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4">
                     {/* Backdrop */}
                     <div
                         className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"

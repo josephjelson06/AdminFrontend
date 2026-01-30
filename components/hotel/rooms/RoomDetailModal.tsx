@@ -22,7 +22,7 @@ export function RoomDetailModal({ room, onClose, onStatusChange }: RoomDetailMod
     if (!room) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             <div
                 className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
                 onClick={onClose}
@@ -46,9 +46,9 @@ export function RoomDetailModal({ room, onClose, onStatusChange }: RoomDetailMod
                 <div className="p-5">
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Current Status</p>
                     <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl ${room.status === 'ready' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' :
-                            room.status === 'cleaning' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
-                                room.status === 'occupied' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
-                                    'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400'
+                        room.status === 'cleaning' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
+                            room.status === 'occupied' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                                'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400'
                         }`}>
                         <div className={`w-3 h-3 rounded-full ${getRoomStatusColor(room.status)}`} />
                         <span className="font-semibold">{getRoomStatusLabel(room.status)}</span>
@@ -69,12 +69,12 @@ export function RoomDetailModal({ room, onClose, onStatusChange }: RoomDetailMod
                                     }}
                                     disabled={room.status === status}
                                     className={`py-2.5 px-3 text-sm font-medium rounded-xl transition-all ${room.status === status
-                                            ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-                                            : status === 'ready'
-                                                ? 'bg-emerald-500 text-white hover:bg-emerald-600'
-                                                : status === 'cleaning'
-                                                    ? 'bg-amber-500 text-white hover:bg-amber-600'
-                                                    : 'bg-rose-500 text-white hover:bg-rose-600'
+                                        ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
+                                        : status === 'ready'
+                                            ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                                            : status === 'cleaning'
+                                                ? 'bg-amber-500 text-white hover:bg-amber-600'
+                                                : 'bg-rose-500 text-white hover:bg-rose-600'
                                         }`}
                                 >
                                     {getRoomStatusLabel(status)}
