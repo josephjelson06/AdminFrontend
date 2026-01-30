@@ -5,6 +5,7 @@
  */
 
 export { InvoiceList } from './InvoiceList';
+export { InvoiceCard } from './InvoiceCard';
 export { InvoiceTable } from './InvoiceTable';
 export { InvoiceStatusBadge } from './InvoiceStatusBadge';
 export { InvoiceSummaryCards } from './InvoiceSummaryCards';

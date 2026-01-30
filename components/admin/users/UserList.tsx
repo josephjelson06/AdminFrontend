@@ -6,8 +6,10 @@
  * Main component for displaying the users grid.
  */
 
+import { useState, useMemo } from 'react';
 import { Users, Plus, Search } from 'lucide-react';
 import { Card } from '@/components/shared/ui/Card';
+import { PaginationBar } from '@/components/shared/ui/Pagination';
 import { useUsers } from './useUsers';
 import { useUserActions } from './useUserActions';
 import { UserCard } from './UserCard';
@@ -33,6 +35,25 @@ export function UserList() {
 
     const actions = useUserActions(refresh);
     const hasActiveFilters = Boolean(filters.search || filters.role);
+
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(9);
+
+    // Paginated data
+    const { paginatedUsers, totalPages } = useMemo(() => {
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+        return {
+            paginatedUsers: users.slice(start, end),
+            totalPages: Math.ceil(users.length / pageSize)
+        };
+    }, [users, page, pageSize]);
+
+    // Reset to page 1 when filters change
+    useMemo(() => {
+        setPage(1);
+    }, [filters.search, filters.role]);
 
     return (
         <div className="space-y-6">
@@ -80,8 +101,8 @@ export function UserList() {
                                 key={opt.value}
                                 onClick={() => setFilter('role', opt.value)}
                                 className={`px-3 py-1 rounded text-sm transition-all ${filters.role === opt.value
-                                        ? 'surface-glass-strong text-primary'
-                                        : 'text-muted hover:text-primary'
+                                    ? 'surface-glass-strong text-primary'
+                                    : 'text-muted hover:text-primary'
                                     }`}
                             >
                                 {opt.label}
@@ -98,7 +119,7 @@ export function UserList() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {users.map((user) => (
+                    {paginatedUsers.map((user) => (
                         <UserCard
                             key={user.id}
                             user={user}
@@ -109,6 +130,19 @@ export function UserList() {
                         />
                     ))}
                 </div>
+            )}
+
+            {/* Pagination */}
+            {users.length > 0 && (
+                <PaginationBar
+                    currentPage={page}
+                    totalPages={totalPages}
+                    totalItems={users.length}
+                    pageSize={pageSize}
+                    onPageChange={setPage}
+                    onPageSizeChange={setPageSize}
+                    pageSizeOptions={[6, 9, 12, 18]}
+                />
             )}
 
             {/* Delete Confirmation Modal */}

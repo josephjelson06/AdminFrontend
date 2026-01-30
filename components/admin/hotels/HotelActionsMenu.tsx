@@ -33,40 +33,40 @@ export function HotelActionsMenu({
     const router = useRouter();
 
     return (
-        <div className="flex justify-end">
-            <Dropdown
-                trigger={
-                    <button className="p-1.5 glass-hover rounded-lg transition-all duration-fast">
-                        <MoreHorizontal className="w-4 h-4 text-muted" />
-                    </button>
-                }
-                align="right"
+        <Dropdown
+            trigger={
+                <button className="p-2.5 rounded-xl surface-glass-soft hover:surface-glass-strong transition-all duration-200">
+                    <MoreHorizontal className="w-4 h-4 text-muted" />
+                </button>
+            }
+            align="right"
+        >
+            <DropdownItem onClick={() => onImpersonate(hotel)}>
+                <UserCheck className="w-4 h-4 text-warning" />
+                <span className="text-warning font-medium">Login as Admin</span>
+            </DropdownItem>
+
+            <div className="my-1.5 border-t border-glass" />
+
+            <DropdownItem onClick={() => router.push(`/hotels/${hotel.id}`)}>
+                <ExternalLink className="w-4 h-4" />
+                View Details
+            </DropdownItem>
+
+            <DropdownItem onClick={() => onEdit(hotel)}>
+                <Edit2 className="w-4 h-4" />
+                Edit Hotel
+            </DropdownItem>
+
+            <div className="my-1.5 border-t border-glass" />
+
+            <DropdownItem
+                onClick={() => onDelete(hotel)}
+                className="text-danger"
             >
-                <DropdownItem onClick={() => onImpersonate(hotel)}>
-                    <UserCheck className="w-4 h-4 text-warning" />
-                    <span className="text-warning font-medium">Login as Admin</span>
-                </DropdownItem>
-
-                <div className="my-1 border-t border-glass" />
-
-                <DropdownItem onClick={() => router.push(`/hotels/${hotel.id}`)}>
-                    <ExternalLink className="w-4 h-4" />
-                    View Details
-                </DropdownItem>
-
-                <DropdownItem onClick={() => onEdit(hotel)}>
-                    <Edit2 className="w-4 h-4" />
-                    Edit Hotel
-                </DropdownItem>
-
-                <DropdownItem
-                    onClick={() => onDelete(hotel)}
-                    className="text-danger"
-                >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
-                </DropdownItem>
-            </Dropdown>
-        </div>
+                <Trash2 className="w-4 h-4" />
+                Delete Hotel
+            </DropdownItem>
+        </Dropdown>
     );
 }

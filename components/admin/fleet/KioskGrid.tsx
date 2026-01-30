@@ -7,8 +7,9 @@
  */
 
 import { useState } from 'react';
-import { LayoutGrid, FileCode, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutGrid, FileCode } from 'lucide-react';
 import { Card } from '@/components/shared/ui/Card';
+import { PaginationBar } from '@/components/shared/ui/Pagination';
 import { useKiosks } from './useKiosks';
 import { KioskFiltersBar } from './KioskFilters';
 import { KioskCard } from './KioskCard';
@@ -63,10 +64,6 @@ export function KioskGrid({ pageSize = 9 }: KioskGridProps) {
         }
     };
 
-    // Pagination info
-    const startItem = totalItems > 0 ? (page - 1) * currentPageSize + 1 : 0;
-    const endItem = Math.min(page * currentPageSize, totalItems);
-
     return (
         <div className="space-y-6">
             {/* Header & Tabs */}
@@ -81,8 +78,8 @@ export function KioskGrid({ pageSize = 9 }: KioskGridProps) {
                     <button
                         onClick={() => setActiveTab('devices')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-fast ${activeTab === 'devices'
-                                ? 'surface-glass-strong text-primary shadow-sm'
-                                : 'text-muted hover:text-secondary-text'
+                            ? 'surface-glass-strong text-primary shadow-sm'
+                            : 'text-muted hover:text-secondary-text'
                             }`}
                     >
                         <LayoutGrid className="w-4 h-4 inline-block mr-2" />
@@ -91,8 +88,8 @@ export function KioskGrid({ pageSize = 9 }: KioskGridProps) {
                     <button
                         onClick={() => setActiveTab('firmware')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-fast ${activeTab === 'firmware'
-                                ? 'surface-glass-strong text-primary shadow-sm'
-                                : 'text-muted hover:text-secondary-text'
+                            ? 'surface-glass-strong text-primary shadow-sm'
+                            : 'text-muted hover:text-secondary-text'
                             }`}
                     >
                         <FileCode className="w-4 h-4 inline-block mr-2" />
@@ -135,45 +132,15 @@ export function KioskGrid({ pageSize = 9 }: KioskGridProps) {
                     )}
 
                     {/* Pagination */}
-                    <div className="py-3 px-4 border-t border-glass surface-glass-soft rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted">Rows per page:</span>
-                            <select
-                                value={currentPageSize}
-                                onChange={(e) => setPageSize(Number(e.target.value))}
-                                className="input-glass !w-auto !py-1"
-                            >
-                                <option value={6}>6</option>
-                                <option value={9}>9</option>
-                                <option value={12}>12</option>
-                                <option value={15}>15</option>
-                            </select>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <span className="text-sm text-muted">
-                                {totalItems > 0 ? `${startItem}–${endItem} of ${totalItems}` : '0 items'}
-                            </span>
-                            <div className="flex items-center gap-1">
-                                <button
-                                    onClick={() => setPage(page - 1)}
-                                    disabled={page === 1}
-                                    className="p-1.5 rounded-lg glass-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-fast"
-                                >
-                                    <ChevronLeft className="w-4 h-4 text-muted" />
-                                </button>
-                                <span className="px-2 text-sm text-secondary-text">
-                                    {page} / {totalPages || 1}
-                                </span>
-                                <button
-                                    onClick={() => setPage(page + 1)}
-                                    disabled={page === totalPages || totalPages === 0}
-                                    className="p-1.5 rounded-lg glass-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-fast"
-                                >
-                                    <ChevronRight className="w-4 h-4 text-muted" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <PaginationBar
+                        currentPage={page}
+                        totalPages={totalPages}
+                        totalItems={totalItems}
+                        pageSize={currentPageSize}
+                        onPageChange={setPage}
+                        onPageSizeChange={setPageSize}
+                        pageSizeOptions={[6, 9, 12, 15]}
+                    />
                 </>
             )}
 

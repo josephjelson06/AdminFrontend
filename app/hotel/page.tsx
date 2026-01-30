@@ -12,3 +12,4 @@ import { HotelDashboardManager } from '@/components/hotel/dashboard';
 export default function HotelDashboard() {
     return <HotelDashboardManager />;
 }
+

@@ -6,7 +6,9 @@
  * Main component for the helpdesk page.
  */
 
+import { useState, useMemo } from 'react';
 import { LifeBuoy, Inbox } from 'lucide-react';
+import { PaginationBar } from '@/components/shared/ui/Pagination';
 import { useSupport } from './useSupport';
 import { TicketCard } from './TicketCard';
 import { TicketDetailSlideOver } from './TicketDetailSlideOver';
@@ -28,8 +30,8 @@ function FilterTab({
         <button
             onClick={onClick}
             className={`flex items-center gap-2 text-sm transition-colors ${isActive
-                    ? 'font-bold text-primary'
-                    : 'font-medium text-muted hover:text-secondary-text'
+                ? 'font-bold text-primary'
+                : 'font-medium text-muted hover:text-secondary-text'
                 }`}
         >
             {label}
@@ -53,6 +55,25 @@ export function SupportList() {
         selectedTicket,
         selectTicket,
     } = useSupport();
+
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(8);
+
+    // Paginated data
+    const { paginatedTickets, totalPages } = useMemo(() => {
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+        return {
+            paginatedTickets: tickets.slice(start, end),
+            totalPages: Math.ceil(tickets.length / pageSize)
+        };
+    }, [tickets, page, pageSize]);
+
+    // Reset to page 1 when filter changes
+    useMemo(() => {
+        setPage(1);
+    }, [filterStatus]);
 
     return (
         <div className="space-y-6 max-w-7xl mx-auto">
@@ -111,7 +132,7 @@ export function SupportList() {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {tickets.map((ticket) => (
+                        {paginatedTickets.map((ticket) => (
                             <TicketCard
                                 key={ticket.id}
                                 ticket={ticket}
@@ -119,6 +140,19 @@ export function SupportList() {
                             />
                         ))}
                     </div>
+                )}
+
+                {/* Pagination */}
+                {tickets.length > 0 && (
+                    <PaginationBar
+                        currentPage={page}
+                        totalPages={totalPages}
+                        totalItems={tickets.length}
+                        pageSize={pageSize}
+                        onPageChange={setPage}
+                        onPageSizeChange={setPageSize}
+                        pageSizeOptions={[6, 8, 12, 16]}
+                    />
                 )}
             </div>
 
