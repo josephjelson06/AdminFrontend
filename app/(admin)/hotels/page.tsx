@@ -11,7 +11,7 @@ import { HotelList } from '@/components/admin/hotels';
 
 export default function HotelsPage() {
     return (
-        <div className="p-4 sm:p-6 animate-in fade-in duration-normal">
+        <div className="animate-in fade-in duration-normal">
             <HotelList />
         </div>
     );

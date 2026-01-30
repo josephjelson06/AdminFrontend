@@ -46,9 +46,9 @@ export function RolesList() {
     }
 
     return (
-        <div className="p-4 sm:p-6 max-w-6xl mx-auto animate-in fade-in duration-normal">
+        <div className="max-w-6xl mx-auto animate-in fade-in duration-normal space-y-4">
             {/* Page Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-primary">Roles & Access</h1>
                     <p className="text-sm text-muted mt-1">
@@ -62,12 +62,12 @@ export function RolesList() {
             </div>
 
             {/* Section Header */}
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-muted" />
                 <h2 className="text-lg font-semibold text-primary">ATC Admin Roles</h2>
                 <span className="ml-2 badge-default">{roles.length} roles</span>
             </div>
-            <p className="text-sm text-muted mb-6">
+            <p className="text-sm text-muted">
                 Roles for ATC internal staff managing the super admin panel. Control access to hotels, fleet, finance, and system settings.
             </p>
 

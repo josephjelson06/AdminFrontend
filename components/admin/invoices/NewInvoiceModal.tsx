@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { Modal, ModalHeader, ModalBody, ModalFooter, ModalCancelButton, ModalSubmitButton } from '@/components/shared/ui/Modal';
 import type { Invoice } from '@/types/finance';
 
 interface NewInvoiceModalProps {
@@ -16,36 +16,23 @@ export function NewInvoiceModal({ isOpen, onClose, onSubmit }: NewInvoiceModalPr
     const [dueDate, setDueDate] = useState('');
     const [description, setDescription] = useState('');
 
-    if (!isOpen) return null;
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit({
             hotelName,
             amount: parseFloat(amount),
             dueDate,
-            // description not in Invoice type, but passed anyway
         } as Partial<Invoice>);
+        onClose();
     };
 
     return (
-        <div className="fixed inset-0 z-50 overflow-hidden">
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-            <div className="absolute inset-0 flex items-center justify-center p-4">
-                <div className="relative w-full max-w-md surface-glass-strong rounded-2xl shadow-elevated">
-                    {/* Header */}
-                    <div className="px-6 py-4 border-b border-glass flex items-center justify-between">
-                        <h2 className="text-lg font-semibold text-primary">Create New Invoice</h2>
-                        <button
-                            onClick={onClose}
-                            className="p-2 rounded-lg glass-hover transition-all duration-fast"
-                        >
-                            <X className="w-5 h-5 text-muted" />
-                        </button>
-                    </div>
+        <Modal isOpen={isOpen} onClose={onClose} layout="center" size="sm">
+            <form onSubmit={handleSubmit} className="flex flex-col h-full">
+                <ModalHeader title="Create New Invoice" />
 
-                    {/* Form */}
-                    <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <ModalBody>
+                    <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-secondary-text mb-1">
                                 Hotel
@@ -105,26 +92,14 @@ export function NewInvoiceModal({ isOpen, onClose, onSubmit }: NewInvoiceModalPr
                                 className="input-glass resize-none"
                             />
                         </div>
+                    </div>
+                </ModalBody>
 
-                        {/* Actions */}
-                        <div className="flex gap-3 pt-2">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="btn-secondary flex-1"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="btn-primary flex-1"
-                            >
-                                Create Invoice
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+                <ModalFooter>
+                    <ModalCancelButton />
+                    <ModalSubmitButton label="Create Invoice" />
+                </ModalFooter>
+            </form>
+        </Modal>
     );
 }
