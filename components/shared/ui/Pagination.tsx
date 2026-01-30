@@ -1,6 +1,18 @@
 'use client';
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+/**
+ * Pagination Components
+ * 
+ * Unified pagination with glassmorphism design system.
+ * Use PaginationBar for a complete pagination control with page size selector.
+ */
+
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { GlassCard } from './GlassCard';
+
+// ============================================
+// TYPES
+// ============================================
 
 interface PaginationProps {
     currentPage: number;
@@ -8,7 +20,29 @@ interface PaginationProps {
     totalItems: number;
     itemsPerPage: number;
     onPageChange: (page: number) => void;
+    showPageNumbers?: boolean;
 }
+
+interface PageSizeSelectorProps {
+    value: number;
+    options?: number[];
+    onChange: (size: number) => void;
+    label?: string;
+}
+
+interface PaginationBarProps {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    pageSize: number;
+    onPageChange: (page: number) => void;
+    onPageSizeChange?: (size: number) => void;
+    pageSizeOptions?: number[];
+}
+
+// ============================================
+// PAGINATION (Page Numbers)
+// ============================================
 
 export function Pagination({
     currentPage,
@@ -16,13 +50,14 @@ export function Pagination({
     totalItems,
     itemsPerPage,
     onPageChange,
+    showPageNumbers = true,
 }: PaginationProps) {
-    const startItem = (currentPage - 1) * itemsPerPage + 1;
+    const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
-    const pages = [];
+    // Calculate visible page numbers
+    const pages: number[] = [];
     const maxVisiblePages = 5;
-
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
@@ -35,90 +70,126 @@ export function Pagination({
     }
 
     return (
-        <div className="flex items-center justify-between py-3 px-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-            <div className="text-sm text-slate-500 dark:text-slate-400">
-                Showing <span className="font-medium text-slate-700 dark:text-slate-300">{startItem}</span> to{' '}
-                <span className="font-medium text-slate-700 dark:text-slate-300">{endItem}</span> of{' '}
-                <span className="font-medium text-slate-700 dark:text-slate-300">{totalItems}</span> results
-            </div>
+        <div className="flex items-center gap-4">
+            {/* Results count */}
+            <span className="text-sm text-muted hidden sm:inline">
+                {totalItems > 0 ? `${startItem}–${endItem} of ${totalItems}` : '0 items'}
+            </span>
 
+            {/* Navigation */}
             <div className="flex items-center gap-1">
+                {/* First page */}
+                <button
+                    onClick={() => onPageChange(1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-xl glass-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    title="First page"
+                >
+                    <ChevronsLeft className="w-4 h-4 text-muted" />
+                </button>
+
+                {/* Previous page */}
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-xl glass-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    title="Previous page"
                 >
-                    <ChevronLeft className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                    <ChevronLeft className="w-4 h-4 text-muted" />
                 </button>
 
-                {startPage > 1 && (
-                    <>
-                        <button
-                            onClick={() => onPageChange(1)}
-                            className="w-8 h-8 rounded-md text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                        >
-                            1
-                        </button>
-                        {startPage > 2 && <span className="px-1 text-slate-400 dark:text-slate-500">...</span>}
-                    </>
+                {/* Page numbers */}
+                {showPageNumbers && (
+                    <div className="hidden sm:flex items-center gap-1 mx-1">
+                        {startPage > 1 && (
+                            <>
+                                <button
+                                    onClick={() => onPageChange(1)}
+                                    className="w-8 h-8 rounded-xl text-sm font-medium text-muted glass-hover transition-all"
+                                >
+                                    1
+                                </button>
+                                {startPage > 2 && (
+                                    <span className="px-1 text-muted">...</span>
+                                )}
+                            </>
+                        )}
+
+                        {pages.map((page) => (
+                            <button
+                                key={page}
+                                onClick={() => onPageChange(page)}
+                                className={`w-8 h-8 rounded-xl text-sm font-medium transition-all ${page === currentPage
+                                        ? 'bg-primary text-inverse shadow-lg'
+                                        : 'text-muted glass-hover'
+                                    }`}
+                            >
+                                {page}
+                            </button>
+                        ))}
+
+                        {endPage < totalPages && (
+                            <>
+                                {endPage < totalPages - 1 && (
+                                    <span className="px-1 text-muted">...</span>
+                                )}
+                                <button
+                                    onClick={() => onPageChange(totalPages)}
+                                    className="w-8 h-8 rounded-xl text-sm font-medium text-muted glass-hover transition-all"
+                                >
+                                    {totalPages}
+                                </button>
+                            </>
+                        )}
+                    </div>
                 )}
 
-                {pages.map((page) => (
-                    <button
-                        key={page}
-                        onClick={() => onPageChange(page)}
-                        className={`w-8 h-8 rounded-md text-sm font-medium transition-colors ${page === currentPage
-                            ? 'bg-slate-900 dark:bg-emerald-600 text-white'
-                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
-                            }`}
-                    >
-                        {page}
-                    </button>
-                ))}
+                {/* Mobile page indicator */}
+                <span className="sm:hidden px-3 text-sm text-secondary-text">
+                    {currentPage} / {totalPages || 1}
+                </span>
 
-                {endPage < totalPages && (
-                    <>
-                        {endPage < totalPages - 1 && <span className="px-1 text-slate-400 dark:text-slate-500">...</span>}
-                        <button
-                            onClick={() => onPageChange(totalPages)}
-                            className="w-8 h-8 rounded-md text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                        >
-                            {totalPages}
-                        </button>
-                    </>
-                )}
-
+                {/* Next page */}
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    disabled={currentPage === totalPages || totalPages === 0}
+                    className="p-2 rounded-xl glass-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    title="Next page"
                 >
-                    <ChevronRight className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                    <ChevronRight className="w-4 h-4 text-muted" />
+                </button>
+
+                {/* Last page */}
+                <button
+                    onClick={() => onPageChange(totalPages)}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                    className="p-2 rounded-xl glass-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    title="Last page"
+                >
+                    <ChevronsRight className="w-4 h-4 text-muted" />
                 </button>
             </div>
         </div>
     );
 }
 
-// Items per page selector
-interface PageSizeSelectorProps {
-    value: number;
-    options?: number[];
-    onChange: (size: number) => void;
-}
+// ============================================
+// PAGE SIZE SELECTOR
+// ============================================
 
 export function PageSizeSelector({
     value,
-    options = [10, 25, 50, 100],
+    options = [10, 25, 50],
     onChange,
+    label = 'Per page',
 }: PageSizeSelectorProps) {
     return (
         <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-500 dark:text-slate-400">Show</span>
+            <span className="text-sm text-muted">{label}:</span>
             <select
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
-                className="px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                className="input-glass !py-1.5 !px-2 !w-auto text-sm"
             >
                 {options.map((opt) => (
                     <option key={opt} value={opt}>
@@ -126,7 +197,46 @@ export function PageSizeSelector({
                     </option>
                 ))}
             </select>
-            <span className="text-sm text-slate-500 dark:text-slate-400">entries</span>
         </div>
+    );
+}
+
+// ============================================
+// PAGINATION BAR (Complete component)
+// ============================================
+
+export function PaginationBar({
+    currentPage,
+    totalPages,
+    totalItems,
+    pageSize,
+    onPageChange,
+    onPageSizeChange,
+    pageSizeOptions = [8, 12, 16, 24],
+}: PaginationBarProps) {
+    return (
+        <GlassCard padding="sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                {/* Page size selector */}
+                {onPageSizeChange ? (
+                    <PageSizeSelector
+                        value={pageSize}
+                        options={pageSizeOptions}
+                        onChange={onPageSizeChange}
+                    />
+                ) : (
+                    <div /> // Spacer
+                )}
+
+                {/* Pagination controls */}
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={totalItems}
+                    itemsPerPage={pageSize}
+                    onPageChange={onPageChange}
+                />
+            </div>
+        </GlassCard>
     );
 }

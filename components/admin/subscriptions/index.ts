@@ -5,6 +5,7 @@
  */
 
 export { SubscriptionList } from './SubscriptionList';
+export { SubscriptionCard } from './SubscriptionCard';
 export { SubscriptionTable } from './SubscriptionTable';
 export { SubscriptionMetricsCards } from './SubscriptionMetricsCards';
 export {

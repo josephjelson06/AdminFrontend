@@ -9,6 +9,7 @@
 
 import { Search, Plus, Building2 } from 'lucide-react';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
+import { PaginationBar } from '@/components/shared/ui/Pagination';
 import { useHotels } from './useHotels';
 import { useHotelActions } from './useHotelActions';
 import { HotelCard } from './HotelCard';
@@ -26,9 +27,11 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
         isLoading,
         error,
         page,
+        pageSize: currentPageSize,
         totalPages,
         totalItems,
         setPage,
+        setPageSize,
         filters,
         setFilter,
         clearFilters,
@@ -136,31 +139,16 @@ export function HotelList({ pageSize = 12 }: HotelListProps) {
                     </div>
 
                     {/* Pagination */}
-                    {totalPages > 1 && (
-                        <GlassCard padding="sm" className="mt-6">
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                                <span className="text-sm text-muted">
-                                    Page <span className="font-medium text-primary">{page}</span> of{' '}
-                                    <span className="font-medium text-primary">{totalPages}</span>
-                                </span>
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={() => setPage(page - 1)}
-                                        disabled={page <= 1}
-                                        className="btn-secondary px-5 py-2 disabled:opacity-40 disabled:cursor-not-allowed"
-                                    >
-                                        Previous
-                                    </button>
-                                    <button
-                                        onClick={() => setPage(page + 1)}
-                                        disabled={page >= totalPages}
-                                        className="btn-secondary px-5 py-2 disabled:opacity-40 disabled:cursor-not-allowed"
-                                    >
-                                        Next
-                                    </button>
-                                </div>
-                            </div>
-                        </GlassCard>
+                    {hotels.length > 0 && (
+                        <PaginationBar
+                            currentPage={page}
+                            totalPages={totalPages}
+                            totalItems={totalItems}
+                            pageSize={currentPageSize}
+                            onPageChange={setPage}
+                            onPageSizeChange={setPageSize}
+                            pageSizeOptions={[8, 12, 16, 24]}
+                        />
                     )}
                 </>
             )}

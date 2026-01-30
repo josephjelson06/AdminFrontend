@@ -15,6 +15,7 @@ interface GlassCardProps {
     aurora?: boolean; // Aurora accent stripe
     auroraGlow?: boolean; // Aurora glow effect
     padding?: 'none' | 'sm' | 'md' | 'lg';
+    onClick?: () => void;
 }
 
 const variantClasses: Record<GlassVariant, string> = {
@@ -31,9 +32,9 @@ const paddingClasses = {
     lg: 'p-6',
 };
 
-export const GlassCard: React.FC<GlassCardProps> = ({ 
-    children, 
-    className, 
+export const GlassCard: React.FC<GlassCardProps> = ({
+    children,
+    className,
     style,
     variant = 'strong',
     hover = true,
@@ -41,6 +42,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     aurora = false,
     auroraGlow = false,
     padding = 'md',
+    onClick,
 }) => {
     return (
         <div
@@ -53,9 +55,11 @@ export const GlassCard: React.FC<GlassCardProps> = ({
                 aurora && "aurora-accent",
                 auroraGlow && "aurora-glow",
                 "transition-all duration-normal ease-smooth",
+                onClick && "cursor-pointer",
                 className
             )}
             style={style}
+            onClick={onClick}
         >
             {children}
         </div>

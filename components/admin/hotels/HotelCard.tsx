@@ -29,21 +29,21 @@ export function HotelCard({ hotel, onEdit, onDelete, onImpersonate }: HotelCardP
     const emailUrl = `mailto:${hotel.contactEmail}`;
 
     return (
-        <GlassCard className="group relative overflow-hidden h-full" hover padding="none">
+        <GlassCard className="group relative overflow-hidden h-full flex flex-col" hover padding="none">
             {/* Status Badge - Top Right */}
-            <div className="absolute top-4 right-4 z-10">
+            <div className="absolute top-5 right-5 z-10">
                 <HotelStatusBadge status={hotel.status} />
             </div>
 
             {/* Card Content */}
-            <div className="p-5 flex flex-col h-full">
+            <div className="p-6 flex flex-col flex-1 space-y-6">
                 {/* Header with Hotel Icon and Name */}
-                <div className="flex items-start gap-4 mb-5 pr-16">
-                    <div className="shrink-0 p-3 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/25">
-                        <Building2 className="w-5 h-5 text-white" />
+                <div className="flex items-start gap-4 pr-24">
+                    <div className="shrink-0 p-3.5 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/25">
+                        <Building2 className="w-6 h-6 text-white" />
                     </div>
-                    <div className="flex-1 min-w-0 space-y-1">
-                        <h3 className="text-base font-semibold text-primary truncate leading-tight">
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                        <h3 className="text-lg font-semibold text-primary truncate leading-tight">
                             {hotel.name}
                         </h3>
                         <p className="text-sm text-muted truncate">
@@ -53,54 +53,54 @@ export function HotelCard({ hotel, onEdit, onDelete, onImpersonate }: HotelCardP
                 </div>
 
                 {/* Info Grid */}
-                <div className="grid grid-cols-2 gap-3 mb-5 flex-1">
+                <div className="grid grid-cols-2 gap-4 flex-1">
                     {/* Plan */}
-                    <div className="p-3 rounded-xl surface-glass-soft">
-                        <p className="text-xs text-muted mb-1">Plan</p>
-                        <p className="text-sm font-semibold text-primary capitalize">{hotel.plan}</p>
+                    <div className="p-4 rounded-xl surface-glass-soft space-y-2">
+                        <p className="text-xs font-medium text-muted uppercase tracking-wide">Plan</p>
+                        <p className="text-base font-semibold text-primary capitalize">{hotel.plan}</p>
                     </div>
                     {/* Kiosks */}
-                    <div className="p-3 rounded-xl surface-glass-soft">
-                        <p className="text-xs text-muted mb-1">Kiosks</p>
+                    <div className="p-4 rounded-xl surface-glass-soft space-y-2">
+                        <p className="text-xs font-medium text-muted uppercase tracking-wide">Kiosks</p>
                         <div className="flex items-center gap-2">
                             <Cpu className="w-4 h-4 text-info" />
-                            <span className="text-sm font-semibold text-primary">{hotel.kioskCount}</span>
+                            <span className="text-base font-semibold text-primary">{hotel.kioskCount}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Quick Action Buttons */}
-                <div className="flex items-center gap-2 pt-4 border-t border-glass">
+                <div className="flex items-center gap-2.5 pt-5 border-t border-glass">
                     {/* Location Button */}
                     <a
                         href={mapsUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 transition-all duration-200 group/btn"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 transition-all duration-200 group/btn"
                         title="Open in Google Maps"
                     >
                         <MapPin className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                        <span className="text-xs font-medium hidden sm:inline">Map</span>
+                        <span className="text-xs font-semibold hidden sm:inline">Map</span>
                     </a>
 
                     {/* Phone Button */}
                     <a
                         href={phoneUrl}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-all duration-200 group/btn"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-all duration-200 group/btn"
                         title={`Call ${hotel.contactPhone}`}
                     >
                         <Phone className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                        <span className="text-xs font-medium hidden sm:inline">Call</span>
+                        <span className="text-xs font-semibold hidden sm:inline">Call</span>
                     </a>
 
                     {/* Email Button */}
                     <a
                         href={emailUrl}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 transition-all duration-200 group/btn"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 transition-all duration-200 group/btn"
                         title={`Email ${hotel.contactEmail}`}
                     >
                         <Mail className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                        <span className="text-xs font-medium hidden sm:inline">Email</span>
+                        <span className="text-xs font-semibold hidden sm:inline">Email</span>
                     </a>
 
                     {/* More Actions */}
