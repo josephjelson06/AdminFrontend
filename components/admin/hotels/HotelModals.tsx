@@ -37,15 +37,20 @@ export function HotelModals({ actions }: HotelModalsProps) {
             <AddHotelModal
                 isOpen={showAddModal}
                 onClose={closeAllModals}
-                onSubmit={(data) => createHotel({
-                    name: data.name,
-                    location: data.location,
-                    city: data.location,
-                    state: 'MH', // Default state
-                    plan: data.plan as 'standard' | 'advanced',
-                    contactEmail: data.contactEmail,
-                    contactPhone: '',
-                })}
+                onSubmit={(data) => {
+                    // Parse location: expected format "City, State"
+                    const [city, state] = data.location.split(',').map(s => s.trim());
+                    createHotel({
+                        name: data.name,
+                        location: data.location,
+                        city: city || data.location,
+                        state: state || '',
+                        plan: data.plan as 'basic' | 'standard' | 'premium' | 'enterprise',
+                        contactEmail: data.contactEmail,
+                        contactPhone: '',
+                        status: data.status as 'active' | 'onboarding' | 'inactive' | 'suspended',
+                    });
+                }}
             />
 
             {/* Edit Hotel Modal */}
