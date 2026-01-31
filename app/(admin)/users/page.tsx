@@ -11,7 +11,7 @@ import { UserList } from '@/components/admin/users';
 
 export default function UsersPage() {
     return (
-        <div className="p-4 sm:p-6 animate-in fade-in duration-normal">
+        <div className="animate-in fade-in duration-normal">
             <UserList />
         </div>
     );

@@ -130,7 +130,7 @@ export default function CreateRolePage() {
                         Page Permissions
                     </h2>
                     <p className="text-sm text-muted mb-4">
-                        Configure access levels for each module. "Select All" toggles all permissions for that row.
+                        Configure access levels for each module. &quot;Select All&quot; toggles all permissions for that row.
                     </p>
 
                     <PermissionGrid

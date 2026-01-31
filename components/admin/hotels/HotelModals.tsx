@@ -45,10 +45,10 @@ export function HotelModals({ actions }: HotelModalsProps) {
                         location: data.location,
                         city: city || data.location,
                         state: state || '',
-                        plan: data.plan as 'basic' | 'standard' | 'premium' | 'enterprise',
+                        plan: data.plan as 'standard' | 'advanced',
                         contactEmail: data.contactEmail,
                         contactPhone: '',
-                        status: data.status as 'active' | 'onboarding' | 'inactive' | 'suspended',
+                        status: data.status as 'active' | 'inactive' | 'suspended' | 'pending' | 'onboarding',
                     });
                 }}
             />

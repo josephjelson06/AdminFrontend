@@ -80,7 +80,7 @@ const reportTypes: ReportType[] = [
 
 export function ReportsOverview() {
     return (
-        <div className="space-y-8">
+        <div className="space-y-4">
             {/* Page Header */}
             <div className="space-y-1">
                 <h1 className="text-2xl font-bold text-primary">Reports</h1>

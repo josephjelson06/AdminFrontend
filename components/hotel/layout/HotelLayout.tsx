@@ -87,17 +87,16 @@ export function HotelLayout({ children }: HotelLayoutProps) {
             />
 
             {/* Main Content Area */}
-            <div className={`
-                transition-all duration-300 ease-in-out
-                ${isCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
-            `}>
+            <div
+                className="transition-all duration-300 ease-in-out max-lg:!ml-0"
+                style={{ marginLeft: isCollapsed ? 80 : sidebarWidth }}
+            >
                 {/* GLASS HEADER (Floating) */}
                 <header className={`
-                    h-14 sticky top-4 mx-4 z-30 rounded-2xl transition-all duration-300 ease-in-out
-                    ${isCollapsed ? 'lg:left-20' : 'lg:left-64'}
-                    ${scrolled 
-                        ? 'bg-transparent backdrop-blur-none shadow-none opacity-0 pointer-events-none' 
-                        : 'glass bg-white/60 dark:bg-slate-900/60 backdrop-blur-md opacity-100'}
+                    h-14 sticky top-4 mx-4 z-40 rounded-2xl transition-all duration-300 ease-in-out
+                    ${scrolled
+                        ? 'bg-transparent backdrop-blur-none shadow-none opacity-0 pointer-events-none'
+                        : 'surface-glass-strong opacity-100'}
                 `}>
                     <div className="h-full px-4 flex items-center justify-between">
                         {/* Left side */}
@@ -121,18 +120,18 @@ export function HotelLayout({ children }: HotelLayoutProps) {
                             {/* Theme Toggle */}
                             <button
                                 onClick={toggleTheme}
-                                className="p-2 hover:bg-slate-500/10 rounded-lg transition-colors"
+                                className="p-2.5 hover:bg-white/10 rounded-xl transition-all duration-200 text-secondary hover:text-accent"
                                 title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
                             >
                                 {theme === 'light' ? (
-                                    <Moon className="w-5 h-5 text-slate-600" />
+                                    <Moon className="w-5 h-5" />
                                 ) : (
                                     <Sun className="w-5 h-5 text-amber-400" />
                                 )}
                             </button>
 
                             {/* Notifications */}
-                            <button className="relative p-2 hover:bg-slate-500/10 rounded-lg transition-colors">
+                            <button className="relative p-2.5 hover:bg-white/10 rounded-xl transition-all duration-200 text-secondary hover:text-accent">
                                 <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
                             </button>
@@ -141,7 +140,7 @@ export function HotelLayout({ children }: HotelLayoutProps) {
                             <div className="relative" ref={userMenuRef}>
                                 <button
                                     onClick={() => setShowUserMenu(!showUserMenu)}
-                                    className="flex items-center gap-2 pl-2 sm:pl-4 sm:border-l border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-500/10 rounded-lg py-1 pr-2 transition-colors"
+                                    className="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full hover:bg-white/10 transition-all duration-200 border border-transparent hover:border-white/10 group"
                                 >
                                     <div className="w-8 h-8 rounded-full bg-indigo-600 shadow-lg shadow-indigo-500/30 flex items-center justify-center">
                                         <span className="text-sm font-medium text-white">
@@ -155,9 +154,9 @@ export function HotelLayout({ children }: HotelLayoutProps) {
                                     <ChevronDown className="w-4 h-4 text-slate-400 hidden sm:block" />
                                 </button>
 
-                                {/* User Dropdown */}
+                                {/* User Dropdown */}   
                                 {showUserMenu && (
-                                    <div className="absolute right-0 mt-2 w-48 glass-elevated rounded-xl py-1">
+                                    <div className="absolute right-0 mt-2 w-56 surface-glass-strong rounded-2xl py-2 animate-in fade-in zoom-in-95 duration-200 border border-white/10 shadow-2xl shadow-black/50">
                                         <Link
                                             href="/hotel/settings"
                                             className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50 transition-colors"
