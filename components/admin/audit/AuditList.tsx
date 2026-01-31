@@ -8,6 +8,8 @@
 
 import {
     Shield,
+    Search,
+    Download,
     AlertTriangle,
     Info,
     AlertOctagon,
@@ -16,11 +18,12 @@ import {
     User,
     Activity
 } from 'lucide-react';
+import { Card } from '@/components/shared/ui/Card';
 import { DataTable, Column, TableBadge } from '@/components/shared/ui/DataTable';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
+import { FilterChips, SearchFilter } from '@/components/shared/ui/Filters';
 import { useToast } from '@/components/shared/ui/Toast';
 import { useAudit } from './useAudit';
-import { AuditFiltersBar } from './AuditFilters';
 import type { AuditLog, AuditSeverity } from '@/lib/admin/audit-data';
 
 // Severity Badge Component
@@ -134,26 +137,47 @@ export function AuditList() {
     ];
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-                    <Shield className="w-6 h-6 text-success" />
-                    System Audit Logs
-                </h1>
-                <p className="text-sm text-muted mt-1">
-                    Track sensitive actions, security events, and system changes.
-                </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+                        <Shield className="w-6 h-6 text-success" />
+                        System Audit Logs
+                    </h1>
+                    <p className="text-sm text-muted mt-1">
+                        Track sensitive actions, security events, and system changes.
+                    </p>
+                </div>
+                <button onClick={handleExport} className="btn-secondary">
+                    <Download className="w-4 h-4" />
+                    Export CSV
+                </button>
             </div>
 
-            {/* Filters Toolbar */}
-            <AuditFiltersBar
-                search={searchQuery}
-                onSearchChange={setSearchQuery}
-                severityFilter={severityFilter}
-                onSeverityChange={setSeverityFilter}
-                onExport={handleExport}
-            />
+            {/* Filters */}
+            <GlassCard className="p-4">
+                <div className="flex flex-col lg:flex-row gap-4 justify-between">
+                    <div className="flex items-center gap-4 flex-1">
+                        <SearchFilter
+                            value={searchQuery}
+                            onChange={setSearchQuery}
+                            placeholder="Search actions, users, or targets..."
+                        />
+                        <div className="h-8 w-px bg-glass hidden sm:block" />
+                        <FilterChips
+                            label="Severity"
+                            selected={severityFilter}
+                            onChange={(values) => setSeverityFilter(values as AuditSeverity[])}
+                            options={[
+                                { value: 'info', label: 'Info' },
+                                { value: 'warning', label: 'Warning' },
+                                { value: 'critical', label: 'Critical' },
+                            ]}
+                        />
+                    </div>
+                </div>
+            </GlassCard>
 
             {/* Logs Table */}
             <GlassCard className="p-0 overflow-hidden">

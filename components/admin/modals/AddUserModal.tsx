@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, ModalCancelButton, ModalSubmitButton } from '@/components/shared/ui/Modal';
+import { Modal } from '@/components/shared/ui/Modal';
 import { SelectDropdown } from '@/components/shared/ui/Dropdown';
 import { useToast } from '@/components/shared/ui/Toast';
 
@@ -34,56 +34,62 @@ export function AddUserModal({ isOpen, onClose, onSubmit }: AddUserModalProps) {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} layout="center" size="md">
-            <form onSubmit={handleSubmit} className="flex flex-col h-full">
-                <ModalHeader title="Add New User" />
+        <Modal isOpen={isOpen} onClose={onClose} title="Add New User">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Full Name *</label>
+                    <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="e.g., Rahul Sharma"
+                        className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    />
+                </div>
 
-                <ModalBody>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="field-label required">Full Name</label>
-                            <input
-                                type="text"
-                                required
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="e.g., Rahul Sharma"
-                                className="input-glass w-full"
-                            />
-                        </div>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Email Address *</label>
+                    <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="e.g., rahul@atc.in"
+                        className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    />
+                </div>
 
-                        <div>
-                            <label className="field-label required">Email Address</label>
-                            <input
-                                type="email"
-                                required
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                placeholder="e.g., rahul@atc.in"
-                                className="input-glass w-full"
-                            />
-                        </div>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Role</label>
+                    <SelectDropdown
+                        value={formData.role}
+                        onChange={(value) => setFormData({ ...formData, role: value })}
+                        options={[
+                            { value: 'Super Admin', label: 'Super Admin' },
+                            { value: 'Operations', label: 'Operations' },
+                            { value: 'Finance', label: 'Finance' },
+                            { value: 'Support', label: 'Support' },
+                        ]}
+                    />
+                </div>
 
-                        <div>
-                            <label className="field-label">Role</label>
-                            <SelectDropdown
-                                value={formData.role}
-                                onChange={(value) => setFormData({ ...formData, role: value })}
-                                options={[
-                                    { value: 'Super Admin', label: 'Super Admin' },
-                                    { value: 'Operations', label: 'Operations' },
-                                    { value: 'Finance', label: 'Finance' },
-                                    { value: 'Support', label: 'Support' },
-                                ]}
-                            />
-                        </div>
-                    </div>
-                </ModalBody>
-
-                <ModalFooter>
-                    <ModalCancelButton />
-                    <ModalSubmitButton label="Add User" />
-                </ModalFooter>
+                {/* Actions */}
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-md hover:bg-slate-800 transition-colors"
+                    >
+                        Add User
+                    </button>
+                </div>
             </form>
         </Modal>
     );

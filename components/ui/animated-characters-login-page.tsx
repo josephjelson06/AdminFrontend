@@ -870,7 +870,7 @@ export function AnimatedCharactersLoginPage() {
                                         animate={{ opacity: 1 }}
                                         transition={{ delay: 0.5 }}
                                     >
-                                        Don't have an account?{' '}
+                                        Don&apos;t have an account?{' '}
                                         <a href="#" className="text-white font-medium hover:underline">
                                             Sign Up
                                         </a>

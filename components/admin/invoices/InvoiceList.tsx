@@ -6,7 +6,7 @@
  * Main component for managing invoices with card-based layout.
  */
 
-import { Plus } from 'lucide-react';
+import { Search, Plus, Download } from 'lucide-react';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { PaginationBar } from '@/components/shared/ui/Pagination';
 import { useInvoices } from './useInvoices';
@@ -15,8 +15,14 @@ import { InvoiceSummaryCards } from './InvoiceSummaryCards';
 import { InvoiceCard } from './InvoiceCard';
 import { InvoiceDetailSlideOver } from './InvoiceDetailSlideOver';
 import { NewInvoiceModal } from './NewInvoiceModal';
-import { InvoiceFiltersBar } from './InvoiceFilters';
 import { Skeleton } from '@/components/shared/ui/Skeleton';
+
+const statusOptions = [
+    { value: 'all', label: 'All Status' },
+    { value: 'paid', label: 'Paid' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'overdue', label: 'Overdue' },
+];
 
 export function InvoiceList() {
     const {
@@ -37,27 +43,63 @@ export function InvoiceList() {
     const actions = useInvoiceActions(refresh);
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-primary">Invoices</h1>
                     <p className="text-sm text-muted">{summary.totalCount} invoices</p>
                 </div>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => actions.exportData('pdf')}
+                        className="btn-secondary"
+                    >
+                        <Download className="w-4 h-4" />
+                        Export
+                    </button>
+                    <button
+                        onClick={actions.openNewModal}
+                        className="btn-primary"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Create Invoice
+                    </button>
+                </div>
             </div>
 
             {/* Summary Cards */}
             <InvoiceSummaryCards summary={summary} />
 
-            {/* Filters Toolbar */}
-            <InvoiceFiltersBar
-                search={filters.search}
-                onSearchChange={(value) => setFilter('search', value)}
-                status={filters.status}
-                onStatusChange={(value) => setFilter('status', value as typeof filters.status)}
-                onExport={() => actions.exportData('pdf')}
-                onCreateNew={actions.openNewModal}
-            />
+            {/* Filters */}
+            <GlassCard padding="sm">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+                        <input
+                            type="text"
+                            placeholder="Search invoices..."
+                            value={filters.search}
+                            onChange={(e) => setFilter('search', e.target.value)}
+                            className="input-glass w-full pl-11"
+                        />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted">Status:</span>
+                        <select
+                            value={filters.status}
+                            onChange={(e) => setFilter('status', e.target.value as typeof filters.status)}
+                            className="input-glass"
+                        >
+                            {statusOptions.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            </GlassCard>
 
             {/* Invoice Cards Grid */}
             {isLoading ? (

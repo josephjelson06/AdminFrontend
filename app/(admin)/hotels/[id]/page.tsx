@@ -24,8 +24,7 @@ import { useToast } from '@/components/shared/ui/Toast';
 export default function HotelDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const router = useRouter();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { addToast } = useToast();
+
     const [activeTab, setActiveTab] = useState<'overview' | 'kiosks' | 'finance' | 'support'>('overview');
 
     const hotel = getHotelFullProfile(id);
@@ -60,8 +59,8 @@ export default function HotelDetailPage({ params }: { params: Promise<{ id: stri
                             <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
                                 {hotel.name}
                                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${hotel.status === 'active'
-                                        ? 'badge-success'
-                                        : 'badge-warning'
+                                    ? 'badge-success'
+                                    : 'badge-warning'
                                     }`}>
                                     {hotel.status.toUpperCase()}
                                 </span>
@@ -129,8 +128,8 @@ export default function HotelDetailPage({ params }: { params: Promise<{ id: stri
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${isActive
-                                    ? 'btn-primary'
-                                    : 'surface-glass-soft text-secondary-text glass-hover'
+                                ? 'btn-primary'
+                                : 'surface-glass-soft text-secondary-text glass-hover'
                                 }`}
                         >
                             <Icon className="w-4 h-4" />
@@ -180,7 +179,7 @@ export default function HotelDetailPage({ params }: { params: Promise<{ id: stri
                                 <div className="relative">
                                     <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-warning ring-4 ring-white dark:ring-slate-900" />
                                     <p className="text-sm font-medium text-primary">Support Ticket Opened</p>
-                                    <p className="text-xs text-muted">"Kiosk in lobby not printing" reported by Front Desk.</p>
+                                    <p className="text-xs text-muted">&quot;Kiosk in lobby not printing&quot; reported by Front Desk.</p>
                                     <span className="text-[10px] text-muted mt-1 block">Yesterday</span>
                                 </div>
                                 <div className="relative">
@@ -249,7 +248,7 @@ export default function HotelDetailPage({ params }: { params: Promise<{ id: stri
                                         <td className="px-6 py-4 text-right font-medium text-primary">₹{inv.totalAmount.toLocaleString()}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded text-xs font-bold capitalize ${inv.status === 'paid' ? 'badge-success' :
-                                                    inv.status === 'overdue' ? 'badge-danger' : 'badge-warning'
+                                                inv.status === 'overdue' ? 'badge-danger' : 'badge-warning'
                                                 }`}>
                                                 {inv.status}
                                             </span>

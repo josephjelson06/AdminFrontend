@@ -3,14 +3,11 @@
 /**
  * InvoiceCard Component
  * 
- * Card-based display for individual invoice using BaseCard system.
+ * Card-based display for individual invoice with status badge and actions.
  */
 
 import { FileText, Calendar, MoreVertical, Download, CheckCircle, Bell } from 'lucide-react';
-import {
-    BaseCard,
-    CardStat,
-} from '@/components/shared/ui/BaseCard';
+import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { InvoiceStatusBadge } from './InvoiceStatusBadge';
 import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
 import type { Invoice } from '@/types/finance';
@@ -52,69 +49,83 @@ export function InvoiceCard({
     const formatDate = (dateStr: string) =>
         new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-    const statusGradient = getStatusGradient(invoice.status);
-
     return (
-        <BaseCard
-            variant="financial"
+        <GlassCard
+            className="group relative overflow-hidden h-full flex flex-col cursor-pointer"
+            hover
+            padding="none"
             onClick={() => onClick?.(invoice)}
-            header={{
-                icon: <FileText className="w-7 h-7 text-white" />,
-                iconGradient: statusGradient,
-                title: invoice.invoiceNumber,
-                subtitle: invoice.hotelName,
-                badge: <InvoiceStatusBadge status={invoice.status} />,
-                actionsMenu: (
-                    <Dropdown
-                        trigger={
-                            <button className="p-2 rounded-lg surface-glass-soft hover:surface-glass-strong transition-all">
-                                <MoreVertical className="w-4 h-4 text-muted" />
-                            </button>
-                        }
-                        align="right"
-                    >
-                        {invoice.status !== 'paid' && onMarkAsPaid && (
-                            <DropdownItem onClick={() => onMarkAsPaid(invoice)}>
-                                <CheckCircle className="w-4 h-4 text-success" />
-                                Mark as Paid
-                            </DropdownItem>
-                        )}
-                        {invoice.status !== 'paid' && onSendReminder && (
-                            <DropdownItem onClick={() => onSendReminder(invoice)}>
-                                <Bell className="w-4 h-4 text-warning" />
-                                Send Reminder
-                            </DropdownItem>
-                        )}
-                        {onDownloadPdf && (
-                            <DropdownItem onClick={() => onDownloadPdf(invoice)}>
-                                <Download className="w-4 h-4" />
-                                Download PDF
-                            </DropdownItem>
-                        )}
-                    </Dropdown>
-                ),
-            }}
-            body={
-                <div className="flex flex-col items-center text-center">
-                    {/* Title is clickable */}
-                    <h3 className="text-base font-semibold text-info hover:underline">
-                        {invoice.invoiceNumber}
-                    </h3>
+        >
+            {/* Status Badge - Top Left */}
+            <div className="absolute top-4 left-4 z-10">
+                <InvoiceStatusBadge status={invoice.status} />
+            </div>
 
-                    {/* Amount */}
-                    <CardStat
-                        label="Total Amount"
-                        value={formatCurrency(invoice.totalAmount)}
-                    />
+            {/* Actions Menu - Top Right */}
+            <div className="absolute top-4 right-4 z-10" onClick={(e) => e.stopPropagation()}>
+                <Dropdown
+                    trigger={
+                        <button className="p-2 rounded-lg surface-glass-soft hover:surface-glass-strong transition-all">
+                            <MoreVertical className="w-4 h-4 text-muted" />
+                        </button>
+                    }
+                    align="right"
+                >
+                    {invoice.status !== 'paid' && onMarkAsPaid && (
+                        <DropdownItem onClick={() => onMarkAsPaid(invoice)}>
+                            <CheckCircle className="w-4 h-4 text-success" />
+                            Mark as Paid
+                        </DropdownItem>
+                    )}
+                    {invoice.status !== 'paid' && onSendReminder && (
+                        <DropdownItem onClick={() => onSendReminder(invoice)}>
+                            <Bell className="w-4 h-4 text-warning" />
+                            Send Reminder
+                        </DropdownItem>
+                    )}
+                    {onDownloadPdf && (
+                        <DropdownItem onClick={() => onDownloadPdf(invoice)}>
+                            <Download className="w-4 h-4" />
+                            Download PDF
+                        </DropdownItem>
+                    )}
+                </Dropdown>
+            </div>
+
+            {/* Card Header with Icon */}
+            <div className="p-6 pt-14 flex flex-col items-center text-center flex-1">
+                {/* Icon */}
+                <div className={`p-4 rounded-2xl bg-gradient-to-br ${getStatusGradient(invoice.status)} shadow-lg mb-4`}>
+                    <FileText className="w-7 h-7 text-white" />
                 </div>
-            }
-            footer={
-                <div className="px-6 pb-5 flex items-center justify-center gap-2 text-muted">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-xs">Due: {formatDate(invoice.dueDate)}</span>
+
+                {/* Invoice Number */}
+                <h3 className="text-base font-semibold text-info hover:underline">
+                    {invoice.invoiceNumber}
+                </h3>
+
+                {/* Hotel Name */}
+                <p className="text-sm text-muted mt-1">
+                    {invoice.hotelName}
+                </p>
+
+                {/* Amount */}
+                <div className="mt-4">
+                    <p className="text-xs text-muted uppercase tracking-wide">Total Amount</p>
+                    <p className="text-xl font-bold text-success mt-1">
+                        {formatCurrency(invoice.totalAmount)}
+                    </p>
                 </div>
-            }
-            accentGradient={statusGradient}
-        />
+            </div>
+
+            {/* Due Date Footer */}
+            <div className="px-6 pb-5 flex items-center justify-center gap-2 text-muted">
+                <Calendar className="w-4 h-4" />
+                <span className="text-xs">Due: {formatDate(invoice.dueDate)}</span>
+            </div>
+
+            {/* Bottom Border Accent */}
+            <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${getStatusGradient(invoice.status)} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+        </GlassCard>
     );
 }

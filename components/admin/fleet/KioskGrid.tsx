@@ -65,7 +65,7 @@ export function KioskGrid({ pageSize = 9 }: KioskGridProps) {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             {/* Header & Tabs */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>

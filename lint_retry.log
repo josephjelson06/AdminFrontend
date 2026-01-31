@@ -1,0 +1,47 @@
+
+> hms-frontend@0.1.0 lint
+> next lint
+
+
+./components/admin/fleet/useKiosks.ts
+105:8  Warning: React Hook useCallback has a missing dependency: 'pagination'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+123:8  Warning: React Hook useEffect has a missing dependency: 'pagination'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/hotels/useHotels.ts
+105:8  Warning: React Hook useCallback has a missing dependency: 'pagination'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/invoices/useInvoices.ts
+101:8  Warning: React Hook useCallback has a missing dependency: 'pagination'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+118:8  Warning: React Hook useEffect has a missing dependency: 'pagination'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/subscriptions/useSubscriptions.ts
+121:8  Warning: React Hook useCallback has a missing dependency: 'pagination'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+140:8  Warning: React Hook useEffect has a missing dependency: 'pagination'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/support/SupportList.tsx
+76:8  Warning: React Hook useMemo has an unnecessary dependency: 'filterStatus'. Either exclude it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/admin/users/UserList.tsx
+56:8  Warning: React Hook useMemo has unnecessary dependencies: 'filters.role' and 'filters.search'. Either exclude them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/hotel/incidents/HotelIncidentsManager.tsx
+131:33  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+173:37  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/hotel/kiosk/HotelKioskConfigManager.tsx
+127:33  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/hotel/shared/card-system.tsx
+190:17  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/shared/ui/GlobalSearch.tsx
+181:8  Warning: React Hook React.useEffect has a missing dependency: 'handleSelect'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/shared/ui/Tooltip.tsx
+110:8  Warning: React Hook useEffect has a missing dependency: 'calculatePosition'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/ui/vertical-cut-reveal.tsx
+120:13  Warning: React Hook useCallback has missing dependencies: 'elements' and 'splitBy'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+137:12  Warning: React Hook useEffect has a missing dependency: 'startAnimation'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
