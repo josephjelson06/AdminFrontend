@@ -7,6 +7,7 @@
  */
 
 import { Clock } from 'lucide-react';
+import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { RecentCheckInItem } from './RecentCheckInItem';
 import type { GuestCheckIn } from '@/lib/hotel/hotel-data';
 import type { ActivityFilter } from '@/lib/services/hotelDashboardService';
@@ -22,17 +23,17 @@ const filters: ActivityFilter[] = ['All', 'Failed', 'Success'];
 
 export function ActivityFeed({ activity, filter, onFilterChange, getKioskName }: ActivityFeedProps) {
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 flex flex-col min-h-[400px] max-h-[600px]">
-            <div className="flex items-center justify-between mb-4 flex-shrink-0">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Recent Activity</h2>
-                <div className="flex bg-slate-100 dark:bg-slate-700/50 rounded-lg p-1">
+        <GlassCard className="flex flex-col min-h-[400px] max-h-[600px]">
+            <div className="flex items-center justify-between mb-4 flex-shrink-0 px-5 pt-5">
+                <h2 className="text-lg font-semibold text-primary">Recent Activity</h2>
+                <div className="flex bg-white/10 rounded-lg p-1">
                     {filters.map(f => (
                         <button
                             key={f}
                             onClick={() => onFilterChange(f)}
                             className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${filter === f
-                                ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm'
-                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                ? 'bg-white/20 text-primary shadow-sm'
+                                : 'text-muted hover:text-primary'
                                 }`}
                         >
                             {f}
@@ -41,7 +42,7 @@ export function ActivityFeed({ activity, filter, onFilterChange, getKioskName }:
                 </div>
             </div>
 
-            <div className="overflow-y-auto flex-1 pr-2 -mr-2">
+            <div className="overflow-y-auto flex-1 pr-2 -mr-2 px-5 pb-5">
                 {activity.length > 0 ? (
                     <div className="space-y-1">
                         {activity.map((guest, index) => {
@@ -51,7 +52,7 @@ export function ActivityFeed({ activity, filter, onFilterChange, getKioskName }:
                             return (
                                 <div key={guest.id}>
                                     {showGroupHeader && (
-                                        <div className="sticky top-0 bg-white/95 dark:bg-slate-800/95 backdrop-blur py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider z-10">
+                                        <div className="sticky top-0 bg-transparent backdrop-blur-sm py-2 text-xs font-semibold text-muted uppercase tracking-wider z-10">
                                             {getKioskName(guest.kioskId)}
                                         </div>
                                     )}
@@ -61,12 +62,12 @@ export function ActivityFeed({ activity, filter, onFilterChange, getKioskName }:
                         })}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                    <div className="flex flex-col items-center justify-center h-full text-muted">
                         <Clock className="w-10 h-10 mb-2 opacity-50" />
                         <p className="text-sm">No activity found</p>
                     </div>
                 )}
             </div>
-        </div>
+        </GlassCard>
     );
 }
