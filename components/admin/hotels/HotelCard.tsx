@@ -19,9 +19,9 @@ export function HotelCard({ hotel, onEdit, onDelete, onImpersonate }: HotelCardP
     const emailUrl = `mailto:${hotel.contactEmail}`;
 
     return (
-        <GlassCard
+        <GlassCard 
             // FIXED SHADOW: Lower opacity (0.25) prevents the "glitchy solid block" look
-            className="group relative h-full flex flex-col transition-all duration-500 hover:translate-y-[-4px] hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.25)]"
+            className="group relative h-full flex flex-col transition-all duration-500 hover:translate-y-[-4px] hover:shadow-[0_20px_50px_rgba(8,_112,_184,_0.25)]" 
             padding="none"
         >
             {/* Header / Hero */}
@@ -51,7 +51,7 @@ export function HotelCard({ hotel, onEdit, onDelete, onImpersonate }: HotelCardP
                     <div className="flex flex-col gap-1">
                         <span className="text-xs uppercase tracking-wider text-white/40 font-semibold">Current Plan</span>
                         <span className="text-sm font-medium text-white flex items-center gap-2">
-                            <span className={`w-2 h-2 rounded-full ${hotel.plan === 'advanced' ? 'bg-amber-400' : 'bg-blue-400'}`} />
+                            <span className={`w-2 h-2 rounded-full ${hotel.plan === 'enterprise' ? 'bg-amber-400' : 'bg-blue-400'}`} />
                             {hotel.plan.charAt(0).toUpperCase() + hotel.plan.slice(1)}
                         </span>
                     </div>
@@ -76,11 +76,11 @@ export function HotelCard({ hotel, onEdit, onDelete, onImpersonate }: HotelCardP
                         <Mail className="w-4 h-4" />
                     </a>
                     <div className="col-span-1 flex items-center justify-center">
-                        <HotelActionsMenu
-                            hotel={hotel}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                            onImpersonate={onImpersonate}
+                        <HotelActionsMenu 
+                            hotel={hotel} 
+                            onEdit={onEdit} 
+                            onDelete={onDelete} 
+                            onImpersonate={onImpersonate} 
                         />
                     </div>
                 </div>
