@@ -26,14 +26,16 @@ export function DashboardKPIs({ stats, sparklines }: DashboardKPIsProps) {
                 value={stats.todayCheckIns}
                 icon={Users}
                 trend="+12%"
-                color="bg-indigo-600"
+                iconBg="bg-indigo-500/10"
+                iconColor="text-indigo-500"
                 sparklineData={sparklines.checkIns}
             />
             <StatCard
                 title="Failed Verifications"
                 value={stats.failedVerifications}
                 icon={AlertCircle}
-                color="bg-rose-600"
+                iconBg="bg-rose-500/10"
+                iconColor="text-rose-500"
                 isAlert={stats.failedVerifications > 0}
                 sparklineData={sparklines.failed}
                 onClick={() => router.push('/hotel/guests?status=failed')}
@@ -42,14 +44,16 @@ export function DashboardKPIs({ stats, sparklines }: DashboardKPIsProps) {
                 title="Kiosks Online"
                 value={`${stats.onlineKiosks}/${stats.totalKiosks}`}
                 icon={Monitor}
-                color="bg-emerald-600"
+                iconBg="bg-emerald-500/10"
+                iconColor="text-emerald-500"
                 sparklineData={sparklines.kiosks}
             />
             <StatCard
                 title="Rooms Ready"
                 value={`${stats.readyRooms}/${stats.totalRooms}`}
                 icon={BedDouble}
-                color="bg-blue-600"
+                iconBg="bg-blue-500/10"
+                iconColor="text-blue-500"
                 sparklineData={sparklines.rooms}
             />
         </div>

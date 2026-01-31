@@ -6,9 +6,9 @@
  * Card display for a single kiosk in the fleet grid.
  */
 
-import { Wifi, WifiOff, Clock, Cpu, Building2, MoreVertical, Power } from 'lucide-react';
+import { Wifi, WifiOff, Clock, Building2, MoreVertical, Power, FileText } from 'lucide-react';
 import Link from 'next/link';
-import { Card } from '@/components/shared/ui/Card';
+import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
 import type { Kiosk } from '@/types/schema';
 
@@ -35,58 +35,58 @@ function getHeartbeatUrgency(heartbeat: string) {
 export function KioskCard({ kiosk, hotelName, onReboot, onViewLogs }: KioskCardProps) {
     const urgency = getHeartbeatUrgency(kiosk.lastHeartbeat);
     const isOnline = kiosk.status === 'online';
+    const StatusIcon = isOnline ? Wifi : WifiOff;
 
     return (
-        <Card className="hover:border-primary/50 transition-all duration-normal group">
-            {/* Header */}
-            <div className="flex justify-between items-start mb-4">
-                <div className={`p-2 rounded-lg ${isOnline ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'}`}>
-                    {isOnline ? <Wifi className="w-5 h-5" /> : <WifiOff className="w-5 h-5" />}
+        <GlassCard className="p-4 h-full hover:border-primary/50 transition-all duration-normal ease-smooth group">
+            <div className="flex items-start justify-between">
+                <div>
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">{kiosk.model}</p>
+                    <h3 className="text-lg font-bold text-primary mt-1 break-all">{kiosk.serialNumber}</h3>
+                    {hotelName && kiosk.assignedHotelId && (
+                        <Link
+                            href={`/hotels/${kiosk.assignedHotelId}`}
+                            className="flex items-center gap-1.5 text-xs text-secondary-text hover:text-primary transition-colors mt-1.5"
+                        >
+                            <Building2 className="w-3 h-3" />
+                            {hotelName}
+                        </Link>
+                    )}
                 </div>
-                <Dropdown
-                    trigger={
-                        <button className="p-1 glass-hover rounded-lg transition-all duration-fast">
-                            <MoreVertical className="w-4 h-4 text-muted" />
-                        </button>
-                    }
-                    align="right"
-                >
-                    <DropdownItem onClick={() => onReboot(kiosk)}>
-                        <Power className="w-4 h-4" /> Reboot Device
-                    </DropdownItem>
-                    <DropdownItem onClick={() => onViewLogs?.(kiosk)}>
-                        View Logs
-                    </DropdownItem>
-                </Dropdown>
+                <div className={`p-2 rounded-lg ${isOnline ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'} transition-transform duration-fast group-hover:scale-105`}>
+                    <StatusIcon className="w-5 h-5" />
+                </div>
             </div>
 
-            {/* Device Info */}
-            <div className="mb-4">
-                <h3 className="font-bold text-primary flex items-center gap-2">
-                    <Cpu className="w-4 h-4 text-muted" />
-                    {kiosk.serialNumber}
-                </h3>
-                <p className="text-xs text-muted ml-6">{kiosk.model}</p>
-            </div>
+            <div className="mt-4 flex items-end justify-between">
+                <div className="space-y-1">
+                    <div className={`flex items-center gap-1.5 text-xs font-medium ${urgency.class}`}>
+                        <Clock className="w-3 h-3" />
+                        {kiosk.lastHeartbeat}
+                    </div>
+                    <div className="text-[10px] text-muted font-mono">
+                        v{kiosk.firmwareVersion}
+                    </div>
+                </div>
 
-            {/* Hotel Link */}
-            {hotelName && kiosk.assignedHotelId && (
-                <Link
-                    href={`/hotels/${kiosk.assignedHotelId}`}
-                    className="flex items-center gap-2 text-xs text-secondary-text surface-glass-soft p-2 rounded-lg glass-hover transition-all duration-fast mb-4"
-                >
-                    <Building2 className="w-3 h-3" />
-                    {hotelName}
-                </Link>
-            )}
-
-            {/* Footer */}
-            <div className="flex justify-between items-center pt-3 border-t border-glass text-xs">
-                <span className={`flex items-center gap-1 font-medium ${urgency.class}`}>
-                    <Clock className="w-3 h-3" /> {kiosk.lastHeartbeat}
-                </span>
-                <span className="font-mono text-muted">v{kiosk.firmwareVersion}</span>
+                <div className="-mb-1 -mr-1">
+                    <Dropdown
+                        trigger={
+                            <button className="p-1.5 glass-hover rounded-lg text-muted transition-all duration-fast">
+                                <MoreVertical className="w-4 h-4" />
+                            </button>
+                        }
+                        align="right"
+                    >
+                        <DropdownItem onClick={() => onReboot(kiosk)}>
+                            <Power className="w-4 h-4" /> Reboot Device
+                        </DropdownItem>
+                        <DropdownItem onClick={() => onViewLogs?.(kiosk)}>
+                            <FileText className="w-4 h-4" /> View Logs
+                        </DropdownItem>
+                    </Dropdown>
+                </div>
             </div>
-        </Card>
+        </GlassCard>
     );
 }

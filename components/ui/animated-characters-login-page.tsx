@@ -731,11 +731,11 @@ export function AnimatedCharactersLoginPage() {
                                 </motion.div>
 
                                 {/* Login Form */}
-                                <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+                                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                                     <div className="space-y-2">
-                                        <Label htmlFor="email" className="text-xs font-medium text-white/80">Email</Label>
+                                        <Label htmlFor="email" className="text-xs font-medium text-white/80 ml-1">Email</Label>
                                         <div className="relative">
-                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                                            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
                                             <Input
                                                 id="email"
                                                 type="email"
@@ -746,13 +746,13 @@ export function AnimatedCharactersLoginPage() {
                                                 onFocus={() => setIsTyping(true)}
                                                 onBlur={() => setIsTyping(false)}
                                                 required
-                                                className="h-10 pl-10 bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 focus:bg-white/10 transition-all"
+                                                className="h-14 pl-14 pr-4 bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 focus:bg-white/10 transition-all rounded-2xl text-base"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="password" className="text-xs font-medium text-white/80">Password</Label>
+                                        <Label htmlFor="password" className="text-xs font-medium text-white/80 ml-1">Password</Label>
                                         <div className="relative">
                                             <Input
                                                 id="password"
@@ -761,17 +761,17 @@ export function AnimatedCharactersLoginPage() {
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 required
-                                                className="h-10 pr-10 bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 focus:bg-white/10 transition-all"
+                                                className="h-14 pl-5 pr-14 bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 focus:bg-white/10 transition-all rounded-2xl text-base"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                                                className="absolute right-5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors p-1"
                                             >
                                                 {showPassword ? (
-                                                    <EyeOff className="size-4" />
+                                                    <EyeOff className="size-5" />
                                                 ) : (
-                                                    <Eye className="size-4" />
+                                                    <Eye className="size-5" />
                                                 )}
                                             </button>
                                         </div>

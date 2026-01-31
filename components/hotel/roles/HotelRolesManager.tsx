@@ -7,6 +7,7 @@
  */
 
 import { Shield, Users, ChevronRight, Plus, Search } from 'lucide-react';
+import { useState } from 'react';
 import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import { EditRoleSlideOver } from '@/components/hotel/modals/EditRoleSlideOver';
 import { useHotelRoles } from './useHotelRoles';
@@ -17,6 +18,9 @@ import {
     type HotelRoleDefinition,
     type HotelPageAccess,
 } from '@/lib/hotel/rbac-data';
+import { StatCard } from '@/components/hotel/dashboard/StatCard';
+import { PaginationBar } from '@/components/shared/ui/Pagination';
+import { GlassCard } from '@/components/shared/ui/GlassCard';
 
 // Role Card Component
 function RoleCard({
@@ -31,63 +35,61 @@ function RoleCard({
     const enabledPages = role.pageAccess.filter(p => p.enabled);
 
     return (
-        <div className="group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-900 transition-all duration-200">
+        <GlassCard padding="lg" className="h-full flex flex-col group">
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className={`p-2.5 rounded-xl ${iconColor}`}>
-                        <Shield className="w-5 h-5 text-white" />
+                    <div className={`p-2.5 rounded-xl ${iconColor} bg-opacity-20`}>
+                        <Shield className={`w-5 h-5 ${colorClasses.text}`} />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-slate-900 dark:text-white">
+                        <h3 className="font-semibold text-primary">
                             {role.name}
                         </h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                            {role.description}
+                        <p className="text-xs text-muted">
+                            {role.userCount} {role.userCount === 1 ? 'user' : 'users'}
                         </p>
                     </div>
                 </div>
                 {role.isSystemRole && (
-                    <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-medium text-muted surface-glass-soft px-2 py-0.5 rounded-full uppercase tracking-wide">
                         System
                     </span>
                 )}
             </div>
 
-            {/* User Count */}
-            <div className="flex items-center gap-2 mb-4">
-                <Users className="w-4 h-4 text-slate-400" />
-                <span className="text-sm text-slate-600 dark:text-slate-300">
-                    {role.userCount} {role.userCount === 1 ? 'user' : 'users'}
-                </span>
-            </div>
+            <p className="text-sm text-secondary-text mb-6 min-h-[40px] line-clamp-2">
+                {role.description}
+            </p>
 
             {/* Permission Chips */}
-            <div className="flex flex-wrap gap-1.5 mb-4 min-h-[56px]">
+            <div className="flex flex-wrap gap-1.5 mb-6 min-h-[56px]">
                 {enabledPages.slice(0, 4).map(page => (
                     <span
                         key={page.id}
-                        className={`text-xs font-medium px-2.5 py-1 rounded-lg ${colorClasses.bg} ${colorClasses.text}`}
+                        className={`text-xs font-medium px-2.5 py-1 rounded-lg surface-glass-soft text-secondary-text border border-glass`}
                     >
                         {page.name}
                     </span>
                 ))}
                 {enabledPages.length > 4 && (
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400 px-2.5 py-1">
+                    <span className="text-xs font-medium text-muted px-2.5 py-1">
                         +{enabledPages.length - 4} more
                     </span>
                 )}
             </div>
 
-            {/* Edit Button */}
-            <button
-                onClick={onEdit}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 rounded-xl transition-colors group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/40"
-            >
-                Edit Access
-                <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-            </button>
-        </div>
+            <div className="mt-auto">
+                {/* Edit Button */}
+                <button
+                    onClick={onEdit}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-slate-800 bg-white hover:bg-white/90 rounded-xl transition-all hover:shadow-lg hover:shadow-white/20"
+                >
+                    Edit Access
+                    <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </button>
+            </div>
+        </GlassCard>
     );
 }
 
@@ -111,6 +113,12 @@ export function HotelRolesManager() {
             addToast('success', 'Role Updated', 'Permission changes saved successfully.');
         }
     };
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(6);
+
+    const totalPages = Math.ceil(filteredRoles.length / rowsPerPage);
+    const paginatedRoles = filteredRoles.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
     if (isLoading) {
         return (
@@ -159,29 +167,25 @@ export function HotelRolesManager() {
 
                 {/* Stats Bar */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-indigo-100 dark:bg-indigo-900/30">
-                            <Shield className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalRoles}</p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Active Roles</p>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-emerald-100 dark:bg-emerald-900/30">
-                            <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalUsers}</p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Team Members</p>
-                        </div>
-                    </div>
+                    <StatCard
+                        title="Active Roles"
+                        value={totalRoles}
+                        icon={Shield}
+                        iconBg="bg-indigo-500/10"
+                        iconColor="text-indigo-500"
+                    />
+                    <StatCard
+                        title="Team Members"
+                        value={totalUsers}
+                        icon={Users}
+                        iconBg="bg-emerald-500/10"
+                        iconColor="text-emerald-500"
+                    />
                 </div>
 
                 {/* Roles Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredRoles.map(role => (
+                    {paginatedRoles.map(role => (
                         <RoleCard
                             key={role.id}
                             role={role}
@@ -189,6 +193,21 @@ export function HotelRolesManager() {
                         />
                     ))}
                 </div>
+
+                {/* Pagination */}
+                {filteredRoles.length > 0 && (
+                    <div className="mt-6">
+                        <PaginationBar
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            totalItems={filteredRoles.length}
+                            pageSize={rowsPerPage}
+                            onPageChange={setCurrentPage}
+                            onPageSizeChange={setRowsPerPage}
+                            pageSizeOptions={[6, 9, 12, 24]}
+                        />
+                    </div>
+                )}
 
                 {/* Empty State */}
                 {filteredRoles.length === 0 && (

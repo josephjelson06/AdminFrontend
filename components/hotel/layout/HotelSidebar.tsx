@@ -17,6 +17,7 @@ import {
     AlertTriangle,
     PanelLeft,
     PanelLeftClose,
+    Shield,
 } from 'lucide-react';
 import { useAuth } from '@/lib/shared/auth';
 import { MOCK_GUEST_CHECKINS, MOCK_ROOMS } from '@/lib/hotel/hotel-data';
@@ -44,11 +45,17 @@ const NAV_GROUPS: NavGroup[] = [
         ],
     },
     {
+        title: 'Administration',
+        items: [
+            { id: 'team', name: 'Team & Users', href: '/hotel/team', icon: UserCog },
+            { id: 'roles', name: 'Roles & Access', href: '/hotel/roles', icon: Shield },
+        ],
+    },
+    {
         title: 'Configuration',
         items: [
             { id: 'kiosk', name: 'Kiosk Settings', href: '/hotel/kiosk', icon: Monitor },
             { id: 'settings', name: 'My Hotel', href: '/hotel/settings', icon: Building2 },
-            { id: 'team', name: 'Team Access', href: '/hotel/team', icon: UserCog },
         ],
     },
     {

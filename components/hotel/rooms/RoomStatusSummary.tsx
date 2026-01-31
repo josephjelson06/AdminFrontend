@@ -6,6 +6,8 @@
  * Quick stats display with clickable filters.
  */
 
+import { GlassCard } from '@/components/shared/ui/GlassCard';
+import { cn } from '@/lib/utils';
 import type { RoomStats } from '@/lib/services/hotelRoomService';
 
 interface RoomStatusSummaryProps {
@@ -15,32 +17,41 @@ interface RoomStatusSummaryProps {
 }
 
 const statItems = [
-    { key: 'ready', label: 'Ready', color: 'from-emerald-500 to-emerald-600', textColor: 'text-emerald-600 dark:text-emerald-400' },
-    { key: 'cleaning', label: 'Cleaning', color: 'from-amber-500 to-amber-600', textColor: 'text-amber-600 dark:text-amber-400' },
-    { key: 'occupied', label: 'Occupied', color: 'from-blue-500 to-blue-600', textColor: 'text-blue-600 dark:text-blue-400' },
-    { key: 'dirty', label: 'Dirty', color: 'from-rose-500 to-rose-600', textColor: 'text-rose-600 dark:text-rose-400' },
+    { key: 'ready', label: 'Ready', color: 'text-success', activeBorder: 'border-emerald-500/50', activeBg: 'bg-emerald-500/10' },
+    { key: 'cleaning', label: 'Cleaning', color: 'text-warning', activeBorder: 'border-amber-500/50', activeBg: 'bg-amber-500/10' },
+    { key: 'occupied', label: 'Occupied', color: 'text-blue-500', activeBorder: 'border-blue-500/50', activeBg: 'bg-blue-500/10' },
+    { key: 'dirty', label: 'Dirty', color: 'text-danger', activeBorder: 'border-rose-500/50', activeBg: 'bg-rose-500/10' },
 ] as const;
 
 export function RoomStatusSummary({ stats, activeFilter, onFilterChange }: RoomStatusSummaryProps) {
     return (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            {statItems.map((stat) => (
-                <button
-                    key={stat.key}
-                    onClick={() => onFilterChange(activeFilter === stat.key ? 'all' : stat.key)}
-                    className={`relative overflow-hidden rounded-xl p-4 text-center transition-all hover:scale-105 ${activeFilter === stat.key
-                        ? `bg-gradient-to-br ${stat.color} text-white shadow-lg`
-                        : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
-                        }`}
-                >
-                    <div className={`text-2xl sm:text-3xl font-bold ${activeFilter === stat.key ? 'text-white' : stat.textColor}`}>
-                        {stats[stat.key]}
-                    </div>
-                    <div className={`text-xs font-medium ${activeFilter === stat.key ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'}`}>
-                        {stat.label}
-                    </div>
-                </button>
-            ))}
+            {statItems.map((stat) => {
+                const isActive = activeFilter === stat.key;
+                return (
+                    <GlassCard
+                        key={stat.key}
+                        onClick={() => onFilterChange(isActive ? 'all' : stat.key)}
+                        className={cn(
+                            "group p-4 flex flex-col items-center justify-center transition-all duration-normal ease-smooth",
+                            "hover:scale-[1.02] hover:border-primary/30",
+                            isActive && cn("border-2", stat.activeBorder, stat.activeBg)
+                        )}
+                        padding="none"
+                        variant={isActive ? 'strong' : 'soft'}
+                    >
+                        <div className={cn(
+                            "text-3xl font-bold transition-colors",
+                            stat.color
+                        )}>
+                            {stats[stat.key]}
+                        </div>
+                        <div className="text-xs font-medium text-muted uppercase tracking-wide mt-1">
+                            {stat.label}
+                        </div>
+                    </GlassCard>
+                );
+            })}
         </div>
     );
 }

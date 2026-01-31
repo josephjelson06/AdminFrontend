@@ -40,7 +40,7 @@ const ADMIN_PAGE_ACCESS: Record<UserRole, string[]> = {
 
 // Hotel panel page access  
 const HOTEL_PAGE_ACCESS: Record<HotelUserRole, string[]> = {
-    hotel_manager: ['dashboard', 'guests', 'rooms', 'kiosk', 'settings', 'team', 'billing', 'incidents', 'help'],
+    hotel_manager: ['dashboard', 'guests', 'rooms', 'kiosk', 'settings', 'team', 'roles', 'billing', 'incidents', 'help'],
     front_desk: ['dashboard', 'guests', 'rooms', 'help'],
     housekeeping: ['rooms', 'help'],
     hotel_finance: ['dashboard', 'billing', 'help'],

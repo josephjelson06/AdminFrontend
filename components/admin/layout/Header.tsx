@@ -13,12 +13,9 @@ import {
     Settings,
     UserCircle,
     Menu,
-    Moon,
-    Sun,
 } from 'lucide-react';
 import { GlobalSearch } from '@/components/shared/ui/GlobalSearch';
 import { useAuth } from '@/lib/shared/auth';
-import { useTheme } from '@/lib/shared/theme';
 import { useOnClickOutside } from '@/hooks/use-on-click-outside';
 
 // Mock notifications
@@ -86,7 +83,6 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
     const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
     const [notificationFilter, setNotificationFilter] = useState<'all' | 'alert' | 'payment' | 'contract'>('all');
     const { user, logout } = useAuth();
-    const { theme, toggleTheme } = useTheme();
 
     // Refs for click outside
     const notificationRef = useRef<HTMLDivElement>(null);
@@ -109,7 +105,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
 
     // Scroll detection for transparency effect
     const [scrolled, setScrolled] = useState(false);
-    
+
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
@@ -120,11 +116,10 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
     }, []);
 
     return (
-        <header className={`sticky top-4 mx-4 z-[99] h-14 rounded-2xl lg:ml-[calc(var(--sidebar-width)+1rem)] transition-all duration-500 ease-out ${
-            scrolled 
-                ? 'opacity-0 pointer-events-none translate-y-[-8px]' 
-                : 'surface-glass-strong opacity-100 translate-y-0 shadow-lg shadow-black/5'
-        }`}>
+        <header className={`sticky top-4 mx-4 z-[99] h-14 rounded-2xl lg:ml-[calc(var(--sidebar-width)+1rem)] transition-all duration-500 ease-out ${scrolled
+            ? 'opacity-0 pointer-events-none translate-y-[-8px]'
+            : 'surface-glass-strong opacity-100 translate-y-0 shadow-lg shadow-black/5'
+            }`}>
             <div className="h-full flex items-center justify-between px-4 lg:px-6">
                 {/* Left side */}
                 <div className="flex items-center gap-3">
@@ -144,19 +139,6 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
 
                 {/* Right side */}
                 <div className="flex items-center gap-3">
-                    
-                    {/* Theme Toggle (Optional - since you forced dark mode, maybe keep for fun) */}
-                    <button
-                        onClick={toggleTheme}
-                        className="p-2.5 hover:bg-white/10 rounded-xl transition-all duration-200 text-white/70 hover:text-white"
-                    >
-                        {theme === 'light' ? (
-                            <Moon className="w-5 h-5" />
-                        ) : (
-                            <Sun className="w-5 h-5" />
-                        )}
-                    </button>
-
                     {/* Notifications */}
                     <div className="relative" ref={notificationRef}>
                         <button
@@ -270,7 +252,7 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                         {/* User Dropdown - FIXED CLASS */}
                         {showUserMenu && (
                             <div className="absolute right-0 mt-2 w-56 surface-glass-strong rounded-2xl py-2 animate-in fade-in zoom-in-95 duration-200 border border-white/10 shadow-2xl shadow-black/50">
-                                
+
                                 {/* Dropdown Header */}
                                 <div className="px-4 py-2 mb-2 border-b border-white/5 sm:hidden">
                                     <div className="font-medium text-white">{user?.name}</div>
@@ -293,9 +275,9 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
                                     <Settings className="w-4 h-4 text-slate-400" />
                                     Settings
                                 </Link>
-                                
+
                                 <div className="my-2 border-t border-white/10 mx-2" />
-                                
+
                                 <button
                                     onClick={() => {
                                         setShowUserMenu(false);

@@ -4,25 +4,21 @@
  * StatCard Component
  * 
  * KPI card with sparkline and optional click action.
- * Uses the BaseCard system for consistent styling.
+ * Uses GlassCard for consistent styling.
  */
 
 import { TinySparkline } from '@/components/shared/ui/TinySparkline';
-import {
-    BaseCard,
-    CardHeader,
-    CardBody,
-    CardIcon,
-    CardStat,
-    CardBadge,
-} from '@/components/hotel/shared';
+import { GlassCard } from '@/components/shared/ui/GlassCard';
+import { cn } from '@/lib/utils';
+import { ChevronRight } from 'lucide-react';
 
 interface StatCardProps {
     title: string;
     value: string | number;
     icon: React.ElementType;
+    iconBg?: string; // e.g. "bg-indigo-500/10"
+    iconColor?: string; // e.g. "text-indigo-500"
     trend?: string;
-    color: string;
     sparklineData?: number[];
     onClick?: () => void;
     isAlert?: boolean;
@@ -32,40 +28,56 @@ export function StatCard({
     title,
     value,
     icon: Icon,
+    iconBg = "bg-primary/10",
+    iconColor = "text-primary",
     trend,
-    color,
     sparklineData,
     onClick,
     isAlert,
 }: StatCardProps) {
     return (
-        <BaseCard
-            variant="default"
-            density="comfortable"
-            interactivity={onClick ? 'actionable' : 'readOnly'}
+        <GlassCard
+            className={cn(
+                "p-4 h-full relative group transition-all duration-normal ease-smooth",
+                onClick && "cursor-pointer hover:border-primary/50"
+            )}
             onClick={onClick}
-            className="p-5"
         >
-            <CardHeader className="mb-3">
-                <CardIcon color={color} size="sm" className="p-2.5">
-                    <Icon className="w-5 h-5 text-white" />
-                </CardIcon>
-                {trend && (
-                    <CardBadge variant="success" className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
-                        {trend}
-                    </CardBadge>
-                )}
-            </CardHeader>
+            <div className="flex items-start justify-between">
+                <div>
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide">{title}</p>
+                    <h3 className={cn(
+                        "text-2xl font-bold mt-1",
+                        isAlert ? "text-danger" : "text-primary"
+                    )}>
+                        {value}
+                    </h3>
+                </div>
+                <div className={cn("p-2 rounded-lg transition-transform duration-fast group-hover:scale-110", iconBg)}>
+                    <Icon className={cn("w-5 h-5", iconColor)} />
+                </div>
+            </div>
 
-            <CardBody className="flex items-end justify-between">
-                <CardStat value={value} label={title} isAlert={isAlert} />
-                {sparklineData && (
-                    <TinySparkline
-                        data={sparklineData}
-                        color={isAlert ? 'stroke-rose-500' : 'stroke-emerald-500'}
-                    />
-                )}
-            </CardBody>
-        </BaseCard>
+            <div className="mt-4 flex items-end justify-between min-h-[24px]">
+                <div className="flex items-center">
+                    {trend && (
+                        <span className="text-xs font-medium text-success bg-success/10 px-1.5 py-0.5 rounded">
+                            {trend}
+                        </span>
+                    )}
+                </div>
+
+                {sparklineData ? (
+                    <div className="w-20 h-8 opacity-70 group-hover:opacity-100 transition-opacity">
+                        <TinySparkline
+                            data={sparklineData}
+                            color={isAlert ? 'stroke-rose-500' : 'stroke-emerald-500'}
+                        />
+                    </div>
+                ) : onClick ? (
+                    <ChevronRight className="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+                ) : null}
+            </div>
+        </GlassCard>
     );
 }

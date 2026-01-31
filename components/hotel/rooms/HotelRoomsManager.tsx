@@ -8,6 +8,7 @@
 
 import { useState } from 'react';
 import { RefreshCw, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PaginationBar } from '@/components/shared/ui/Pagination';
 import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import { useHotelRooms } from './useHotelRooms';
 import { RoomCard } from './RoomCard';
@@ -159,46 +160,16 @@ export function HotelRoomsManager() {
 
             {/* Pagination */}
             {rooms.length > 0 && (
-                <div className="mt-6 py-3 px-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-slate-500 dark:text-slate-400">Rows per page:</span>
-                        <select
-                            value={rowsPerPage}
-                            onChange={(e) => setRowsPerPage(Number(e.target.value))}
-                            className="px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                            <option value={6}>6</option>
-                            <option value={12}>12</option>
-                            <option value={18}>18</option>
-                            <option value={24}>24</option>
-                        </select>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <span className="text-sm text-slate-500 dark:text-slate-400">
-                            {rooms.length > 0
-                                ? `${(currentPage - 1) * rowsPerPage + 1}–${Math.min(currentPage * rowsPerPage, rooms.length)} of ${rooms.length}`
-                                : '0 items'}
-                        </span>
-                        <div className="flex items-center gap-1">
-                            <button
-                                onClick={() => setCurrentPage(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                            >
-                                <ChevronLeft className="w-4 h-4 text-slate-500" />
-                            </button>
-                            <span className="px-2 text-sm text-slate-700 dark:text-slate-300">
-                                {currentPage} / {totalPages}
-                            </span>
-                            <button
-                                onClick={() => setCurrentPage(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                            >
-                                <ChevronRight className="w-4 h-4 text-slate-500" />
-                            </button>
-                        </div>
-                    </div>
+                <div className="mt-6">
+                    <PaginationBar
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        totalItems={rooms.length}
+                        pageSize={rowsPerPage}
+                        onPageChange={setCurrentPage}
+                        onPageSizeChange={setRowsPerPage}
+                        pageSizeOptions={[6, 12, 18, 24]}
+                    />
                 </div>
             )}
 

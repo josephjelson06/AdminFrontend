@@ -1,59 +1,45 @@
 'use client';
 
 /**
- * UserCard Component
+ * HotelUserCard Component
  * 
- * Card display for a single admin user.
+ * Card display for a single hotel team member.
+ * Adapted from Admin UserCard for visual consistency.
  */
 
 import {
     Mail,
-    Clock,
-    Shield,
     MoreVertical,
-    RotateCcw,
-    Lock,
-    Unlock,
     Trash2,
+    Edit2,
 } from 'lucide-react';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
-import { UserStatusBadge } from './UserStatusBadge';
-import type { AdminUser } from '@/lib/admin/users-data';
+import type { HotelUser } from '@/lib/hotel/hotel-data';
+import { HOTEL_ROLE_LABELS } from '@/lib/hotel/hotel-data';
 
-interface UserCardProps {
-    user: AdminUser;
-    onEditRole?: (user: AdminUser) => void;
-    onResetPassword: (user: AdminUser) => void;
-    onSuspend: (user: AdminUser) => void;
-    onActivate: (user: AdminUser) => void;
-    onDelete: (user: AdminUser) => void;
+interface HotelUserCardProps {
+    user: HotelUser;
+    onEdit: (user: HotelUser) => void;
+    onDelete: (user: HotelUser) => void;
 }
 
-export function UserCard({
+export function HotelUserCard({
     user,
-    onEditRole,
-    onResetPassword,
-    onSuspend,
-    onActivate,
+    onEdit,
     onDelete,
-}: UserCardProps) {
+}: HotelUserCardProps) {
     return (
         <GlassCard className="p-4 h-full relative group hover:border-primary/50 transition-all duration-normal ease-smooth">
             <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0 pr-4">
                     <p className="text-xs font-medium text-muted uppercase tracking-wide truncate">
-                        {user.roleName} • {user.department}
+                        {HOTEL_ROLE_LABELS[user.role] || user.role}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                         <h3 className="text-lg font-bold text-primary truncate" title={user.name}>
                             {user.name}
                         </h3>
-                        {user.mfaEnabled && (
-                            <div title="MFA Enabled">
-                                <Shield className="w-3.5 h-3.5 text-success" fill="currentColor" fillOpacity={0.2} />
-                            </div>
-                        )}
                     </div>
                     <div className="flex items-center gap-1.5 mt-1 text-xs text-muted truncate">
                         <Mail className="w-3 h-3" />
@@ -67,13 +53,14 @@ export function UserCard({
             </div>
 
             <div className="mt-4 flex items-center justify-between border-t border-glass pt-3">
-                <UserStatusBadge status={user.status} />
+                <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full ${user.status === 'active'
+                    ? 'bg-success/10 text-success'
+                    : 'bg-muted/10 text-muted'
+                    }`}>
+                    {user.status}
+                </span>
 
                 <div className="flex items-center gap-2">
-                    <div className="text-[10px] text-muted flex items-center gap-1" title="Last Active">
-                        <Clock className="w-3 h-3" />
-                        {user.lastActive}
-                    </div>
                     <div className="-mr-1">
                         <Dropdown
                             trigger={
@@ -83,20 +70,9 @@ export function UserCard({
                             }
                             align="right"
                         >
-                            <DropdownItem onClick={() => onEditRole?.(user)}>Edit Role</DropdownItem>
-                            <DropdownItem onClick={() => onResetPassword(user)}>
-                                <RotateCcw className="w-4 h-4" /> Reset Password
+                            <DropdownItem onClick={() => onEdit(user)}>
+                                <Edit2 className="w-4 h-4" /> Edit Role
                             </DropdownItem>
-                            <div className="my-1 border-t border-glass" />
-                            {user.status === 'active' ? (
-                                <DropdownItem onClick={() => onSuspend(user)} className="text-warning">
-                                    <Lock className="w-4 h-4" /> Suspend User
-                                </DropdownItem>
-                            ) : (
-                                <DropdownItem onClick={() => onActivate(user)} className="text-success">
-                                    <Unlock className="w-4 h-4" /> Activate User
-                                </DropdownItem>
-                            )}
                             <DropdownItem onClick={() => onDelete(user)} className="text-danger">
                                 <Trash2 className="w-4 h-4" /> Remove User
                             </DropdownItem>
