@@ -55,20 +55,7 @@ export interface HotelProfile {
     kiosksAllocated: number;
 }
 
-export const MOCK_HOTEL_PROFILE: HotelProfile = {
-    id: 'hotel-001',
-    name: 'Grand Hyatt Mumbai',
-    address: 'Off Western Express Highway, Santacruz East',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    pincode: '400055',
-    phone: '+91 22 6676 1234',
-    email: 'info@grandhyattmumbai.com',
-    plan: 'advanced',
-    planExpiry: '2026-06-15',
-    totalRooms: 150,
-    kiosksAllocated: 2,
-};
+
 
 // ============================================
 // KIOSK DATA
@@ -86,26 +73,6 @@ export interface HotelKiosk {
     firmware: string;
 }
 
-export const MOCK_HOTEL_KIOSKS: HotelKiosk[] = [
-    {
-        id: 'kiosk-001',
-        name: 'Lobby Kiosk 1',
-        location: 'Main Lobby',
-        status: 'online',
-        lastHeartbeat: '2 mins ago',
-        todayCheckIns: 24,
-        firmware: 'v2.4.1',
-    },
-    {
-        id: 'kiosk-002',
-        name: 'Lobby Kiosk 2',
-        location: 'East Wing',
-        status: 'online',
-        lastHeartbeat: '1 min ago',
-        todayCheckIns: 18,
-        firmware: 'v2.4.1',
-    },
-];
 
 // ============================================
 // GUEST CHECK-IN DATA
@@ -124,69 +91,6 @@ export interface GuestCheckIn {
     kioskId: string;
 }
 
-export const MOCK_GUEST_CHECKINS: GuestCheckIn[] = [
-    {
-        id: 'ci-001',
-        guestName: 'Rajesh Kumar',
-        bookingId: 'BK-2024-001234',
-        roomNumber: '304',
-        checkInTime: '2 mins ago',
-        language: 'Hindi',
-        verification: 'verified',
-        kioskId: 'kiosk-001',
-    },
-    {
-        id: 'ci-002',
-        guestName: 'Priya Sharma',
-        bookingId: 'BK-2024-001235',
-        roomNumber: '512',
-        checkInTime: '15 mins ago',
-        language: 'English',
-        verification: 'verified',
-        kioskId: 'kiosk-002',
-    },
-    {
-        id: 'ci-003',
-        guestName: 'Amit Patel',
-        bookingId: 'BK-2024-001236',
-        roomNumber: '207',
-        checkInTime: '32 mins ago',
-        language: 'Hindi',
-        verification: 'manual',
-        kioskId: 'kiosk-001',
-    },
-    {
-        id: 'ci-004',
-        guestName: 'Sarah Johnson',
-        bookingId: 'BK-2024-001237',
-        roomNumber: '801',
-        checkInTime: '1 hour ago',
-        language: 'English',
-        verification: 'verified',
-        kioskId: 'kiosk-002',
-    },
-    {
-        id: 'ci-005',
-        guestName: 'Vikram Singh',
-        bookingId: 'BK-2024-001238',
-        roomNumber: '415',
-        checkInTime: '2 hours ago',
-        language: 'Hindi',
-        verification: 'failed',
-        kioskId: 'kiosk-001',
-    },
-    {
-        id: 'ci-006',
-        guestName: 'Ananya Reddy',
-        bookingId: 'BK-2024-001239',
-        roomNumber: '623',
-        checkInTime: '3 hours ago',
-        language: 'English',
-        verification: 'verified',
-        kioskId: 'kiosk-002',
-    },
-];
-
 // ============================================
 // ROOM DATA
 // ============================================
@@ -202,26 +106,6 @@ export interface Room {
     lastUpdated: string;
 }
 
-export const MOCK_ROOMS: Room[] = [
-    // Floor 1
-    { id: 'r-101', number: '101', floor: 1, type: 'standard', status: 'ready', lastUpdated: '10 mins ago' },
-    { id: 'r-102', number: '102', floor: 1, type: 'standard', status: 'occupied', lastUpdated: '2 hours ago' },
-    { id: 'r-103', number: '103', floor: 1, type: 'deluxe', status: 'cleaning', lastUpdated: '5 mins ago' },
-    { id: 'r-104', number: '104', floor: 1, type: 'standard', status: 'ready', lastUpdated: '1 hour ago' },
-    { id: 'r-105', number: '105', floor: 1, type: 'suite', status: 'dirty', lastUpdated: '30 mins ago' },
-    // Floor 2
-    { id: 'r-201', number: '201', floor: 2, type: 'standard', status: 'ready', lastUpdated: '15 mins ago' },
-    { id: 'r-202', number: '202', floor: 2, type: 'deluxe', status: 'occupied', lastUpdated: '4 hours ago' },
-    { id: 'r-203', number: '203', floor: 2, type: 'standard', status: 'ready', lastUpdated: '45 mins ago' },
-    { id: 'r-204', number: '204', floor: 2, type: 'standard', status: 'cleaning', lastUpdated: '8 mins ago' },
-    { id: 'r-205', number: '205', floor: 2, type: 'deluxe', status: 'ready', lastUpdated: '2 hours ago' },
-    // Floor 3
-    { id: 'r-301', number: '301', floor: 3, type: 'deluxe', status: 'occupied', lastUpdated: '5 hours ago' },
-    { id: 'r-302', number: '302', floor: 3, type: 'standard', status: 'dirty', lastUpdated: '20 mins ago' },
-    { id: 'r-303', number: '303', floor: 3, type: 'suite', status: 'ready', lastUpdated: '1 hour ago' },
-    { id: 'r-304', number: '304', floor: 3, type: 'standard', status: 'occupied', lastUpdated: '2 mins ago' },
-    { id: 'r-305', number: '305', floor: 3, type: 'deluxe', status: 'ready', lastUpdated: '3 hours ago' },
-];
 
 // ============================================
 // KIOSK CONFIG
@@ -281,46 +165,7 @@ export const MOCK_INVOICES: Invoice[] = [
 // HOTEL TEAM DATA
 // ============================================
 
-export const MOCK_HOTEL_TEAM: HotelUser[] = [
-    {
-        id: 'hu-001',
-        name: 'Vikram Mehta',
-        email: 'manager@hotel.in',
-        role: 'hotel_manager',
-        hotelId: 'hotel-001',
-        phone: '+91 98765 00001',
-        status: 'active',
-        lastLogin: '10 mins ago',
-    },
-    {
-        id: 'hu-002',
-        name: 'Anita Desai',
-        email: 'frontdesk@hotel.in',
-        role: 'front_desk',
-        hotelId: 'hotel-001',
-        phone: '+91 98765 00002',
-        status: 'active',
-        lastLogin: '5 mins ago',
-    },
-    {
-        id: 'hu-003',
-        name: 'Ramesh Kumar',
-        email: 'hk@hotel.in',
-        role: 'housekeeping',
-        hotelId: 'hotel-001',
-        status: 'active',
-        lastLogin: '1 hour ago',
-    },
-    {
-        id: 'hu-004',
-        name: 'Priya Nair',
-        email: 'finance@hotel.in',
-        role: 'hotel_finance',
-        hotelId: 'hotel-001',
-        status: 'active',
-        lastLogin: '2 hours ago',
-    },
-];
+
 
 // ============================================
 // HELPER FUNCTIONS

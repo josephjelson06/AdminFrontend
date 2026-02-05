@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { HotelSidebar } from './HotelSidebar';
 import { Menu, Bell, ChevronDown, LogOut, Settings, UserCircle } from 'lucide-react';
-import { useAuth } from '@/lib/shared/auth';
+import { useAuth } from '@/lib/auth';
 import { GlobalSearch } from '@/components/shared/ui/GlobalSearch';
 import { useOnClickOutside } from '@/hooks/use-on-click-outside';
 

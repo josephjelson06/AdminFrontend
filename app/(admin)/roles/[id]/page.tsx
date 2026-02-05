@@ -1,34 +1,58 @@
 'use client';
 
-import { useState, use } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     ArrowLeft,
     Save,
     Shield,
     AlertCircle,
-    Users
+    Users,
+    Loader2
 } from 'lucide-react';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { PermissionMatrix } from '@/components/admin/roles/PermissionMatrix';
 import { useToast } from '@/components/shared/ui/Toast';
-import { type RoleFormData } from '@/lib/admin/permission-data';
+import { rolesService } from '@/lib/services/rolesService';
+import { type Action } from '@/lib/admin/permission-data';
 
-// Mock existing data fetch
-const getMockRole = (id: string): RoleFormData | null => {
-    if (id === 'new') return null;
-    return {
-        name: 'Operations Manager',
-        description: 'Oversees daily hotel operations and kiosk status.',
-        permissions: {
-            hotels: ['view', 'create', 'edit'],
-            fleet: ['view', 'edit'], // Can view and edit (reboot), but not delete
-            finance: ['view'], // Read only
-            users: [], // No access
-            settings: [] // No access
-        }
-    };
-};
+interface RoleFormData {
+    name: string;
+    description: string;
+    permissions: Record<string, Action[]>;
+    userCount?: number;
+    isSystemRole?: boolean;
+}
+
+// Convert API permissions format to form format
+function apiToFormPermissions(apiPerms: Record<string, Record<string, boolean>>): Record<string, Action[]> {
+    const result: Record<string, Action[]> = {};
+    for (const [module, perms] of Object.entries(apiPerms)) {
+        const actions: Action[] = [];
+        if (perms.view) actions.push('view');
+        if (perms.create) actions.push('create');
+        if (perms.edit) actions.push('edit');
+        if (perms.delete) actions.push('delete');
+        if (perms.export) actions.push('export');
+        result[module] = actions;
+    }
+    return result;
+}
+
+// Convert form permissions format to API format
+function formToApiPermissions(formPerms: Record<string, Action[]>): Record<string, Record<string, boolean>> {
+    const result: Record<string, Record<string, boolean>> = {};
+    for (const [module, actions] of Object.entries(formPerms)) {
+        result[module] = {
+            view: actions.includes('view'),
+            create: actions.includes('create'),
+            edit: actions.includes('edit'),
+            delete: actions.includes('delete'),
+            export: actions.includes('export'),
+        };
+    }
+    return result;
+}
 
 export default function RoleEditorPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
@@ -38,16 +62,38 @@ export default function RoleEditorPage({ params }: { params: Promise<{ id: strin
     const { id } = use(params);
     const isNew = id === 'new';
 
-    const initialData = getMockRole(id) || {
+    const [formData, setFormData] = useState<RoleFormData>({
         name: '',
         description: '',
         permissions: {}
-    };
-
-    const [formData, setFormData] = useState<RoleFormData>(initialData);
+    });
+    const [isLoading, setIsLoading] = useState(!isNew);
     const [isSaving, setIsSaving] = useState(false);
 
-    const handleSave = () => {
+    // Fetch role data on mount
+    useEffect(() => {
+        if (!isNew) {
+            setIsLoading(true);
+            rolesService.get(id).then(role => {
+                if (role) {
+                    // Convert permissions from API format
+                    const permissions = typeof role.permissions === 'object' 
+                        ? apiToFormPermissions(role.permissions as unknown as Record<string, Record<string, boolean>>)
+                        : {};
+                    
+                    setFormData({
+                        name: role.name,
+                        description: role.description,
+                        permissions,
+                        userCount: role.userCount,
+                    });
+                }
+                setIsLoading(false);
+            });
+        }
+    }, [id, isNew]);
+
+    const handleSave = async () => {
         if (!formData.name.trim()) {
             addToast('error', 'Validation Error', 'Role name is required.');
             return;
@@ -55,12 +101,42 @@ export default function RoleEditorPage({ params }: { params: Promise<{ id: strin
 
         setIsSaving(true);
 
-        // Simulate API
-        setTimeout(() => {
+        try {
+            // Convert permissions to API format
+            const apiPermissions = formToApiPermissions(formData.permissions);
+
+            if (isNew) {
+                const result = await rolesService.create({
+                    name: formData.name,
+                    description: formData.description,
+                    permissions: apiPermissions as unknown as Record<string, { view: boolean; add: boolean; edit: boolean; delete: boolean }>,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                });
+                if (result.success) {
+                    addToast('success', 'Role Created', `${formData.name} has been created.`);
+                    router.push('/roles');
+                } else {
+                    addToast('error', 'Error', result.error || 'Failed to create role');
+                }
+            } else {
+                const result = await rolesService.update(id, {
+                    name: formData.name,
+                    description: formData.description,
+                    permissions: apiPermissions as unknown as Record<string, { view: boolean; add: boolean; edit: boolean; delete: boolean }>,
+                });
+                if (result.success) {
+                    addToast('success', 'Role Updated', `${formData.name} permissions saved.`);
+                    router.push('/roles');
+                } else {
+                    addToast('error', 'Error', result.error || 'Failed to update role');
+                }
+            }
+        } catch {
+            addToast('error', 'Error', 'An unexpected error occurred');
+        } finally {
             setIsSaving(false);
-            addToast('success', isNew ? 'Role Created' : 'Role Updated', `${formData.name} permissions saved.`);
-            router.push('/roles');
-        }, 800);
+        }
     };
 
     // Quick Select Presets
@@ -89,6 +165,14 @@ export default function RoleEditorPage({ params }: { params: Promise<{ id: strin
             }));
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="p-6 flex items-center justify-center min-h-[50vh]">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        );
+    }
 
     return (
         <div className="p-6 max-w-5xl mx-auto space-y-6 animate-in fade-in duration-normal">
@@ -187,12 +271,12 @@ export default function RoleEditorPage({ params }: { params: Promise<{ id: strin
                         </div>
                     </GlassCard>
 
-                    {!isNew && (
+                    {!isNew && formData.userCount && formData.userCount > 0 && (
                         <div className="p-4 bg-warning/10 border border-warning/30 rounded-xl flex gap-3">
                             <AlertCircle className="w-5 h-5 text-warning flex-shrink-0" />
                             <div className="text-xs text-warning">
                                 <span className="font-bold block mb-1">Impact Warning</span>
-                                Updating this role will immediately affect <strong>12 users</strong> currently assigned to it.
+                                Updating this role will immediately affect <strong>{formData.userCount} users</strong> currently assigned to it.
                             </div>
                         </div>
                     )}

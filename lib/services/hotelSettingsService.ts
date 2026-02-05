@@ -4,11 +4,27 @@
  * Abstracts hotel profile management operations.
  */
 
-import { MOCK_HOTEL_PROFILE, type HotelProfile } from '@/lib/hotel/hotel-data';
+import { type HotelProfile } from '@/lib/hotel/hotel-data';
 import type { ServiceResponse } from './hotelService';
 
 // Simulate network delay
 const delay = (ms: number = 200) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Default profile - TODO: Replace with real API
+const DEFAULT_PROFILE: HotelProfile = {
+    id: 'hotel-001',
+    name: 'Hotel',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    phone: '',
+    email: '',
+    plan: 'standard',
+    planExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    totalRooms: 0,
+    kiosksAllocated: 0,
+};
 
 export interface HotelSettingsData {
     profile: HotelProfile;
@@ -21,7 +37,8 @@ export const hotelSettingsService = {
      */
     async getProfile(): Promise<HotelSettingsData> {
         await delay(100);
-        const profile = MOCK_HOTEL_PROFILE;
+        // TODO: Replace with real API call
+        const profile = DEFAULT_PROFILE;
         const expiryDate = new Date(profile.planExpiry);
         const today = new Date();
         const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -38,3 +55,4 @@ export const hotelSettingsService = {
         return { success: true, data: undefined, error: undefined };
     },
 };
+

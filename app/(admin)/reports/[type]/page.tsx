@@ -7,9 +7,10 @@
  * Provides date range, format selection, filters, and preview.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, notFound } from 'next/navigation';
 import { subDays } from 'date-fns';
+import { reportsService } from '@/lib/services/reportsService';
 import {
     Building2,
     CreditCard,
@@ -256,6 +257,68 @@ const reportConfigs = {
 
 type ReportType = keyof typeof reportConfigs;
 
+// Helper to map API data to table format
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapReportData(type: ReportType, data: any[]): Record<string, unknown>[] {
+    switch (type) {
+        case 'hotels':
+            return data.map((item) => ({
+                name: item.name,
+                city: item.city || '-',
+                state: item.state || '-',
+                status: item.status,
+                plan: item.plan,
+                kiosks: item.kiosks || 0,
+                createdAt: item.created_at ? new Date(item.created_at as string).toLocaleDateString() : '-',
+            }));
+        case 'invoices':
+            return data.map((item) => ({
+                invoiceNo: item.invoice_number,
+                hotel: item.hotel_name,
+                amount: `₹${(item.amount as number).toLocaleString()}`,
+                status: item.status,
+                dueDate: item.due_date || '-',
+                paidDate: item.paid_date || '-',
+            }));
+        case 'subscriptions':
+            return data.map((item) => ({
+                hotel: item.hotel_name,
+                plan: item.plan,
+                status: item.status,
+                amount: `₹${(item.amount as number).toLocaleString()}`,
+                startDate: item.start_date || '-',
+                renewalDate: item.renewal_date || '-',
+            }));
+        case 'users':
+            return data.map((item) => ({
+                name: item.name,
+                email: item.email,
+                role: item.role,
+                hotel: item.hotel_name || '-',
+                status: item.status,
+                lastActive: item.last_active || '-',
+            }));
+        case 'audit':
+            return data.map((item) => ({
+                timestamp: item.timestamp ? new Date(item.timestamp as string).toLocaleString() : '-',
+                user: item.user_email || '-',
+                action: item.action,
+                resource: item.resource,
+                details: item.details || '-',
+            }));
+        case 'revenue':
+            return data.map((item) => ({
+                hotel: item.hotel_name,
+                period: item.period,
+                subscriptions: `₹${(item.subscriptions as number).toLocaleString()}`,
+                addons: `₹${(item.addons as number).toLocaleString()}`,
+                total: `₹${(item.total as number).toLocaleString()}`,
+            }));
+        default:
+            return data;
+    }
+}
+
 export default function ReportExportPage() {
     const params = useParams();
     const { addToast } = useToast();
@@ -277,6 +340,64 @@ export default function ReportExportPage() {
     const [format, setFormat] = useState<ExportFormat>(config.formats[0]);
     const [filterValues, setFilterValues] = useState<Record<string, string>>({});
     const [isExporting, setIsExporting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [reportData, setReportData] = useState<Record<string, unknown>[]>([]);
+    const [totalCount, setTotalCount] = useState(0);
+
+    // Fetch data from API
+    const fetchData = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const params = {
+                search: filterValues.search,
+                status: filterValues.status,
+                plan: filterValues.plan,
+                role: filterValues.role,
+                action: filterValues.action,
+                period: filterValues.period,
+                dateFrom: dateRange.from?.toISOString().split('T')[0],
+                dateTo: dateRange.to?.toISOString().split('T')[0],
+            };
+
+            let result: { data: unknown[]; total: number };
+            
+            switch (reportType as ReportType) {
+                case 'hotels':
+                    result = await reportsService.getHotelsReport(params) as unknown as { data: unknown[]; total: number };
+                    break;
+                case 'invoices':
+                    result = await reportsService.getInvoicesReport(params) as unknown as { data: unknown[]; total: number };
+                    break;
+                case 'subscriptions':
+                    result = await reportsService.getSubscriptionsReport(params) as unknown as { data: unknown[]; total: number };
+                    break;
+                case 'users':
+                    result = await reportsService.getUsersReport(params) as unknown as { data: unknown[]; total: number };
+                    break;
+                case 'audit':
+                    result = await reportsService.getAuditReport(params) as unknown as { data: unknown[]; total: number };
+                    break;
+                case 'revenue':
+                    result = await reportsService.getRevenueReport(params) as unknown as { data: unknown[]; total: number };
+                    break;
+                default:
+                    result = { data: [], total: 0 };
+            }
+
+            setReportData(mapReportData(reportType as ReportType, result.data as Record<string, unknown>[]));
+            setTotalCount(result.total);
+        } catch (error) {
+            console.error('Failed to fetch report data:', error);
+            addToast('error', 'Error', 'Failed to load report data');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [reportType, filterValues, dateRange, addToast]);
+
+    // Fetch on mount and when filters change
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const handleFilterChange = (id: string, value: string) => {
         setFilterValues((prev) => ({ ...prev, [id]: value }));
@@ -288,7 +409,7 @@ export default function ReportExportPage() {
 
     const handleExport = async () => {
         setIsExporting(true);
-        // Simulate export
+        // TODO: Implement real export with backend
         await new Promise((resolve) => setTimeout(resolve, 2000));
         setIsExporting(false);
         addToast('success', 'Export Complete', `${config.title} has been exported as ${format.toUpperCase()}.`);
@@ -319,12 +440,13 @@ export default function ReportExportPage() {
             {/* Right Column - Preview */}
             <ExportPreview
                 columns={config.columns}
-                data={config.mockData}
-                isLoading={false}
+                data={reportData}
+                isLoading={isLoading}
                 onExport={handleExport}
                 isExporting={isExporting}
-                totalCount={config.mockData.length * 50} // Mock total count
+                totalCount={totalCount}
             />
         </ExportPageLayout>
     );
 }
+

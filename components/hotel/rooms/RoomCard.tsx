@@ -1,122 +1,63 @@
 'use client';
 
-/**
- * RoomCard Component
- * 
- * Interactive room card with status cycling.
- * Uses the BaseCard and Status systems for consistent styling.
- */
-
-import { useState } from 'react';
-import { Check, Sparkles, User, BedDouble } from 'lucide-react';
-import type { Room, RoomStatus } from '@/lib/hotel/hotel-data';
-import { getRoomStatusLabel } from '@/lib/hotel/hotel-data';
-import {
-    BaseCard,
-    CardBody,
-    CardFooter,
-    CardTitle,
-    CardDescription,
-    StatusBadge,
-    TimeMeta,
-    getSemanticToken,
-    getTokenStyles,
-} from '@/components/hotel/shared';
+import { Edit, Trash2, Home, Layers } from 'lucide-react';
+import type { Room } from './types';
 
 interface RoomCardProps {
     room: Room;
-    onStatusChange: (roomId: string, newStatus: RoomStatus) => void;
-    onViewDetails: (room: Room) => void;
-    getNextStatus: (currentStatus: RoomStatus) => RoomStatus;
+    onEdit: (room: Room) => void;
+    onDelete: (room: Room) => void;
 }
 
-const statusConfig: Record<RoomStatus, {
-    bg: string;
-    border: string;
-    icon: React.ReactNode;
-}> = {
-    ready: {
-        bg: 'bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/50',
-        border: 'border-emerald-300 dark:border-emerald-700 hover:border-emerald-400 dark:hover:border-emerald-600',
-        icon: <Check className="w-4 h-4 text-white" />,
-    },
-    cleaning: {
-        bg: 'bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/50',
-        border: 'border-amber-300 dark:border-amber-700 hover:border-amber-400 dark:hover:border-amber-600',
-        icon: <Sparkles className="w-4 h-4 text-white" />,
-    },
-    occupied: {
-        bg: 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/50',
-        border: 'border-blue-300 dark:border-blue-700',
-        icon: <User className="w-4 h-4 text-white" />,
-    },
-    dirty: {
-        bg: 'bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-900/50',
-        border: 'border-rose-300 dark:border-rose-700 hover:border-rose-400 dark:hover:border-rose-600',
-        icon: <BedDouble className="w-4 h-4 text-white" />,
-    },
+const statusColors = {
+    available: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    occupied: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    maintenance: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+    cleaning: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
 };
 
-export function RoomCard({ room, onStatusChange, onViewDetails, getNextStatus }: RoomCardProps) {
-    const isClickable = room.status !== 'occupied';
-    const [isAnimating, setIsAnimating] = useState(false);
-
-    const handleClick = () => {
-        if (!isClickable) {
-            onViewDetails(room);
-            return;
-        }
-
-        setIsAnimating(true);
-        setTimeout(() => setIsAnimating(false), 300);
-
-        const nextStatus = getNextStatus(room.status);
-        onStatusChange(room.id, nextStatus);
-    };
-
-    const config = statusConfig[room.status];
-    const token = getSemanticToken(room.status);
-    const tokenStyle = getTokenStyles(token);
-
+export function RoomCard({ room, onEdit, onDelete }: RoomCardProps) {
     return (
-        <BaseCard
-            variant="default"
-            density="comfortable"
-            interactivity={isClickable ? 'stateful' : 'actionable'}
-            status={{ color: tokenStyle.badgeSolid }}
-            statusPosition="top-right"
-            onClick={handleClick}
-            className={`
-                w-full text-center border-2
-                ${config.bg} ${config.border}
-                ${isAnimating ? 'scale-95' : ''}
-            `}
-        >
-            {/* Status Icon in Badge */}
-            <div className={`absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center ${tokenStyle.badgeSolid} shadow-lg`}>
-                {config.icon}
+        <div className="group relative bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-all duration-300">
+            <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-white/5">
+                        <Home className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-white leading-none mb-1">
+                            {room.room_number}
+                        </h3>
+                        <p className="text-xs text-white/50 font-medium">
+                            {room.room_type}
+                        </p>
+                    </div>
+                </div>
+                <div className={`px-2 py-1 rounded-md text-xs font-medium border ${statusColors[room.status as keyof typeof statusColors] || statusColors.available}`}>
+                    {room.status.charAt(0).toUpperCase() + room.status.slice(1)}
+                </div>
             </div>
 
-            <CardBody className="space-y-1">
-                {/* Room Number */}
-                <CardTitle size="xl">{room.number}</CardTitle>
+            <div className="flex items-center gap-2 text-white/60 text-sm mb-4">
+                <Layers className="w-4 h-4" />
+                <span>Floor {room.floor}</span>
+            </div>
 
-                {/* Room Type */}
-                <CardDescription className="capitalize font-medium mb-3">
-                    {room.type}
-                </CardDescription>
-
-                {/* Status Badge */}
-                <StatusBadge
-                    status={room.status}
-                    label={getRoomStatusLabel(room.status)}
-                    variant="solid"
-                />
-            </CardBody>
-
-            <CardFooter className="justify-center mt-2">
-                <TimeMeta time={room.lastUpdated} variant="relative" />
-            </CardFooter>
-        </BaseCard>
+            <div className="flex items-center gap-2 mt-auto pt-4 border-t border-white/5">
+                <button
+                    onClick={() => onEdit(room)}
+                    className="flex-1 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                    <Edit className="w-3 h-3" />
+                    Edit
+                </button>
+                <button
+                    onClick={() => onDelete(room)}
+                    className="h-8 w-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors flex items-center justify-center"
+                >
+                    <Trash2 className="w-3 h-3" />
+                </button>
+            </div>
+        </div>
     );
 }

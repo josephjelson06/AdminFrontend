@@ -28,7 +28,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import { Breadcrumbs } from '@/components/shared/ui/Breadcrumbs';
-import { useAuth } from '@/lib/shared/auth';
+import { useAuth } from '@/lib/auth';
 import { useToast } from '@/components/shared/ui/Toast';
 import { useHotelIncidents } from './useHotelIncidents';
 import { cn } from '@/lib/utils';
@@ -236,6 +236,7 @@ export function HotelIncidentsManager() {
         setPriority,
         assignIncident,
         resolveIncident,
+        deleteIncident,
         isLoading,
     } = useHotelIncidents();
 
@@ -268,6 +269,13 @@ export function HotelIncidentsManager() {
         const success = await resolveIncident(incidentId);
         if (success) {
             addToast('success', 'Incident Resolved', 'Great work! The incident has been marked as completed.');
+        }
+    };
+
+    const handleDelete = async (incidentId: string) => {
+        const success = await deleteIncident(incidentId);
+        if (success) {
+            addToast('success', 'Incident Deleted', 'The incident has been permanently removed.');
         }
     };
 
@@ -340,6 +348,7 @@ export function HotelIncidentsManager() {
                                         incident={incident}
                                         onSetPriority={handleSetPriority}
                                         onAssign={handleAssign}
+                                        onDelete={handleDelete}
                                         showActions
                                     />
                                 ))}

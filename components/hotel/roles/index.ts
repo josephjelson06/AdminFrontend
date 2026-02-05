@@ -6,4 +6,4 @@
 
 export { HotelRolesManager } from './HotelRolesManager';
 export { useHotelRoles } from './useHotelRoles';
-export type { UseHotelRolesReturn } from './useHotelRoles';
+export * from './types';

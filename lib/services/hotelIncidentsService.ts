@@ -66,38 +66,6 @@ export interface IncidentsFilters {
 
 export const hotelIncidentsService = {
     /**
-     * Get all incidents
-     */
-    async getIncidents(): Promise<Incident[]> {
-        await delay(100);
-        return MOCK_INCIDENTS;
-    },
-
-    /**
-     * Set incident priority
-     */
-    async setPriority(id: string, priority: IncidentPriority): Promise<ServiceResponse<void>> {
-        await delay(300);
-        return { success: true, data: undefined, error: undefined };
-    },
-
-    /**
-     * Assign incident to staff
-     */
-    async assignIncident(id: string): Promise<ServiceResponse<void>> {
-        await delay(300);
-        return { success: true, data: undefined, error: undefined };
-    },
-
-    /**
-     * Resolve incident
-     */
-    async resolveIncident(id: string): Promise<ServiceResponse<void>> {
-        await delay(500);
-        return { success: true, data: undefined, error: undefined };
-    },
-
-    /**
      * Filter and sort incidents
      */
     filterAndSort(incidents: Incident[], filters: IncidentsFilters): Incident[] {

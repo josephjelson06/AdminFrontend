@@ -5,9 +5,6 @@
  */
 
 import {
-    MOCK_HOTEL_KIOSKS,
-    MOCK_GUEST_CHECKINS,
-    MOCK_ROOMS,
     type GuestCheckIn,
     type HotelKiosk,
 } from '@/lib/hotel/hotel-data';
@@ -36,20 +33,25 @@ export interface SparklineData {
 
 export type ActivityFilter = 'All' | 'Failed' | 'Success';
 
+// Placeholder data - to be replaced with real API calls
+const PLACEHOLDER_KIOSKS: HotelKiosk[] = [];
+const PLACEHOLDER_CHECKINS: GuestCheckIn[] = [];
+
 export const hotelDashboardService = {
     /**
      * Get dashboard stats
      */
     async getStats(): Promise<DashboardStats> {
         await delay(100);
+        // TODO: Replace with real API call
         return {
-            todayCheckIns: MOCK_GUEST_CHECKINS.length,
-            failedVerifications: MOCK_GUEST_CHECKINS.filter(g => g.verification === 'failed').length,
-            onlineKiosks: MOCK_HOTEL_KIOSKS.filter(k => k.status === 'online').length,
-            totalKiosks: MOCK_HOTEL_KIOSKS.length,
-            readyRooms: MOCK_ROOMS.filter(r => r.status === 'ready').length,
-            totalRooms: MOCK_ROOMS.length,
-            occupiedRooms: MOCK_ROOMS.filter(r => r.status === 'occupied').length,
+            todayCheckIns: 0,
+            failedVerifications: 0,
+            onlineKiosks: 0,
+            totalKiosks: 0,
+            readyRooms: 0,
+            totalRooms: 0,
+            occupiedRooms: 0,
         };
     },
 
@@ -58,10 +60,9 @@ export const hotelDashboardService = {
      */
     async getSparklineData(): Promise<SparklineData> {
         await delay(50);
-        const failedCount = MOCK_GUEST_CHECKINS.filter(g => g.verification === 'failed').length;
         return {
             checkIns: [12, 18, 14, 25, 20, 32, 24],
-            failed: [0, 1, 0, 2, 1, 0, failedCount],
+            failed: [0, 1, 0, 2, 1, 0, 0],
             kiosks: [50, 60, 55, 70, 65, 80, 75],
             rooms: [40, 45, 42, 48, 46, 50, 48],
         };
@@ -72,19 +73,8 @@ export const hotelDashboardService = {
      */
     async getRecentActivity(filter: ActivityFilter = 'All'): Promise<GuestCheckIn[]> {
         await delay(100);
-        let filtered = [...MOCK_GUEST_CHECKINS];
-
-        if (filter === 'Failed') {
-            filtered = filtered.filter(g => g.verification === 'failed');
-        } else if (filter === 'Success') {
-            filtered = filtered.filter(g => g.verification === 'verified');
-        }
-
-        // Sort by kiosk for grouping
-        return filtered.sort((a, b) => {
-            if (a.kioskId === b.kioskId) return 0;
-            return a.kioskId > b.kioskId ? 1 : -1;
-        });
+        // TODO: Replace with real API call
+        return [];
     },
 
     /**
@@ -92,15 +82,16 @@ export const hotelDashboardService = {
      */
     async getKiosks(): Promise<HotelKiosk[]> {
         await delay(100);
-        return [...MOCK_HOTEL_KIOSKS];
+        // TODO: Replace with real API call
+        return [];
     },
 
     /**
      * Get kiosk name by ID
      */
     getKioskName(kioskId: string): string {
-        const kiosk = MOCK_HOTEL_KIOSKS.find(k => k.id === kioskId);
-        return kiosk?.name || kioskId;
+        // TODO: Replace with real lookup
+        return kioskId;
     },
 
     /**

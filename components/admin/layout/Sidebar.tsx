@@ -19,7 +19,7 @@ import {
     CreditCard,
     LifeBuoy,
 } from 'lucide-react';
-import { useAuth } from '@/lib/shared/auth';
+import { useAuth } from '@/lib/auth';
 
 interface NavItem {
     id: string; // Used for permission check

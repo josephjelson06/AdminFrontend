@@ -9,7 +9,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
-import { useAuth } from '@/lib/shared/auth';
+import { useAuth } from '@/lib/auth';
 import { useHotelDashboard } from './useHotelDashboard';
 import { DashboardHeader } from './DashboardHeader';
 import { DashboardKPIs } from './DashboardKPIs';

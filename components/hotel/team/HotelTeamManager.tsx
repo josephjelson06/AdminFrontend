@@ -11,42 +11,53 @@ import {
     UserPlus,
     Users,
     Search,
+    Ban,
+    CheckCircle,
 } from 'lucide-react';
 import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
 import { PaginationBar } from '@/components/shared/ui/Pagination';
 import { useHotelTeam } from './useHotelTeam';
 import { HotelUserCard } from './HotelUserCard';
+import { AddHotelUserModal } from './AddHotelUserModal';
+import { EditHotelUserModal } from './EditHotelUserModal';
 import { useToast } from '@/components/shared/ui/Toast';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
+import type { HotelUser } from './types';
 
 export function HotelTeamManager() {
     const { addToast } = useToast();
     const {
         team,
-        paginatedTeam,
+        roles,
         totalPages,
         currentPage,
         rowsPerPage,
         setCurrentPage,
         setRowsPerPage,
         isLoading,
+        filters,
+        setFilters,
+        addMember,
+        updateMember,
+        deleteMember,
+        toggleStatus,
     } = useHotelTeam();
 
     const [showAddModal, setShowAddModal] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [editingUser, setEditingUser] = useState<HotelUser | null>(null);
 
-    // Filter team based on search (simple client-side filter for demo)
-    const filteredPaginatedTeam = paginatedTeam.filter(user =>
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const handleDeleteUser = (user: any) => {
-        addToast('info', 'Demo Action', `Delete user ${user.name} feature coming soon.`);
+    const handleEditUser = (user: HotelUser) => {
+        setEditingUser(user);
     };
 
-    const handleEditUser = (user: any) => {
-        addToast('info', 'Demo Action', `Edit role for ${user.name} feature coming soon.`);
+    const handleDeleteUser = async (user: HotelUser) => {
+        if (confirm(`Are you sure you want to remove ${user.full_name}? This action cannot be undone.`)) {
+            await deleteMember(user.id);
+        }
+    };
+
+    const handleToggleStatus = async (user: HotelUser) => {
+         await toggleStatus(user);
     };
 
     if (isLoading) {
@@ -89,8 +100,8 @@ export function HotelTeamManager() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                         <input
                             type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            value={filters.search || ''}
+                            onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                             placeholder="Search name or email..."
                             className="pl-9 pr-4 py-2 bg-transparent border-none text-sm w-full focus:ring-0 placeholder:text-muted/70"
                         />
@@ -98,24 +109,43 @@ export function HotelTeamManager() {
                 </GlassCard>
 
                 {/* User Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    {filteredPaginatedTeam.map((member) => (
-                        <HotelUserCard
-                            key={member.id}
-                            user={member}
-                            onEdit={handleEditUser}
-                            onDelete={handleDeleteUser}
-                        />
-                    ))}
-                </div>
+                {team.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        {team.map((member) => (
+                            <HotelUserCard
+                                key={member.id}
+                                user={member}
+                                onEdit={handleEditUser}
+                                onDelete={handleDeleteUser}
+                                onToggleStatus={handleToggleStatus}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-64 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50">
+                        <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-3">
+                            <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                        </div>
+                        <h3 className="text-lg font-medium text-slate-900 dark:text-white">No team members found</h3>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 mb-4">
+                            Try adjusting your filters or invite a new member.
+                        </p>
+                        <button
+                             onClick={() => setShowAddModal(true)}
+                             className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline text-sm"
+                        >
+                            Invite First Member
+                        </button>
+                    </div>
+                )}
 
                 {/* Pagination */}
-                {team.length > 0 && (
+                {totalPages > 1 && (
                     <div className="mt-4">
                         <PaginationBar
                             currentPage={currentPage}
                             totalPages={totalPages}
-                            totalItems={team.length}
+                            totalItems={totalPages * rowsPerPage} // Approx
                             pageSize={rowsPerPage}
                             onPageChange={setCurrentPage}
                             onPageSizeChange={setRowsPerPage}
@@ -123,6 +153,22 @@ export function HotelTeamManager() {
                         />
                     </div>
                 )}
+
+                {/* Modals */}
+                <AddHotelUserModal
+                    isOpen={showAddModal}
+                    onClose={() => setShowAddModal(false)}
+                    onSave={addMember}
+                    roles={roles}
+                />
+
+                <EditHotelUserModal
+                    isOpen={!!editingUser}
+                    onClose={() => setEditingUser(null)}
+                    user={editingUser}
+                    onSave={updateMember}
+                    roles={roles}
+                />
             </div>
         </HotelLayout>
     );

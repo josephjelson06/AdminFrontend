@@ -7,7 +7,7 @@
  */
 
 import { CreditCard, Plus } from 'lucide-react';
-import { useAuth } from '@/lib/shared/auth';
+import { useAuth } from '@/lib/auth';
 import { usePlans } from './usePlans';
 import { PlanCard } from './PlanCard';
 import { PlanEditorSlideOver } from '@/components/admin/plans/PlanEditorSlideOver';
@@ -49,9 +49,11 @@ export function PlanList() {
         closeEditor,
         savePlan,
         archivePlan,
+        unarchivePlan,
+        deletePlan,
     } = usePlans();
 
-    const canEdit = hasPermission('finance');
+    const canEdit = hasPermission('finance', 'edit');
 
     if (isLoading) {
         return (
@@ -119,6 +121,8 @@ export function PlanList() {
                             canEdit={canEdit}
                             onEdit={openEditor}
                             onArchive={archivePlan}
+                            onUnarchive={unarchivePlan}
+                            onDelete={deletePlan}
                         />
                     </motion.div>
                 ))}

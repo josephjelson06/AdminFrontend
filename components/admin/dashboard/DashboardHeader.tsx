@@ -6,7 +6,7 @@
  * Header with greeting and time filter.
  */
 
-import { useAuth } from '@/lib/shared/auth';
+import { useAuth } from '@/lib/auth';
 import { DashboardFilter } from './DashboardFilter';
 import type { Alert } from '@/lib/services/dashboardService';
 

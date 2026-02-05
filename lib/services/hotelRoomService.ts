@@ -5,7 +5,6 @@
  */
 
 import {
-    MOCK_ROOMS,
     type Room,
     type RoomStatus,
     getRoomStatusLabel,
@@ -15,8 +14,8 @@ import type { ServiceResponse } from './hotelService';
 // Simulate network delay
 const delay = (ms: number = 200) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Local mutable copy
-let rooms = [...MOCK_ROOMS];
+// Local mutable copy - TODO: Replace with real API data
+let rooms: Room[] = [];
 
 // Filter configuration
 export const FLOOR_FILTERS = [
@@ -89,11 +88,11 @@ export const hotelRoomService = {
     },
 
     /**
-     * Refresh rooms data (reset to mock)
+     * Refresh rooms data
      */
     async refresh(): Promise<Room[]> {
         await delay(800);
-        rooms = [...MOCK_ROOMS];
+        // TODO: Fetch from real API
         return rooms;
     },
 

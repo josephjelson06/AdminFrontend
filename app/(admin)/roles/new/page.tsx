@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Save, X } from 'lucide-react';
+import { ChevronLeft, Save, X, Loader2 } from 'lucide-react';
 import {
     PERMISSION_CATEGORIES,
     createEmptyPermissions,
@@ -12,6 +12,7 @@ import {
 import { PermissionGrid } from '@/components/shared/ui/PermissionGrid';
 import { ConfirmModal } from '@/components/admin/modals/ConfirmModal';
 import { useToast } from '@/components/shared/ui/Toast';
+import { rolesService } from '@/lib/services/rolesService';
 
 export default function CreateRolePage() {
     const router = useRouter();
@@ -24,6 +25,7 @@ export default function CreateRolePage() {
     );
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const handlePermissionChange = (moduleId: string, permission: keyof ModulePermission, value: boolean) => {
         setPermissions(prev => ({
@@ -49,15 +51,45 @@ export default function CreateRolePage() {
         setHasUnsavedChanges(true);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!name.trim()) {
             addToast('error', 'Validation Error', 'Role name is required.');
             return;
         }
 
-        // Simulate save
-        addToast('success', 'Role Created', `"${name}" has been created successfully.`);
-        router.push('/roles');
+        setIsSaving(true);
+
+        try {
+            // Convert permissions to API format (add -> create mapping)
+            const apiPermissions: Record<string, { view: boolean; add: boolean; edit: boolean; delete: boolean }> = {};
+            for (const [moduleId, perms] of Object.entries(permissions)) {
+                apiPermissions[moduleId] = {
+                    view: perms.view,
+                    add: perms.add, // 'add' in UI maps to 'create' concept
+                    edit: perms.edit,
+                    delete: perms.delete,
+                };
+            }
+
+            const result = await rolesService.create({
+                name,
+                description,
+                permissions: apiPermissions,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            });
+
+            if (result.success) {
+                addToast('success', 'Role Created', `"${name}" has been created successfully.`);
+                router.push('/roles');
+            } else {
+                addToast('error', 'Error', result.error || 'Failed to create role');
+            }
+        } catch {
+            addToast('error', 'Error', 'An unexpected error occurred');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleCancel = () => {
@@ -146,16 +178,27 @@ export default function CreateRolePage() {
                     <button
                         onClick={handleCancel}
                         className="btn-ghost"
+                        disabled={isSaving}
                     >
                         <X className="w-4 h-4" />
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
-                        className="btn-primary"
+                        className="btn-primary disabled:opacity-70"
+                        disabled={isSaving}
                     >
-                        <Save className="w-4 h-4" />
-                        Save Role
+                        {isSaving ? (
+                            <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="w-4 h-4" />
+                                Save Role
+                            </>
+                        )}
                     </button>
                 </div>
             </div>

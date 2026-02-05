@@ -4,23 +4,48 @@ import { useState } from 'react';
 import { User, Mail, Phone, Shield, Key, Bell, Camera, Save } from 'lucide-react';
 import { useToast } from '@/components/shared/ui/Toast';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
+import { useAuth } from '@/lib/auth';
+import { api } from '@/lib/api';
 
 export default function ProfilePage() {
+    const { user, refreshUser } = useAuth();
     const { addToast } = useToast();
     const [isEditing, setIsEditing] = useState(false);
-    const [profile, setProfile] = useState({
-        name: 'Admin User',
-        email: 'admin@atc.in',
-        phone: '+91 98765 43210',
-        role: 'Super Admin',
+    const [isLoading, setIsLoading] = useState(false);
+    
+    // Form state match user data
+    const [formData, setFormData] = useState({
+        name: user?.name || '',
+        email: user?.email || '',
+        // These fields are not in current User model, keeping as display only or future use
+        phone: '+91 98765 43210', 
         department: 'Technology',
-        joinDate: '2024-03-15',
     });
 
-    const handleSave = () => {
-        setIsEditing(false);
-        addToast('success', 'Profile Updated', 'Your profile has been saved successfully.');
+    const handleSave = async () => {
+        if (!isEditing) {
+            setIsEditing(true);
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            await api.users.updateMe({
+                full_name: formData.name,
+                email: formData.email,
+            });
+            await refreshUser();
+            addToast('success', 'Profile Updated', 'Your specific details have been saved.');
+            setIsEditing(false);
+        } catch (error) {
+            console.error(error);
+            addToast('error', 'Update Failed', 'Could not update profile details.');
+        } finally {
+            setIsLoading(false);
+        }
     };
+
+    if (!user) return <div className="p-6">Loading profile...</div>;
 
     return (
         <div className="p-6 max-w-4xl">
@@ -38,16 +63,17 @@ export default function ProfilePage() {
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-lg font-semibold text-primary">Personal Information</h2>
                             <button
-                                onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+                                onClick={handleSave}
+                                disabled={isLoading}
                                 className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all ${isEditing
                                     ? 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-500/20'
                                     : 'bg-slate-700/50 text-slate-200 hover:bg-slate-700 border border-slate-600 hover:border-slate-500'
-                                    }`}
+                                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 {isEditing ? (
                                     <>
                                         <Save className="w-4 h-4" />
-                                        Save Changes
+                                        {isLoading ? 'Saving...' : 'Save Changes'}
                                     </>
                                 ) : (
                                     'Edit Profile'
@@ -59,13 +85,11 @@ export default function ProfilePage() {
                             {/* Avatar */}
                             <div className="relative mx-auto sm:mx-0">
                                 <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                                    <span className="text-3xl font-bold text-white">AU</span>
+                                    <span className="text-3xl font-bold text-white">
+                                        {user.name.charAt(0).toUpperCase()}
+                                        {user.name.split(' ')[1]?.charAt(0).toUpperCase()}
+                                    </span>
                                 </div>
-                                {isEditing && (
-                                    <button className="absolute -bottom-2 -right-2 p-2 bg-slate-800 border border-slate-600 rounded-full shadow-lg text-white hover:bg-slate-700 transition-colors">
-                                        <Camera className="w-4 h-4" />
-                                    </button>
-                                )}
                             </div>
 
                             {/* Form Fields */}
@@ -77,13 +101,13 @@ export default function ProfilePage() {
                                             <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                             <input
                                                 type="text"
-                                                value={profile.name}
-                                                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                                                value={formData.name}
+                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                                 className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-600 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                                             />
                                         </div>
                                     ) : (
-                                        <p className="text-sm font-medium text-white py-2.5 px-1">{profile.name}</p>
+                                        <p className="text-sm font-medium text-white py-2.5 px-1">{user.name}</p>
                                     )}
                                 </div>
 
@@ -94,48 +118,28 @@ export default function ProfilePage() {
                                             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                             <input
                                                 type="email"
-                                                value={profile.email}
-                                                onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                                                value={formData.email}
+                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                                 className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-600 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                                             />
                                         </div>
                                     ) : (
-                                        <p className="text-sm font-medium text-white py-2.5 px-1">{profile.email}</p>
+                                        <p className="text-sm font-medium text-white py-2.5 px-1">{user.email}</p>
                                     )}
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-300 mb-1.5">Phone</label>
-                                    {isEditing ? (
-                                        <div className="relative">
-                                            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                                            <input
-                                                type="tel"
-                                                value={profile.phone}
-                                                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                                                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-600 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <p className="text-sm font-medium text-white py-2.5 px-1">{profile.phone}</p>
-                                    )}
+                                    <div className="relative">
+                                        <p className="text-sm font-medium text-muted py-2.5 px-1">{formData.phone} (Static)</p>
+                                    </div>
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-300 mb-1.5">Department</label>
-                                    {isEditing ? (
-                                        <div className="relative">
-                                            <Shield className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                                            <input
-                                                type="text"
-                                                value={profile.department}
-                                                onChange={(e) => setProfile({ ...profile, department: e.target.value })}
-                                                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-600 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <p className="text-sm font-medium text-white py-2.5 px-1">{profile.department}</p>
-                                    )}
+                                    <div className="relative">
+                                        <p className="text-sm font-medium text-muted py-2.5 px-1">{formData.department} (Static)</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -156,7 +160,7 @@ export default function ProfilePage() {
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => addToast('info', 'Password Reset', 'Check your email for reset link.')}
+                                    onClick={() => addToast('info', 'Password Reset', 'Feature coming soon.')}
                                     className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 border border-slate-600 rounded-xl hover:bg-slate-700 hover:border-slate-500 transition-all"
                                 >
                                     Change
@@ -206,16 +210,13 @@ export default function ProfilePage() {
                             <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
                                 <span className="text-sm text-slate-400">Role</span>
                                 <span className="px-3 py-1 text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-full">
-                                    {profile.role}
+                                    {user.role}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
                                 <span className="text-sm text-slate-400">Member Since</span>
                                 <span className="text-sm font-medium text-white">
-                                    {new Date(profile.joinDate).toLocaleDateString('en-IN', {
-                                        month: 'short',
-                                        year: 'numeric',
-                                    })}
+                                    Mar 2024
                                 </span>
                             </div>
                             <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
@@ -237,17 +238,11 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium text-white">Windows PC</span>
-                                    <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Current</span>
+                                    <span className="text-sm font-medium text-white">Current Session</span>
+                                    <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Active</span>
                                 </div>
-                                <p className="text-xs text-slate-400">Chrome • Mumbai, IN</p>
+                                <p className="text-xs text-slate-400">IP: 192.168.1.1</p>
                             </div>
-                            <button
-                                onClick={() => addToast('info', 'Sessions Cleared', 'All other sessions have been logged out.')}
-                                className="w-full py-2 text-center text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors"
-                            >
-                                Sign out all other sessions
-                            </button>
                         </div>
                     </GlassCard>
                 </div>

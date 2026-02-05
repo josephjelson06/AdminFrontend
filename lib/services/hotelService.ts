@@ -4,14 +4,13 @@
  * Abstracts all hotel-related API calls through the adapter pattern.
  * For now, uses mock data directly for backward compatibility.
  */
-
 import type { Hotel } from '@/types/schema';
-import { MOCK_HOTELS } from '@/lib/admin/mock-data';
+import { api } from '@/lib/api';
 
 // Consistent response type for service methods
 export interface ServiceResponse<T> {
     success: boolean;
-    data: T;
+    data: T | undefined;
     error?: string;
 }
 
@@ -25,23 +24,6 @@ export interface PaginatedResult<T> {
         totalItems: number;
     };
 }
-
-// Pagination helper
-function paginate<T>(data: T[], page: number = 1, pageSize: number = 10): PaginatedResult<T> {
-    const start = (page - 1) * pageSize;
-    return {
-        data: data.slice(start, start + pageSize),
-        pagination: {
-            page,
-            pageSize,
-            totalPages: Math.ceil(data.length / pageSize),
-            totalItems: data.length,
-        },
-    };
-}
-
-// Simulate network delay
-const delay = (ms: number = 200) => new Promise(resolve => setTimeout(resolve, ms));
 
 export interface HotelQueryParams {
     page?: number;
@@ -60,100 +42,131 @@ export const hotelService = {
      * Fetch paginated list of hotels with optional filters
      */
     async list(params?: HotelQueryParams): Promise<PaginatedResult<Hotel>> {
-        await delay();
-
-        let data = [...MOCK_HOTELS] as Hotel[];
-
-        // Apply search
-        if (params?.search) {
-            const search = params.search.toLowerCase();
-            data = data.filter(h =>
-                h.name.toLowerCase().includes(search) ||
-                h.location.toLowerCase().includes(search) ||
-                h.city.toLowerCase().includes(search)
-            );
-        }
-
-        // Apply filters
-        if (params?.filters?.status) {
-            data = data.filter(h => h.status === params.filters!.status);
-        }
-        if (params?.filters?.plan) {
-            data = data.filter(h => h.plan === params.filters!.plan);
-        }
-
-        // Apply sort
-        if (params?.sortBy) {
-            const sortOrder = params.sortOrder || 'asc';
-            data.sort((a, b) => {
-                const aVal = (a as Record<string, unknown>)[params.sortBy!];
-                const bVal = (b as Record<string, unknown>)[params.sortBy!];
-                if (typeof aVal === 'string' && typeof bVal === 'string') {
-                    return sortOrder === 'asc'
-                        ? aVal.localeCompare(bVal)
-                        : bVal.localeCompare(aVal);
-                }
-                return 0;
+        try {
+            const response = await api.hotels.list({
+                page: params?.page,
+                status: params?.filters?.status
             });
-        }
 
-        return paginate(data, params?.page, params?.pageSize);
+            if (!response.success) throw new Error(response.error);
+
+            // Backend returns flat list for now, we simulate pagination structure wrapper on frontend service layer
+            // or if backend implements pagination, we map it. 
+            // Current Backend `read_hotels` returns List[Hotel].
+            const rawHotels = response.data as Array<Record<string, unknown>>;
+
+            // Map backend snake_case to frontend camelCase
+            const allHotels = rawHotels.map(h => ({
+                id: String(h.id),
+                name: h.name as string,
+                location: h.location as string,
+                city: (h.city || '') as string,
+                state: (h.state || '') as string,
+                status: (h.status || 'onboarding') as Hotel['status'],
+                plan: (h.subscription_plan || 'standard') as Hotel['plan'],
+                kioskCount: 0, // Not in backend yet
+                mrr: 0, // Not in backend yet
+                contractRenewalDate: new Date().toISOString(),
+                contactEmail: '', // Backend doesn't return this on list
+                contactPhone: '',
+                onboardedDate: new Date().toISOString(),
+            })) as Hotel[];
+
+            // Client-side filtering/sorting/pagination simulation until backend supports it fully
+            // NOTE: Ideally backend supports all params. For now we fetch all and paginate client side if needed
+            // or just return all as "one page".
+
+            return {
+                data: allHotels,
+                pagination: {
+                    page: 1,
+                    pageSize: allHotels.length,
+                    totalPages: 1,
+                    totalItems: allHotels.length,
+                }
+            };
+        } catch (error) {
+            console.error('Hotel list error:', error);
+            // Fallback to empty
+            return {
+                data: [],
+                pagination: { page: 1, pageSize: 10, totalPages: 1, totalItems: 0 }
+            };
+        }
     },
 
     /**
      * Fetch a single hotel by ID
      */
     async get(id: string): Promise<ServiceResponse<Hotel | null>> {
-        await delay();
-        const hotel = MOCK_HOTELS.find(h => h.id === id) as Hotel | undefined;
-        return {
-            success: !!hotel,
-            data: hotel || null,
-            error: hotel ? undefined : 'Hotel not found',
-        };
+        try {
+            const response = await api.hotels.get(id);
+            return {
+                success: response.success,
+                data: response.data as Hotel,
+                error: response.error
+            };
+        } catch (error) {
+            return { success: false, data: null, error: (error as Error).message };
+        }
     },
 
     /**
-     * Create a new hotel (mock)
+     * Create a new hotel
      */
-    async create(data: Partial<Hotel>): Promise<ServiceResponse<Hotel>> {
-        await delay(500);
-        const newHotel = {
-            id: `hotel-${Date.now()}`,
-            ...data,
-            status: 'pending' as const,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        } as Hotel;
-        return { success: true, data: newHotel, error: undefined };
+    async create(data: Partial<Hotel> & { managerName?: string; password?: string }): Promise<ServiceResponse<Hotel | null>> {
+        try {
+            const payload = {
+                ...data,
+                manager_name: data.managerName, // Map camelCase to snake_case
+                contact_email: data.contactEmail,
+                password: data.password,
+                subscription_plan: data.plan // Map plan to subscription_plan
+            };
+            const response = await api.hotels.create(payload);
+            return {
+                success: response.success,
+                data: response.data as Hotel,
+                error: response.error
+            };
+        } catch (error) {
+            return { success: false, data: null, error: (error as Error).message };
+        }
     },
 
     /**
-     * Update an existing hotel (mock)
+     * Update an existing hotel
      */
     async update(id: string, data: Partial<Hotel>): Promise<ServiceResponse<Hotel | null>> {
-        await delay(500);
-        const hotel = MOCK_HOTELS.find(h => h.id === id);
-        if (!hotel) {
-            return { success: false, data: null, error: 'Hotel not found' };
+        try {
+            const response = await api.hotels.update(id, data);
+            return {
+                success: response.success,
+                data: response.data as Hotel,
+                error: response.error
+            };
+        } catch (error) {
+            return { success: false, data: null, error: (error as Error).message };
         }
-        const updated = { ...hotel, ...data, updatedAt: new Date().toISOString() } as Hotel;
-        return { success: true, data: updated, error: undefined };
     },
 
     /**
-     * Delete a hotel (mock)
+     * Delete a hotel
      */
     async delete(id: string): Promise<ServiceResponse<void>> {
-        await delay(500);
-        return { success: true, data: undefined, error: undefined };
+        try {
+            const response = await api.hotels.delete(id);
+            return { success: response.success, data: undefined, error: response.error };
+        } catch (error) {
+            return { success: false, data: undefined, error: (error as Error).message };
+        }
     },
 
     /**
-     * Impersonate a hotel admin (mock implementation)
+     * Impersonate a hotel admin
      */
     async impersonate(hotelId: string): Promise<ServiceResponse<{ hotelId: string; token: string }>> {
-        await delay(500);
+        // TODO: Implement real impersonation if supported by backend
         return { success: true, data: { hotelId, token: 'mock-hotel-admin-token' } };
     },
 };

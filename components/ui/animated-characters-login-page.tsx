@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Sparkles, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { useAuth } from "@/lib/shared/auth";
+import { useAuth } from '@/lib/auth';
 
 
 interface PupilProps {

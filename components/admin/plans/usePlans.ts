@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { planService, type Plan } from '@/lib/services/planService';
+import { api } from '@/lib/api';
 
 export interface UsePlansReturn {
     plans: Plan[];
@@ -17,8 +18,10 @@ export interface UsePlansReturn {
     isEditorOpen: boolean;
     openEditor: (plan?: Plan) => void;
     closeEditor: () => void;
-    savePlan: (plan: Plan) => Promise<void>;
+    savePlan: (plan: Plan | Omit<Plan, 'id'>) => Promise<void>;
     archivePlan: (id: string) => Promise<void>;
+    unarchivePlan: (id: string) => Promise<void>;
+    deletePlan: (id: string) => Promise<void>;
     refresh: () => void;
 }
 
@@ -57,14 +60,15 @@ export function usePlans(): UsePlansReturn {
         setIsEditorOpen(false);
     }, []);
 
-    const savePlan = useCallback(async (plan: Plan) => {
-        if (editingPlan) {
-            await planService.update(plan.id, plan);
-            setPlans(prev => prev.map(p => p.id === plan.id ? plan : p));
+    const savePlan = useCallback(async (plan: Plan | Omit<Plan, 'id'>) => {
+        if (editingPlan && 'id' in plan) {
+            await planService.update(plan.id, plan as Plan);
+            setPlans(prev => prev.map(p => p.id === (plan as Plan).id ? (plan as Plan) : p));
         } else {
             const result = await planService.create(plan);
             if (result.success && result.data) {
-                setPlans(prev => [...prev, result.data]);
+                const newPlan = result.data as Plan;
+                setPlans(prev => [...prev, newPlan]);
             }
         }
         closeEditor();
@@ -73,6 +77,24 @@ export function usePlans(): UsePlansReturn {
     const archivePlan = useCallback(async (id: string) => {
         await planService.archive(id);
         setPlans(prev => prev.map(p => p.id === id ? { ...p, status: 'archived' as const } : p));
+    }, []);
+
+    const unarchivePlan = useCallback(async (id: string) => {
+        await planService.update(id, { status: 'active' });
+        setPlans(prev => prev.map(p => p.id === id ? { ...p, status: 'active' as const } : p));
+    }, []);
+    
+    const deletePlan = useCallback(async (id: string) => {
+        try {
+            // Check if planService has delete, if not fallback to archive or implement it
+            // Assuming planService has delete as per checking earlier
+             await api.plans.delete(id); 
+             // Ideally planService.delete(id)
+             setPlans(prev => prev.filter(p => p.id !== id));
+        } catch (error) {
+            console.error("Failed to delete plan", error);
+            setError(error instanceof Error ? error : new Error('Failed to delete plan'));
+        }
     }, []);
 
     return {
@@ -85,6 +107,8 @@ export function usePlans(): UsePlansReturn {
         closeEditor,
         savePlan,
         archivePlan,
+        unarchivePlan,
+        deletePlan,
         refresh: fetchPlans,
     };
 }

@@ -5,13 +5,9 @@
  */
 
 import {
-    MOCK_GUEST_CHECKINS,
     type GuestCheckIn,
 } from '@/lib/hotel/hotel-data';
 import type { ServiceResponse } from './hotelService';
-
-// Simulate network delay
-const delay = (ms: number = 200) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Filter configuration
 export const DATE_FILTERS = [
@@ -38,49 +34,4 @@ export interface GuestStats {
     failed: number;
 }
 
-export const hotelGuestService = {
-    /**
-     * Get guests with filters
-     */
-    async getGuests(statusFilter?: GuestStatusFilter, searchQuery?: string): Promise<GuestCheckIn[]> {
-        await delay(100);
-        return MOCK_GUEST_CHECKINS.filter((guest) => {
-            const matchesSearch =
-                !searchQuery ||
-                guest.guestName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                guest.bookingId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                guest.roomNumber.includes(searchQuery);
-
-            const matchesStatus = !statusFilter || statusFilter === 'all' || guest.verification === statusFilter;
-
-            return matchesSearch && matchesStatus;
-        });
-    },
-
-    /**
-     * Get guest stats
-     */
-    async getStats(): Promise<GuestStats> {
-        await delay(50);
-        return {
-            total: MOCK_GUEST_CHECKINS.length,
-            verified: MOCK_GUEST_CHECKINS.filter(g => g.verification === 'verified').length,
-            manual: MOCK_GUEST_CHECKINS.filter(g => g.verification === 'manual').length,
-            failed: MOCK_GUEST_CHECKINS.filter(g => g.verification === 'failed').length,
-        };
-    },
-
-    /**
-     * Export guests to CSV
-     */
-    async exportCSV(): Promise<ServiceResponse<Blob>> {
-        await delay(1500);
-        // Mock CSV generation
-        const csvContent = 'Name,Booking ID,Room,Time,Language,Status\n' +
-            MOCK_GUEST_CHECKINS.map(g =>
-                `${g.guestName},${g.bookingId},${g.roomNumber},${g.checkInTime},${g.language},${g.verification}`
-            ).join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        return { success: true, data: blob, error: undefined };
-    },
-};
+// hotelGuestService object removed as functionality moved to api.ts hooks

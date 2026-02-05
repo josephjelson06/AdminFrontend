@@ -1,28 +1,51 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, ModalCancelButton, ModalSubmitButton } from '@/components/shared/ui/Modal';
+import { hotelService } from '@/lib/services/hotelService';
 import type { Invoice } from '@/types/finance';
+import type { Hotel } from '@/types/schema';
 
 interface NewInvoiceModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: Partial<Invoice>) => void;
+    onSubmit: (data: Partial<Invoice> & { hotelId?: string }) => void;
 }
 
 export function NewInvoiceModal({ isOpen, onClose, onSubmit }: NewInvoiceModalProps) {
-    const [hotelName, setHotelName] = useState('');
+    const [hotelId, setHotelId] = useState('');
     const [amount, setAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [description, setDescription] = useState('');
+    const [hotels, setHotels] = useState<Hotel[]>([]);
+    const [loadingHotels, setLoadingHotels] = useState(false);
+
+    // Fetch hotels when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setLoadingHotels(true);
+            hotelService.list({ pageSize: 100 }).then(result => {
+                setHotels(result.data);
+                setLoadingHotels(false);
+            });
+        }
+    }, [isOpen]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        const selectedHotel = hotels.find(h => h.id === hotelId);
         onSubmit({
-            hotelName,
+            hotelId,
+            hotelName: selectedHotel?.name || '',
             amount: parseFloat(amount),
+            totalAmount: parseFloat(amount),
             dueDate,
-        } as Partial<Invoice>);
+        });
+        // Reset form
+        setHotelId('');
+        setAmount('');
+        setDueDate('');
+        setDescription('');
         onClose();
     };
 
@@ -38,17 +61,18 @@ export function NewInvoiceModal({ isOpen, onClose, onSubmit }: NewInvoiceModalPr
                                 Hotel
                             </label>
                             <select
-                                value={hotelName}
-                                onChange={(e) => setHotelName(e.target.value)}
+                                value={hotelId}
+                                onChange={(e) => setHotelId(e.target.value)}
                                 required
                                 className="input-glass"
+                                disabled={loadingHotels}
                             >
-                                <option value="">Select a hotel...</option>
-                                <option value="Royal Orchid Bangalore">Royal Orchid Bangalore</option>
-                                <option value="Lemon Tree Premier">Lemon Tree Premier</option>
-                                <option value="Ginger Hotel, Panjim">Ginger Hotel, Panjim</option>
-                                <option value="Taj Palace">Taj Palace</option>
-                                <option value="ITC Maratha">ITC Maratha</option>
+                                <option value="">{loadingHotels ? 'Loading hotels...' : 'Select a hotel...'}</option>
+                                {hotels.map(hotel => (
+                                    <option key={hotel.id} value={hotel.id}>
+                                        {hotel.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 

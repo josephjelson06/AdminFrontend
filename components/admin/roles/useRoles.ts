@@ -27,7 +27,8 @@ export function useRoles(): UseRolesReturn {
         setIsLoading(true);
         setError(null);
         try {
-            const data = await rolesService.list();
+            // Admin panel should only show platform/system roles
+            const data = await rolesService.list('platform');
             setRoles(data);
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Failed to load roles'));

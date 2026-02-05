@@ -7,6 +7,7 @@
 import type { HotelSubscription } from '@/types/finance';
 import { MOCK_SUBSCRIPTIONS, MOCK_FINANCIAL_METRICS } from '@/lib/admin/finance-data';
 import type { ServiceResponse, PaginatedResult } from './hotelService';
+import { api } from '@/lib/api';
 
 // Simulate network delay
 const delay = (ms: number = 200) => new Promise(resolve => setTimeout(resolve, ms));
@@ -53,54 +54,18 @@ export const subscriptionService = {
      * Fetch paginated list of subscriptions with optional filters
      */
     async list(params?: SubscriptionQueryParams): Promise<PaginatedResult<HotelSubscription>> {
-        await delay();
-
-        let data = [...MOCK_SUBSCRIPTIONS];
-
-        // Apply tab filter
-        if (params?.tab && params.tab !== 'all') {
-            switch (params.tab) {
-                case 'auto_pay':
-                    data = data.filter(s => s.paymentMethod === 'auto');
-                    break;
-                case 'manual':
-                    data = data.filter(s => s.paymentMethod !== 'auto');
-                    break;
-                case 'failed':
-                    data = data.filter(s => s.paymentStatus === 'failed');
-                    break;
-                case 'grace_period':
-                    data = data.filter(s => s.paymentStatus === 'grace_period');
-                    break;
-            }
+        const response = await api.subscriptions.list(params);
+        if (!response.success) {
+            throw new Error(response.error || 'Failed to fetch subscriptions');
         }
-
-        // Apply search
-        if (params?.search) {
-            const search = params.search.toLowerCase();
-            data = data.filter(s =>
-                s.hotelName.toLowerCase().includes(search) ||
-                s.location.toLowerCase().includes(search)
-            );
-        }
-
-        // Apply plan filter
-        if (params?.plan && params.plan !== 'all') {
-            data = data.filter(s => s.plan === params.plan);
-        }
-
-        // Apply status filter
-        if (params?.status && params.status !== 'all') {
-            data = data.filter(s => s.status === params.status);
-        }
-
-        return paginate(data, params?.page, params?.pageSize);
+        return response.data as PaginatedResult<HotelSubscription>;
     },
 
     /**
      * Get subscription metrics
      */
     async getMetrics(): Promise<SubscriptionMetrics> {
+         // Should be real API, mocking for now as we focused on List/CRUD
         await delay(100);
         return MOCK_FINANCIAL_METRICS;
     },
@@ -109,14 +74,14 @@ export const subscriptionService = {
      * Get tab counts for the subscription list
      */
     async getTabCounts(): Promise<TabCounts> {
+        // Should be real API, mocking for now
         await delay(100);
-        const subs = MOCK_SUBSCRIPTIONS;
         return {
-            all: subs.length,
-            auto_pay: subs.filter(s => s.paymentMethod === 'auto').length,
-            manual: subs.filter(s => s.paymentMethod !== 'auto').length,
-            failed: subs.filter(s => s.paymentStatus === 'failed').length,
-            grace_period: subs.filter(s => s.paymentStatus === 'grace_period').length,
+            all: 0,
+            auto_pay: 0,
+            manual: 0,
+            failed: 0,
+            grace_period: 0,
         };
     },
 
@@ -124,12 +89,23 @@ export const subscriptionService = {
      * Get single subscription by hotel ID
      */
     async get(hotelId: string): Promise<ServiceResponse<HotelSubscription | null>> {
-        await delay();
-        const sub = MOCK_SUBSCRIPTIONS.find(s => s.hotelId === hotelId);
+        const response = await api.subscriptions.get(hotelId);
         return {
-            success: !!sub,
-            data: sub || null,
-            error: sub ? undefined : 'Subscription not found',
+            success: response.success,
+            data: response.data as HotelSubscription,
+            error: response.error,
         };
     },
+    
+    /**
+     * Update subscription
+     */
+    async update(hotelId: string, data: Partial<HotelSubscription>): Promise<ServiceResponse<HotelSubscription>> {
+        const response = await api.subscriptions.update(hotelId, data);
+        return {
+            success: response.success,
+            data: response.data as HotelSubscription,
+            error: response.error,
+        };
+    }
 };

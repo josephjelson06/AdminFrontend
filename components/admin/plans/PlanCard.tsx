@@ -6,7 +6,7 @@
  * Individual plan card with details and actions.
  */
 
-import { Check, MoreHorizontal, Edit2, Archive, Users, HardDrive, Monitor } from 'lucide-react';
+import { Check, MoreHorizontal, Edit2, Archive, Users, HardDrive, Monitor, Trash2 } from 'lucide-react';
 import { GlassCard } from '@/components/shared/ui/GlassCard';
 import { Dropdown, DropdownItem } from '@/components/shared/ui/Dropdown';
 import type { Plan } from '@/lib/services/planService';
@@ -16,9 +16,11 @@ interface PlanCardProps {
     canEdit: boolean;
     onEdit: (plan: Plan) => void;
     onArchive: (id: string) => void;
+    onUnarchive: (id: string) => void;
+    onDelete: (id: string) => void;
 }
 
-export function PlanCard({ plan, canEdit, onEdit, onArchive }: PlanCardProps) {
+export function PlanCard({ plan, canEdit, onEdit, onArchive, onUnarchive, onDelete }: PlanCardProps) {
     return (
         <GlassCard
             className={`relative p-0 flex flex-col h-full ${plan.status === 'archived' ? 'opacity-60 grayscale' : ''}`}
@@ -51,14 +53,27 @@ export function PlanCard({ plan, canEdit, onEdit, onArchive }: PlanCardProps) {
                             }
                             align="right"
                         >
-                            <DropdownItem onClick={() => onEdit(plan)}>
-                                <Edit2 className="w-4 h-4" />
-                                Edit Plan
-                            </DropdownItem>
-                            <DropdownItem onClick={() => onArchive(plan.id)} className="text-danger">
-                                <Archive className="w-4 h-4" />
-                                Archive
-                            </DropdownItem>
+                            {plan.status === 'archived' ? (
+                                <DropdownItem onClick={() => onUnarchive(plan.id)} className="text-emerald-500">
+                                    <Check className="w-4 h-4" />
+                                    Unarchive Plan
+                                </DropdownItem>
+                            ) : (
+                                <>
+                                    <DropdownItem onClick={() => onEdit(plan)}>
+                                        <Edit2 className="w-4 h-4" />
+                                        Edit Plan
+                                    </DropdownItem>
+                                    <DropdownItem onClick={() => onArchive(plan.id)} className="text-amber-500">
+                                        <Archive className="w-4 h-4" />
+                                        Archive
+                                    </DropdownItem>
+                                    <DropdownItem onClick={() => onDelete(plan.id)} className="text-rose-500">
+                                        <Trash2 className="w-4 h-4" />
+                                        Delete
+                                    </DropdownItem>
+                                </>
+                            )}
                         </Dropdown>
                     )}
                 </div>

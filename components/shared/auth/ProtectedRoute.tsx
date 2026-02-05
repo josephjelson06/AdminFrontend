@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/lib/shared/auth';
+import { useAuth } from '@/lib/auth';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
@@ -39,7 +39,7 @@ export function ProtectedRoute({ children, requiredPermission }: ProtectedRouteP
     }
 
     // Check permission if required
-    if (requiredPermission && !hasPermission(requiredPermission)) {
+    if (requiredPermission && !hasPermission(requiredPermission, 'view')) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <div className="text-center">

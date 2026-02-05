@@ -5,8 +5,12 @@
  */
 
 import type { ServiceResponse } from './hotelService';
+import { api } from '@/lib/api';
 
-// Simulate network delay
+// Check if mock mode is enabled
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK !== 'false';
+
+// Simulate network delay for mock data
 const delay = (ms: number = 200) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Types
@@ -81,6 +85,82 @@ export interface OperationalFilters {
     hotelId?: string;
     dateFrom?: string;
     dateTo?: string;
+}
+
+// Report query params interface
+export interface ReportQueryParams {
+    search?: string;
+    status?: string;
+    plan?: string;
+    role?: string;
+    action?: string;
+    period?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    skip?: number;
+    limit?: number;
+}
+
+// Report response types from API
+export interface HotelReportItem {
+    id: number;
+    name: string;
+    city?: string;
+    state?: string;
+    status: string;
+    plan: string;
+    kiosks: number;
+    created_at?: string;
+}
+
+export interface InvoiceReportItem {
+    id: number;
+    invoice_number: string;
+    hotel_name: string;
+    amount: number;
+    currency: string;
+    status: string;
+    due_date?: string;
+    paid_date?: string;
+}
+
+export interface SubscriptionReportItem {
+    hotel_id: number;
+    hotel_name: string;
+    plan: string;
+    status: string;
+    amount: number;
+    currency: string;
+    start_date?: string;
+    renewal_date?: string;
+}
+
+export interface UserReportItem {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+    hotel_name?: string;
+    status: string;
+    last_active?: string;
+}
+
+export interface AuditLogReportItem {
+    id: number;
+    timestamp: string;
+    user_email?: string;
+    action: string;
+    resource: string;
+    details?: string;
+}
+
+export interface RevenueReportItem {
+    hotel_id: number;
+    hotel_name: string;
+    period: string;
+    subscriptions: number;
+    addons: number;
+    total: number;
 }
 
 // Mock data
@@ -288,4 +368,205 @@ export const reportsService = {
         const blob = new Blob([headers + rows], { type: 'text/csv' });
         return { success: true, data: blob, error: undefined };
     },
+
+    // ============================================
+    // Report Export Data Methods (API-backed)
+    // ============================================
+
+    /**
+     * Get hotels report data for export
+     */
+    async getHotelsReport(params?: ReportQueryParams): Promise<{ data: HotelReportItem[]; total: number }> {
+        if (USE_MOCK) {
+            await delay(300);
+            return {
+                data: MOCK_TOP_HOTELS.map((h, i) => ({
+                    id: i + 1,
+                    name: h.name,
+                    city: 'City',
+                    state: 'State',
+                    status: 'active',
+                    plan: h.category.toLowerCase(),
+                    kiosks: Math.floor(Math.random() * 10) + 1,
+                })),
+                total: MOCK_TOP_HOTELS.length,
+            };
+        }
+        try {
+            const response = await api.reports.hotels({
+                search: params?.search,
+                status: params?.status,
+                plan: params?.plan,
+                date_from: params?.dateFrom,
+                date_to: params?.dateTo,
+                skip: params?.skip,
+                limit: params?.limit,
+            });
+            return response.data as { data: HotelReportItem[]; total: number };
+        } catch (error) {
+            console.error('Failed to fetch hotels report:', error);
+            return { data: [], total: 0 };
+        }
+    },
+
+    /**
+     * Get invoices report data for export
+     */
+    async getInvoicesReport(params?: ReportQueryParams): Promise<{ data: InvoiceReportItem[]; total: number }> {
+        if (USE_MOCK) {
+            await delay(300);
+            return {
+                data: [
+                    { id: 1, invoice_number: 'INV-2024-001', hotel_name: 'Grand Hyatt', amount: 25000, currency: 'INR', status: 'paid', due_date: '2024-02-15', paid_date: '2024-02-10' },
+                    { id: 2, invoice_number: 'INV-2024-002', hotel_name: 'Taj Palace', amount: 50000, currency: 'INR', status: 'pending', due_date: '2024-03-20' },
+                ],
+                total: 2,
+            };
+        }
+        try {
+            const response = await api.reports.invoices({
+                search: params?.search,
+                status: params?.status,
+                date_from: params?.dateFrom,
+                date_to: params?.dateTo,
+                skip: params?.skip,
+                limit: params?.limit,
+            });
+            return response.data as { data: InvoiceReportItem[]; total: number };
+        } catch (error) {
+            console.error('Failed to fetch invoices report:', error);
+            return { data: [], total: 0 };
+        }
+    },
+
+    /**
+     * Get subscriptions report data for export
+     */
+    async getSubscriptionsReport(params?: ReportQueryParams): Promise<{ data: SubscriptionReportItem[]; total: number }> {
+        if (USE_MOCK) {
+            await delay(300);
+            return {
+                data: MOCK_TOP_HOTELS.map((h, i) => ({
+                    hotel_id: i + 1,
+                    hotel_name: h.name,
+                    plan: h.category.toLowerCase(),
+                    status: 'active',
+                    amount: h.category === 'Luxury' ? 50000 : h.category === 'Business' ? 25000 : 15000,
+                    currency: 'INR',
+                    start_date: '2024-01-01',
+                    renewal_date: '2025-01-01',
+                })),
+                total: MOCK_TOP_HOTELS.length,
+            };
+        }
+        try {
+            const response = await api.reports.subscriptions({
+                search: params?.search,
+                plan: params?.plan,
+                status: params?.status,
+                skip: params?.skip,
+                limit: params?.limit,
+            });
+            return response.data as { data: SubscriptionReportItem[]; total: number };
+        } catch (error) {
+            console.error('Failed to fetch subscriptions report:', error);
+            return { data: [], total: 0 };
+        }
+    },
+
+    /**
+     * Get users report data for export
+     */
+    async getUsersReport(params?: ReportQueryParams): Promise<{ data: UserReportItem[]; total: number }> {
+        if (USE_MOCK) {
+            await delay(300);
+            return {
+                data: [
+                    { id: 1, name: 'Raj Sharma', email: 'raj@hyatt.com', role: 'Admin', hotel_name: 'Grand Hyatt', status: 'Active', last_active: '2024-03-15' },
+                    { id: 2, name: 'Priya Patel', email: 'priya@taj.com', role: 'Manager', hotel_name: 'Taj Palace', status: 'Active', last_active: '2024-03-14' },
+                ],
+                total: 2,
+            };
+        }
+        try {
+            const response = await api.reports.users({
+                search: params?.search,
+                role: params?.role,
+                status: params?.status,
+                skip: params?.skip,
+                limit: params?.limit,
+            });
+            return response.data as { data: UserReportItem[]; total: number };
+        } catch (error) {
+            console.error('Failed to fetch users report:', error);
+            return { data: [], total: 0 };
+        }
+    },
+
+    /**
+     * Get audit logs report data for export
+     */
+    async getAuditReport(params?: ReportQueryParams): Promise<{ data: AuditLogReportItem[]; total: number }> {
+        if (USE_MOCK) {
+            await delay(300);
+            return {
+                data: [
+                    { id: 1, timestamp: '2024-03-15T10:30:45Z', user_email: 'raj@hyatt.com', action: 'update', resource: 'Hotel Settings', details: 'Updated contact email' },
+                    { id: 2, timestamp: '2024-03-15T09:15:22Z', user_email: 'admin@hms.com', action: 'create', resource: 'User', details: 'Created new manager account' },
+                ],
+                total: 2,
+            };
+        }
+        try {
+            const response = await api.reports.audit({
+                search: params?.search,
+                action: params?.action,
+                date_from: params?.dateFrom,
+                date_to: params?.dateTo,
+                skip: params?.skip,
+                limit: params?.limit,
+            });
+            return response.data as { data: AuditLogReportItem[]; total: number };
+        } catch (error) {
+            console.error('Failed to fetch audit report:', error);
+            return { data: [], total: 0 };
+        }
+    },
+
+    /**
+     * Get revenue report data for export
+     */
+    async getRevenueReport(params?: ReportQueryParams): Promise<{ data: RevenueReportItem[]; total: number; grand_total: number }> {
+        if (USE_MOCK) {
+            await delay(300);
+            const data = MOCK_TOP_HOTELS.map((h, i) => ({
+                hotel_id: i + 1,
+                hotel_name: h.name,
+                period: 'Mar 2024',
+                subscriptions: h.category === 'Luxury' ? 50000 : h.category === 'Business' ? 25000 : 15000,
+                addons: Math.floor(Math.random() * 10000),
+                total: h.category === 'Luxury' ? 55000 : h.category === 'Business' ? 28000 : 17000,
+            }));
+            return {
+                data,
+                total: data.length,
+                grand_total: data.reduce((sum, r) => sum + r.total, 0),
+            };
+        }
+        try {
+            const response = await api.reports.revenue({
+                search: params?.search,
+                period: params?.period,
+                date_from: params?.dateFrom,
+                date_to: params?.dateTo,
+                skip: params?.skip,
+                limit: params?.limit,
+            });
+            return response.data as { data: RevenueReportItem[]; total: number; grand_total: number };
+        } catch (error) {
+            console.error('Failed to fetch revenue report:', error);
+            return { data: [], total: 0, grand_total: 0 };
+        }
+    },
 };
+

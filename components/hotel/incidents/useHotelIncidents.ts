@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import api from '@/lib/api';
 import {
     hotelIncidentsService,
     type SortOption,
@@ -47,6 +48,7 @@ export interface UseHotelIncidentsReturn {
     setPriority: (id: string, priority: IncidentPriority) => Promise<boolean>;
     assignIncident: (id: string) => Promise<boolean>;
     resolveIncident: (id: string) => Promise<boolean>;
+    deleteIncident: (id: string) => Promise<boolean>;
 
     // Modal
     selectedIncident: Incident | null;
@@ -69,6 +71,38 @@ export function useHotelIncidents(): UseHotelIncidentsReturn {
     const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const fetchData = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            // Fetch incidents from real API
+            const response = await api.incidents.list();
+            if (response.success && Array.isArray(response.data)) {
+                 // Map to Incident type
+                 const mapped: Incident[] = response.data.map((i: any) => ({
+                    id: i.id.toString(),
+                    guestName: i.reported_by || 'Guest',
+                    guestReportPhoto: 'https://placehold.co/400', // Placeholder
+                    resolvedPhoto: null,
+                    description: `${i.title} - ${i.description || ''}`,
+                    priority: i.priority as IncidentPriority,
+                    status: i.status as IncidentStatus,
+                    assignedToUserId: null,
+                    roomNumber: i.location || 'N/A',
+                    reportedAt: i.created_at ? new Date(i.created_at).toLocaleString() : 'Just now',
+                 }));
+                 setIncidents(mapped);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
     const filters: IncidentsFilters = useMemo(() => ({
         searchQuery,
         sortBy,
@@ -78,6 +112,7 @@ export function useHotelIncidents(): UseHotelIncidentsReturn {
         dateTo,
     }), [searchQuery, sortBy, statusFilter, priorityFilter, dateFrom, dateTo]);
 
+    // Client-side filtering/sorting for now
     const filteredIncidents = useMemo(
         () => hotelIncidentsService.filterAndSort(incidents, filters),
         [incidents, filters]
@@ -94,19 +129,6 @@ export function useHotelIncidents(): UseHotelIncidentsReturn {
         if (dateFrom || dateTo) count++;
         return count;
     }, [searchQuery, statusFilter, priorityFilter, dateFrom, dateTo]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true);
-            try {
-                const data = await hotelIncidentsService.getIncidents();
-                setIncidents(data);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
 
     // Reset page when filters change
     useEffect(() => {
@@ -127,7 +149,7 @@ export function useHotelIncidents(): UseHotelIncidentsReturn {
     }, []);
 
     const setPriority = useCallback(async (id: string, priority: IncidentPriority): Promise<boolean> => {
-        const result = await hotelIncidentsService.setPriority(id, priority);
+        const result = await api.incidents.update(parseInt(id), { priority });
         if (result.success) {
             setIncidents(prev => prev.map(inc =>
                 inc.id === id ? { ...inc, priority } : inc
@@ -137,21 +159,29 @@ export function useHotelIncidents(): UseHotelIncidentsReturn {
     }, []);
 
     const assignIncident = useCallback(async (id: string): Promise<boolean> => {
-        const result = await hotelIncidentsService.assignIncident(id);
+        const result = await api.incidents.update(parseInt(id), { status: 'in_progress' });
         if (result.success) {
             setIncidents(prev => prev.map(inc =>
-                inc.id === id ? { ...inc, status: 'Assigned' as IncidentStatus } : inc
+                inc.id === id ? { ...inc, status: 'In Progress' as IncidentStatus } : inc
             ));
         }
         return result.success;
     }, []);
 
     const resolveIncident = useCallback(async (id: string): Promise<boolean> => {
-        const result = await hotelIncidentsService.resolveIncident(id);
+        const result = await api.incidents.update(parseInt(id), { status: 'resolved' });
         if (result.success) {
             setIncidents(prev => prev.map(inc =>
                 inc.id === id ? { ...inc, status: 'Resolved' as IncidentStatus } : inc
             ));
+        }
+        return result.success;
+    }, []);
+
+    const deleteIncident = useCallback(async (id: string): Promise<boolean> => {
+        const result = await api.incidents.delete(parseInt(id));
+        if (result.success) {
+            setIncidents(prev => prev.filter(inc => inc.id !== id));
         }
         return result.success;
     }, []);
@@ -182,6 +212,7 @@ export function useHotelIncidents(): UseHotelIncidentsReturn {
         setPriority,
         assignIncident,
         resolveIncident,
+        deleteIncident,
         selectedIncident,
         setSelectedIncident,
         isLoading,

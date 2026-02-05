@@ -15,7 +15,7 @@ import {
     Menu,
 } from 'lucide-react';
 import { GlobalSearch } from '@/components/shared/ui/GlobalSearch';
-import { useAuth } from '@/lib/shared/auth';
+import { useAuth } from '@/lib/auth';
 import { useOnClickOutside } from '@/hooks/use-on-click-outside';
 
 // Mock notifications
@@ -60,16 +60,28 @@ function NotificationIcon({ type }: { type: string }) {
 }
 
 const ROLE_LABELS: Record<string, { label: string; color: string }> = {
-    // Admin roles
-    super_admin: { label: 'Super Admin', color: 'text-purple-400' },
-    operations: { label: 'Operations', color: 'text-blue-400' },
-    finance: { label: 'Finance', color: 'text-emerald-400' },
-    support: { label: 'Support', color: 'text-amber-400' },
+    // Platform roles (backend format)
+    'SuperAdmin': { label: 'Super Admin', color: 'text-purple-400' },
+    'Operations': { label: 'Operations', color: 'text-blue-400' },
+    'Finance': { label: 'Finance', color: 'text-emerald-400' },
+    'Support': { label: 'Support', color: 'text-amber-400' },
+    // Legacy snake_case format
+    'super_admin': { label: 'Super Admin', color: 'text-purple-400' },
+    'operations': { label: 'Operations', color: 'text-blue-400' },
+    'finance': { label: 'Finance', color: 'text-emerald-400' },
+    'support': { label: 'Support', color: 'text-amber-400' },
     // Hotel roles
-    hotel_manager: { label: 'Hotel Manager', color: 'text-indigo-400' },
-    front_desk: { label: 'Front Desk', color: 'text-blue-400' },
-    housekeeping: { label: 'Housekeeping', color: 'text-amber-400' },
-    hotel_finance: { label: 'Finance', color: 'text-emerald-400' },
+    'Hotel Manager': { label: 'Hotel Manager', color: 'text-indigo-400' },
+    'Front Desk': { label: 'Front Desk', color: 'text-blue-400' },
+    'Housekeeping': { label: 'Housekeeping', color: 'text-amber-400' },
+    'Hotel Finance': { label: 'Finance', color: 'text-emerald-400' },
+    'Maintenance': { label: 'Maintenance', color: 'text-slate-400' },
+    // Legacy snake_case format
+    'hotel_manager': { label: 'Hotel Manager', color: 'text-indigo-400' },
+    'front_desk': { label: 'Front Desk', color: 'text-blue-400' },
+    'housekeeping': { label: 'Housekeeping', color: 'text-amber-400' },
+    'hotel_finance': { label: 'Finance', color: 'text-emerald-400' },
+    'maintenance_staff': { label: 'Maintenance', color: 'text-slate-400' },
 };
 
 interface HeaderProps {
@@ -101,7 +113,9 @@ export function Header({ onMenuClick, sidebarCollapsed = false }: HeaderProps) {
         ? notifications
         : notifications.filter(n => n.type === notificationFilter);
 
-    const roleInfo = user ? ROLE_LABELS[user.role] : { label: 'User', color: 'text-slate-400' };
+    const roleInfo = user && user.role 
+        ? (ROLE_LABELS[user.role] || { label: user.role, color: 'text-slate-400' })
+        : { label: 'User', color: 'text-slate-400' };
 
     // Scroll detection for transparency effect
     const [scrolled, setScrolled] = useState(false);

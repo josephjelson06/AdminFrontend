@@ -1,16 +1,17 @@
 'use client';
 
 import { Monitor, X } from 'lucide-react';
-import { AVAILABLE_LANGUAGES, MOCK_HOTEL_PROFILE } from '@/lib/hotel/hotel-data';
+import { AVAILABLE_LANGUAGES } from '@/lib/hotel/hotel-data';
 
 interface PreviewModalProps {
     isOpen: boolean;
     onClose: () => void;
     welcomeMessage: string;
     languages: string[];
+    hotelName?: string;
 }
 
-export function PreviewModal({ isOpen, onClose, welcomeMessage, languages }: PreviewModalProps) {
+export function PreviewModal({ isOpen, onClose, welcomeMessage, languages, hotelName = 'Hotel' }: PreviewModalProps) {
     if (!isOpen) return null;
 
     const enabledLangs = AVAILABLE_LANGUAGES.filter(l => languages.includes(l.id));
@@ -32,7 +33,7 @@ export function PreviewModal({ isOpen, onClose, welcomeMessage, languages }: Pre
                                 <Monitor className="w-10 h-10 text-white" />
                             </div>
                             <h2 className="text-xl font-bold text-white mb-2">
-                                {MOCK_HOTEL_PROFILE.name}
+                                {hotelName}
                             </h2>
                             <p className="text-white/80 text-sm leading-relaxed">
                                 {welcomeMessage}
@@ -78,3 +79,4 @@ export function PreviewModal({ isOpen, onClose, welcomeMessage, languages }: Pre
         </div>
     );
 }
+

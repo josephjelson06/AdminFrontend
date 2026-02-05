@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { Sidebar } from '@/components/admin/layout/Sidebar';
 import { Header } from '@/components/admin/layout/Header';
 import { ProtectedRoute } from '@/components/shared/auth/ProtectedRoute';
+import { PAGE_PERMISSIONS } from '@/lib/auth';
 import { useState, useEffect } from 'react';
 
 export default function AdminLayout({
@@ -12,6 +13,8 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
+    const pageId = pathname?.split('/')[1] || 'dashboard';
+    const requiredPermission = PAGE_PERMISSIONS[pageId]?.module;
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     // Sidebar State
@@ -52,7 +55,7 @@ export default function AdminLayout({
     const currentSidebarWidth = isMounted ? (isCollapsed ? 80 : sidebarWidth) : 256;
 
     return (
-        <ProtectedRoute>
+        <ProtectedRoute requiredPermission={requiredPermission}>
             <div
                 className="min-h-screen bg-gradient-mesh"
                 style={{

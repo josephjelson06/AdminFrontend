@@ -9,7 +9,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, Send, CheckCircle2 } from 'lucide-react';
+import { ChevronDown, Send, CheckCircle2, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,7 @@ interface IncidentCardProps {
     onSetPriority?: (id: string, priority: IncidentPriority) => void;
     onAssign?: (id: string) => void;
     onResolve?: (id: string) => void;
+    onDelete?: (id: string) => void;
     showActions?: boolean;
 }
 
@@ -45,6 +46,7 @@ export function IncidentCard({
     onSetPriority,
     onAssign,
     onResolve,
+    onDelete,
     showActions = false,
 }: IncidentCardProps) {
     const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -195,6 +197,23 @@ export function IncidentCard({
                                 >
                                     <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
                                     Mark Resolved
+                                </Button>
+                            )}
+
+                            {onDelete && (
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm('Are you sure you want to delete this incident?')) {
+                                            onDelete(incident.id);
+                                        }
+                                    }}
+                                    className="w-full text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                                    Delete
                                 </Button>
                             )}
                         </CardActions>

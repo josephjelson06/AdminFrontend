@@ -12,6 +12,7 @@ import {
     User,
     Loader2,
     ChevronRight,
+    Trash2,
 } from 'lucide-react';
 import { PaginationBar } from '@/components/shared/ui/Pagination';
 import { HotelLayout } from '@/components/hotel/layout/HotelLayout';
@@ -43,6 +44,7 @@ export function HotelGuestsManager() {
         totalPages,
         paginatedGuests,
         exportCSV,
+        deleteGuest,
         isLoading,
         isExporting,
     } = useHotelGuests();
@@ -180,7 +182,21 @@ export function HotelGuestsManager() {
                                         </span>
                                     </td>
                                     <td className="px-5 py-4">
-                                        <VerificationBadge status={guest.verification} />
+                                        <div className="flex items-center gap-3">
+                                            <VerificationBadge status={guest.verification} />
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (confirm('Delete this guest log entry?')) {
+                                                        deleteGuest(guest.id);
+                                                    }
+                                                }}
+                                                className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
+                                                title="Delete entry"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

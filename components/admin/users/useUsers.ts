@@ -7,9 +7,8 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { userService } from '@/lib/services/userService';
+import { userService, type AdminUser } from '@/lib/services/userService';
 import { useFilters, useDebounce } from '@/lib/hooks';
-import type { AdminUser } from '@/lib/admin/users-data';
 
 export interface UserFilters {
     search: string;
@@ -67,7 +66,7 @@ export function useUsers(): UseUsersReturn {
                 },
             });
 
-            setUsers(response.data);
+            setUsers(response.data ?? []);
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Failed to fetch users'));
         } finally {

@@ -27,7 +27,7 @@ interface PlanEditorProps {
     isOpen: boolean;
     onClose: () => void;
     plan?: Plan | null; // If null, we are creating a new plan
-    onSave: (plan: Plan) => void;
+    onSave: (plan: Plan | Omit<Plan, 'id'>) => void;
 }
 
 export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEditorProps) {
@@ -40,6 +40,8 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
         status: 'active'
     });
     const [newFeature, setNewFeature] = useState('');
+
+    const isArchived = formData.status === 'archived';
 
     // Load plan data when editing
     useEffect(() => {
@@ -83,12 +85,13 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
             return;
         }
 
-        // Simulate ID generation
         const payload = {
             ...formData,
-            id: plan?.id || `plan-${Date.now()}`,
         } as Plan;
 
+        // If creating, we don't have an ID yet, but strict typing expects Plan. 
+        // We'll cast it for now, but really onSave should accept Plan without ID.
+        // Actually, let's just pass it. The hook handles it.
         onSave(payload);
         addToast('success', plan ? 'Plan Updated' : 'Plan Created', `${payload.name} has been saved.`);
         onClose();
@@ -99,11 +102,11 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
             isOpen={isOpen}
             onClose={onClose}
             title={plan ? 'Edit Subscription Plan' : 'Create New Plan'}
-            description="Configure pricing tiers and entitlements."
+            description={isArchived ? "This plan is archived. Unarchive it to make edits." : "Configure pricing tiers and entitlements."}
         >
             <form onSubmit={handleSubmit} className="space-y-6 pb-20">
                 {/* Basic Info */}
-                <div className="space-y-4">
+                <div className={`space-y-4 ${isArchived ? 'opacity-60 pointer-events-none' : ''}`}>
                     <h3 className="text-sm font-medium text-slate-900 dark:text-white flex items-center gap-2">
                         <CreditCard className="w-4 h-4 text-emerald-500" />
                         Plan Details
@@ -119,6 +122,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 placeholder="e.g. Enterprise Gold"
                                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                disabled={isArchived}
                             />
                         </div>
                         <div>
@@ -128,13 +132,14 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                 onChange={e => setFormData({ ...formData, description: e.target.value })}
                                 placeholder="Short description of the plan..."
                                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 h-20 resize-none"
+                                disabled={isArchived}
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* Pricing */}
-                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
+                <div className={`p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4 ${isArchived ? 'opacity-60 pointer-events-none' : ''}`}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Price</label>
@@ -145,6 +150,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                 value={formData.price || ''}
                                 onChange={e => setFormData({ ...formData, price: Number(e.target.value) })}
                                 className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                disabled={isArchived}
                             />
                         </div>
                         <div>
@@ -153,6 +159,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                 value={formData.currency}
                                 onChange={e => setFormData({ ...formData, currency: e.target.value })}
                                 className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                disabled={isArchived}
                             >
                                 <option value="INR">INR (₹)</option>
                                 <option value="USD">USD ($)</option>
@@ -169,6 +176,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                 checked={formData.billingCycle === 'monthly'}
                                 onChange={() => setFormData({ ...formData, billingCycle: 'monthly' })}
                                 className="text-emerald-500 focus:ring-emerald-500"
+                                disabled={isArchived}
                             />
                             <span className="text-sm text-slate-700 dark:text-slate-300">Monthly</span>
                         </label>
@@ -179,6 +187,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                 checked={formData.billingCycle === 'yearly'}
                                 onChange={() => setFormData({ ...formData, billingCycle: 'yearly' })}
                                 className="text-emerald-500 focus:ring-emerald-500"
+                                disabled={isArchived}
                             />
                             <span className="text-sm text-slate-700 dark:text-slate-300">Yearly</span>
                         </label>
@@ -186,7 +195,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                 </div>
 
                 {/* Limits */}
-                <div className="space-y-4">
+                <div className={`space-y-4 ${isArchived ? 'opacity-60 pointer-events-none' : ''}`}>
                     <h3 className="text-sm font-medium text-slate-900 dark:text-white">Plan Limits</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
@@ -196,6 +205,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                 value={formData.limits?.kiosks}
                                 onChange={e => setFormData({ ...formData, limits: { ...formData.limits!, kiosks: Number(e.target.value) } })}
                                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                                disabled={isArchived}
                             />
                         </div>
                         <div>
@@ -205,6 +215,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                 value={formData.limits?.users}
                                 onChange={e => setFormData({ ...formData, limits: { ...formData.limits!, users: Number(e.target.value) } })}
                                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                                disabled={isArchived}
                             />
                         </div>
                         <div>
@@ -214,13 +225,14 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                 value={formData.limits?.storage}
                                 onChange={e => setFormData({ ...formData, limits: { ...formData.limits!, storage: e.target.value } })}
                                 className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                                disabled={isArchived}
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* Features */}
-                <div className="space-y-4">
+                <div className={`space-y-4 ${isArchived ? 'opacity-60 pointer-events-none' : ''}`}>
                     <h3 className="text-sm font-medium text-slate-900 dark:text-white">Features List</h3>
                     <div className="flex gap-2">
                         <input
@@ -230,11 +242,13 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                             onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddFeature())}
                             placeholder="Add a feature (e.g. '24/7 Support')"
                             className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            disabled={isArchived}
                         />
                         <button
                             type="button"
                             onClick={handleAddFeature}
                             className="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-colors"
+                            disabled={isArchived}
                         >
                             <Plus className="w-5 h-5" />
                         </button>
@@ -250,6 +264,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                                     type="button"
                                     onClick={() => removeFeature(index)}
                                     className="text-slate-400 hover:text-rose-500 transition-colors"
+                                    disabled={isArchived}
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -258,7 +273,7 @@ export function PlanEditorSlideOver({ isOpen, onClose, plan, onSave }: PlanEdito
                     </div>
                 </div>
 
-                {/* Status Toggle */}
+                {/* Status Toggle - ALWAYS ENABLED */}
                 <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                     <div>
                         <div className="text-sm font-medium text-slate-900 dark:text-white">Active Plan</div>

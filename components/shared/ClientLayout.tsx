@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Sidebar } from '@/components/admin/layout/Sidebar';
 import { Header } from '@/components/admin/layout/Header';
 import { ToastProvider } from '@/components/shared/ui/Toast';
-import { AuthProvider } from '@/lib/shared/auth';
+import { AuthProvider } from '@/lib/auth';
 import { ThemeProvider } from '@/lib/shared/theme';
 import { ProtectedRoute } from '@/components/shared/auth/ProtectedRoute';
 

@@ -49,6 +49,8 @@ export function HotelModals({ actions }: HotelModalsProps) {
                         contactEmail: data.contactEmail,
                         contactPhone: '',
                         status: data.status as 'active' | 'inactive' | 'suspended' | 'pending' | 'onboarding',
+                        managerName: data.managerName,
+                        password: data.password,
                     });
                 }}
             />

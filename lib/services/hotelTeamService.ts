@@ -5,7 +5,6 @@
  */
 
 import {
-    MOCK_HOTEL_TEAM,
     type HotelUser,
     type HotelUserRole,
 } from '@/lib/hotel/hotel-data';
@@ -26,8 +25,9 @@ export const hotelTeamService = {
      */
     async getTeamData(): Promise<TeamData> {
         await delay(100);
+        // TODO: Replace with real API call
         return {
-            team: MOCK_HOTEL_TEAM,
+            team: [],
             roles: INITIAL_ROLES,
         };
     },

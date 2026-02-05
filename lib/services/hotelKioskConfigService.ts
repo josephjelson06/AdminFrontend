@@ -7,7 +7,6 @@
 import {
     MOCK_KIOSK_CONFIG,
     AVAILABLE_LANGUAGES,
-    MOCK_HOTEL_PROFILE,
     type Language,
 } from '@/lib/hotel/hotel-data';
 import type { ServiceResponse } from './hotelService';
@@ -46,7 +45,8 @@ export const hotelKioskConfigService = {
      * Get hotel plan
      */
     getHotelPlan(): string {
-        return MOCK_HOTEL_PROFILE.plan;
+        // TODO: Fetch from real API
+        return 'standard';
     },
 
     /**

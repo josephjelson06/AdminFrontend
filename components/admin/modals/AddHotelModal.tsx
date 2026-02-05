@@ -15,6 +15,8 @@ interface HotelFormData {
     name: string;
     location: string;
     contactEmail: string;
+    password: string; // Added password
+    managerName: string; // Added manager name
     plan: string;
     status: string;
 }
@@ -24,6 +26,8 @@ export function AddHotelModal({ isOpen, onClose, onSubmit }: AddHotelModalProps)
         name: '',
         location: '',
         contactEmail: '',
+        password: '',
+        managerName: '',
         plan: 'standard',
         status: 'onboarding',
     });
@@ -32,7 +36,7 @@ export function AddHotelModal({ isOpen, onClose, onSubmit }: AddHotelModalProps)
         e.preventDefault();
         onSubmit?.(formData);
         onClose();
-        setFormData({ name: '', location: '', contactEmail: '', plan: 'standard', status: 'onboarding' });
+        setFormData({ name: '', location: '', contactEmail: '', password: '', managerName: '', plan: 'standard', status: 'onboarding' });
     };
 
     return (
@@ -60,7 +64,34 @@ export function AddHotelModal({ isOpen, onClose, onSubmit }: AddHotelModalProps)
                         />
                     </div>
 
-                    {/* Location & Email - Grid */}
+                    {/* Manager Name & Email - Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="field-label required">Manager Name</label>
+                            <input
+                                type="text"
+                                required
+                                value={formData.managerName}
+                                onChange={(e) => setFormData({ ...formData, managerName: e.target.value })}
+                                placeholder="e.g., John Doe"
+                                className="input-glass w-full"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="field-label required">Contact Email</label>
+                            <input
+                                type="email"
+                                required
+                                value={formData.contactEmail}
+                                onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                                placeholder="e.g., manager@hotel.com"
+                                className="input-glass w-full"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Location & Password - Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="field-label required">Location</label>
@@ -76,15 +107,16 @@ export function AddHotelModal({ isOpen, onClose, onSubmit }: AddHotelModalProps)
                         </div>
 
                         <div className="space-y-2">
-                            <label className="field-label required">Contact Email</label>
+                            <label className="field-label required">Password</label>
                             <input
-                                type="email"
+                                type="password"
                                 required
-                                value={formData.contactEmail}
-                                onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                                placeholder="e.g., manager@hotel.com"
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                placeholder="e.g., SecurePassword123"
                                 className="input-glass w-full"
                             />
+                            <p className="text-xs text-muted">For Hotel Admin login</p>
                         </div>
                     </div>
 

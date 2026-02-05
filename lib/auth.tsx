@@ -1,22 +1,40 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api';
 
-// Combined user roles (ATC Admin + Hotel)
-export type UserRole = 'super_admin' | 'operations' | 'finance' | 'support';
-export type HotelUserRole = 'hotel_manager' | 'front_desk' | 'housekeeping' | 'hotel_finance';
-export type AnyUserRole = UserRole | HotelUserRole;
+// Page ID to Module mapping for permission checks
+export const PAGE_PERMISSIONS: Record<string, { module: string; action?: string }> = {
+    'hotels': { module: 'hotels' },
+    'fleet': { module: 'fleet' },
+    'reports': { module: 'reports' },
+    'invoices': { module: 'invoices' },
+    'plans': { module: 'plans' },
+    'subscriptions': { module: 'subscriptions' },
+    'finance': { module: 'finance' },
+    'users': { module: 'users' },
+    'roles': { module: 'roles' },
+    'audit': { module: 'reports' },
+    'settings': { module: 'settings' },
+    'guests': { module: 'guests' },
+    'rooms': { module: 'rooms' },
+    'housekeeping': { module: 'housekeeping' },
+    'billing': { module: 'invoices' },
+    'maintenance': { module: 'maintenance' },
+};
 
+// User Interface matching API response + frontend needs
 export interface User {
     id: string;
     name: string;
     email: string;
-    role: AnyUserRole;
+    role: string;
     avatar?: string;
-    hotelId?: string; // Only for hotel users
+    hotelId?: number;
     hotelName?: string;
     panelType: 'admin' | 'hotel';
+    permissions: Record<string, Record<string, boolean>>;
 }
 
 interface AuthContextType {
@@ -25,133 +43,11 @@ interface AuthContextType {
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
-    hasPermission: (permission: string) => boolean;
+    hasPermission: (module: string, action: string) => boolean;
     canAccessPage: (pageId: string) => boolean;
     isHotelUser: boolean;
+    refreshUser: () => Promise<void>;
 }
-
-// ATC Admin page access
-const ADMIN_PAGE_ACCESS: Record<UserRole, string[]> = {
-    super_admin: ['*'],
-    operations: ['dashboard', 'hotels', 'fleet', 'reports', 'audit', 'settings', 'profile'],
-    finance: ['dashboard', 'hotels', 'finance', 'invoices', 'reports', 'profile'],
-    support: ['dashboard', 'hotels', 'fleet', 'reports', 'profile'],
-};
-
-// Hotel panel page access  
-const HOTEL_PAGE_ACCESS: Record<HotelUserRole, string[]> = {
-    hotel_manager: ['dashboard', 'guests', 'rooms', 'kiosk', 'settings', 'team', 'billing', 'help'],
-    front_desk: ['dashboard', 'guests', 'rooms', 'help'],
-    housekeeping: ['rooms', 'help'],
-    hotel_finance: ['dashboard', 'billing', 'help'],
-};
-
-// Role permissions for actions
-const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
-    super_admin: ['*'],
-    operations: ['hotels', 'fleet', 'reports', 'audit'],
-    finance: ['finance', 'invoices', 'reports'],
-    support: ['hotels.view', 'fleet.view', 'reports.view'],
-};
-
-// Mock users for demo - ATC Admin users
-const MOCK_ADMIN_USERS: Record<string, { password: string; user: User }> = {
-    'admin@atc.in': {
-        password: 'admin123',
-        user: {
-            id: 'u-001',
-            name: 'Admin User',
-            email: 'admin@atc.in',
-            role: 'super_admin',
-            panelType: 'admin',
-        },
-    },
-    'ops@atc.in': {
-        password: 'ops123',
-        user: {
-            id: 'u-002',
-            name: 'Priya Menon',
-            email: 'ops@atc.in',
-            role: 'operations',
-            panelType: 'admin',
-        },
-    },
-    'finance@atc.in': {
-        password: 'finance123',
-        user: {
-            id: 'u-003',
-            name: 'Amit Patel',
-            email: 'finance@atc.in',
-            role: 'finance',
-            panelType: 'admin',
-        },
-    },
-    'support@atc.in': {
-        password: 'support123',
-        user: {
-            id: 'u-004',
-            name: 'Sneha Gupta',
-            email: 'support@atc.in',
-            role: 'support',
-            panelType: 'admin',
-        },
-    },
-};
-
-// Mock users for demo - Hotel users
-const MOCK_HOTEL_USERS: Record<string, { password: string; user: User }> = {
-    'manager@hotel.in': {
-        password: 'manager123',
-        user: {
-            id: 'hu-001',
-            name: 'Vikram Mehta',
-            email: 'manager@hotel.in',
-            role: 'hotel_manager',
-            hotelId: 'hotel-001',
-            hotelName: 'Grand Hyatt Mumbai',
-            panelType: 'hotel',
-        },
-    },
-    'frontdesk@hotel.in': {
-        password: 'frontdesk123',
-        user: {
-            id: 'hu-002',
-            name: 'Anita Desai',
-            email: 'frontdesk@hotel.in',
-            role: 'front_desk',
-            hotelId: 'hotel-001',
-            hotelName: 'Grand Hyatt Mumbai',
-            panelType: 'hotel',
-        },
-    },
-    'hk@hotel.in': {
-        password: 'hk123',
-        user: {
-            id: 'hu-003',
-            name: 'Ramesh Kumar',
-            email: 'hk@hotel.in',
-            role: 'housekeeping',
-            hotelId: 'hotel-001',
-            hotelName: 'Grand Hyatt Mumbai',
-            panelType: 'hotel',
-        },
-    },
-    'hotelfinance@hotel.in': {
-        password: 'hotelfinance123',
-        user: {
-            id: 'hu-004',
-            name: 'Priya Nair',
-            email: 'hotelfinance@hotel.in',
-            role: 'hotel_finance',
-            hotelId: 'hotel-001',
-            hotelName: 'Grand Hyatt Mumbai',
-            panelType: 'hotel',
-        },
-    },
-};
-
-// Combined mock users
-const ALL_MOCK_USERS = { ...MOCK_ADMIN_USERS, ...MOCK_HOTEL_USERS };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -160,56 +56,97 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('atc_user');
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch {
-                localStorage.removeItem('atc_user');
-            }
-        }
-        setIsLoading(false);
-    }, []);
-
-    const login = async (email: string, password: string): Promise<boolean> => {
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
-        const mockUser = ALL_MOCK_USERS[email.toLowerCase()];
-        if (mockUser && mockUser.password === password) {
-            setUser(mockUser.user);
-            localStorage.setItem('atc_user', JSON.stringify(mockUser.user));
-            return true;
-        }
-        return false;
-    };
-
-    const logout = () => {
+    const logout = useCallback(() => {
         setUser(null);
+        localStorage.removeItem('atc_token');
         localStorage.removeItem('atc_user');
         router.push('/login');
+    }, [router]);
+
+    useEffect(() => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('atc_token') : null;
+        if (token) {
+            // Validate token and get fresh user data on load
+            fetchUserData(token).catch(() => {
+                logout();
+            });
+        } else {
+            setIsLoading(false);
+        }
+    }, [logout]);
+
+    const fetchUserData = async (token: string) => {
+        try {
+            const apiUser = await api.auth.me(token);
+            
+            const mappedUser: User = {
+                id: apiUser.id.toString(),
+                name: apiUser.full_name || apiUser.email.split('@')[0],
+                email: apiUser.email,
+                role: apiUser.role_ref?.name || apiUser.role,
+                hotelId: apiUser.hotel_id,
+                hotelName: apiUser.hotel?.name || 'My Hotel',
+                panelType: apiUser.is_platform_user ? 'admin' : 'hotel',
+                permissions: apiUser.role_ref?.permissions || {},
+            };
+            
+            setUser(mappedUser);
+            // Also update localStorage for immediate access in non-react contexts if needed,
+            // though keeping it in state is safer.
+            localStorage.setItem('atc_user', JSON.stringify(mappedUser));
+        } catch (error) {
+            console.error('Failed to fetch user data', error);
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const hasPermission = (permission: string): boolean => {
+    const login = async (email: string, password: string): Promise<boolean> => {
+        try {
+            const { access_token } = await api.auth.login(email, password);
+            localStorage.setItem('atc_token', access_token);
+            await fetchUserData(access_token);
+            return true;
+        } catch (error) {
+            console.error('Login error:', error);
+            return false;
+        }
+    };
+
+
+
+    const hasPermission = (module: string, action: string = 'view'): boolean => {
         if (!user) return false;
-        if (user.panelType === 'hotel') return true; // Simplified for hotel
-        const permissions = ROLE_PERMISSIONS[user.role as UserRole];
-        return permissions?.includes('*') || permissions?.includes(permission);
+        
+        // SuperAdmin bypass (check role name or if permissions object is empty but it's superadmin)
+        if (user.role === 'SuperAdmin' || user.role === 'SUPER_ADMIN') return true;
+
+        const modulePerms = user.permissions[module];
+        if (!modulePerms) return false;
+        
+        return !!modulePerms[action];
     };
 
     const canAccessPage = (pageId: string): boolean => {
         if (!user) return false;
 
-        if (user.panelType === 'hotel') {
-            const pages = HOTEL_PAGE_ACCESS[user.role as HotelUserRole];
-            return pages?.includes('*') || pages?.includes(pageId);
-        }
+        const mapping = PAGE_PERMISSIONS[pageId];
+        
+        // If page not mapped (e.g. profile, help), allow access by default if logged in
+        if (!mapping) return true;
 
-        const pages = ADMIN_PAGE_ACCESS[user.role as UserRole];
-        return pages?.includes('*') || pages?.includes(pageId);
+        return hasPermission(mapping.module, mapping.action || 'view');
     };
 
     const isHotelUser = user?.panelType === 'hotel';
+
+    const refreshUser = async () => {
+        const token = localStorage.getItem('atc_token');
+        if (token) {
+            await fetchUserData(token);
+        }
+    };
 
     return (
         <AuthContext.Provider
@@ -222,6 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 hasPermission,
                 canAccessPage,
                 isHotelUser,
+                refreshUser,
             }}
         >
             {children}
@@ -236,6 +174,3 @@ export function useAuth() {
     }
     return context;
 }
-
-// Export for sidebar usage
-export { ADMIN_PAGE_ACCESS, HOTEL_PAGE_ACCESS };

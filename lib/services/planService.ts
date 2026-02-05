@@ -5,9 +5,10 @@
  */
 
 import type { ServiceResponse } from './hotelService';
+import { api } from '@/lib/api';
 
 // Simulate network delay
-const delay = (ms: number = 200) => new Promise(resolve => setTimeout(resolve, ms));
+// const delay = (ms: number = 200) => new Promise(resolve => setTimeout(resolve, ms));
 
 export interface Plan {
     id: string;
@@ -26,66 +27,38 @@ export interface Plan {
     popular?: boolean;
 }
 
-// Initial mock data
-const INITIAL_PLANS: Plan[] = [
-    {
-        id: 'plan-001',
-        name: 'Starter',
-        description: 'Perfect for small boutique hotels starting with automation.',
-        price: 4999,
-        currency: 'INR',
-        billingCycle: 'monthly',
-        limits: { kiosks: 2, users: 3, storage: '10GB' },
-        features: ['Basic Kiosk Mode', 'Email Support', '7-Day Data Retention'],
-        status: 'active'
-    },
-    {
-        id: 'plan-002',
-        name: 'Professional',
-        description: 'Advanced features for scaling hotel chains.',
-        price: 12999,
-        currency: 'INR',
-        billingCycle: 'monthly',
-        limits: { kiosks: 10, users: 15, storage: '100GB' },
-        features: ['Voice AI Enabled', 'Priority 24/7 Support', '90-Day Data Retention', 'Custom Branding'],
-        status: 'active',
-        popular: true
-    },
-    {
-        id: 'plan-003',
-        name: 'Enterprise',
-        description: 'Full-scale solution for luxury properties.',
-        price: 24999,
-        currency: 'INR',
-        billingCycle: 'monthly',
-        limits: { kiosks: 50, users: 999, storage: 'Unlimited' },
-        features: ['Dedicated Account Manager', 'SLA Guarantee', 'Unlimited History', 'API Access', 'On-premise Deployment'],
-        status: 'active'
-    }
-];
-
-// In-memory state for mock
-let plans = [...INITIAL_PLANS];
-
 export const planService = {
     /**
      * Fetch all plans
      */
     async list(): Promise<Plan[]> {
-        await delay();
-        return [...plans];
+        const response = await api.plans.list();
+        if (!response.success) {
+            console.error('Failed to fetch plans:', response.error);
+            return [];
+        }
+        return (response.data as any[]).map(p => ({
+            ...p,
+            id: String(p.id)
+        }));
     },
 
     /**
      * Get single plan by ID
      */
     async get(id: string): Promise<ServiceResponse<Plan | null>> {
-        await delay();
-        const plan = plans.find(p => p.id === id);
+        const response = await api.plans.get(id);
+        if (!response.success) {
+            return {
+                success: false,
+                data: null,
+                error: response.error || 'Plan not found',
+            };
+        }
+        const plan = response.data as any;
         return {
-            success: !!plan,
-            data: plan || null,
-            error: plan ? undefined : 'Plan not found',
+            success: true,
+            data: { ...plan, id: String(plan.id) },
         };
     },
 
@@ -93,38 +66,41 @@ export const planService = {
      * Create new plan
      */
     async create(data: Omit<Plan, 'id'>): Promise<ServiceResponse<Plan>> {
-        await delay(500);
-        const newPlan: Plan = {
-            ...data,
-            id: `plan-${Date.now()}`,
-        };
-        plans.push(newPlan);
-        return { success: true, data: newPlan, error: undefined };
+        const response = await api.plans.create(data);
+        if (!response.success) {
+            return { success: false, data: undefined as any, error: response.error };
+        }
+        const plan = response.data as any;
+        return { success: true, data: { ...plan, id: String(plan.id) } };
     },
 
     /**
      * Update existing plan
      */
     async update(id: string, data: Partial<Plan>): Promise<ServiceResponse<Plan>> {
-        await delay(500);
-        const index = plans.findIndex(p => p.id === id);
-        if (index === -1) {
-            return { success: false, data: undefined as any, error: 'Plan not found' };
+        const response = await api.plans.update(id, data);
+        if (!response.success) {
+            return { success: false, data: undefined as any, error: response.error };
         }
-        plans[index] = { ...plans[index], ...data };
-        return { success: true, data: plans[index], error: undefined };
+        const plan = response.data as any;
+        return { success: true, data: { ...plan, id: String(plan.id) } };
     },
 
     /**
      * Archive plan
      */
     async archive(id: string): Promise<ServiceResponse<void>> {
-        await delay(500);
-        const index = plans.findIndex(p => p.id === id);
-        if (index === -1) {
-            return { success: false, data: undefined, error: 'Plan not found' };
+        // We use the update endpoint to set status to archived, or delete endpoint if strict delete
+        // Backend supports DELETE /plans/{id} which deletes it.
+        // If we want archive (soft delete), we should use update.
+        // But the current flow in frontend is 'archive'.
+        // Backend 'delete' endpoint effectively removes it.
+        // Let's use update to set status = 'archived' as per the UI expectation of "Archiving"
+
+        const response = await api.plans.update(id, { status: 'archived' });
+        if (!response.success) {
+            return { success: false, data: undefined, error: response.error };
         }
-        plans[index].status = 'archived';
-        return { success: true, data: undefined, error: undefined };
+        return { success: true, data: undefined };
     },
 };

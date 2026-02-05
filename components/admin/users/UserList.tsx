@@ -7,7 +7,8 @@
  */
 
 import { useState, useMemo } from 'react';
-import { Users, Plus, Search } from 'lucide-react';
+import Link from 'next/link';
+import { Users, Plus, Search, UserX } from 'lucide-react';
 import { Card } from '@/components/shared/ui/Card';
 import { PaginationBar } from '@/components/shared/ui/Pagination';
 import { useUsers } from './useUsers';
@@ -68,13 +69,13 @@ export function UserList() {
                         Manage internal staff access and security protocols.
                     </p>
                 </div>
-                <button
-                    onClick={actions.openInviteModal}
+                <Link
+                    href="/users/new"
                     className="btn-primary"
                 >
                     <Plus className="w-4 h-4" />
                     Invite Member
-                </button>
+                </Link>
             </div>
 
             {/* Filters */}
@@ -116,6 +117,22 @@ export function UserList() {
             {isLoading ? (
                 <div className="flex items-center justify-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+            ) : users.length === 0 ? (
+                <div className="surface-glass-strong rounded-lg border border-glass p-12 text-center">
+                    <UserX className="w-12 h-12 text-muted mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-primary mb-2">No Users Found</h3>
+                    <p className="text-sm text-muted mb-4">
+                        {hasActiveFilters 
+                            ? 'No users match your current filters.'
+                            : 'Get started by inviting your first team member.'}
+                    </p>
+                    {!hasActiveFilters && (
+                        <Link href="/users/new" className="btn-primary inline-flex">
+                            <Plus className="w-4 h-4" />
+                            Invite Member
+                        </Link>
+                    )}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

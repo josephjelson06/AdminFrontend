@@ -19,8 +19,7 @@ import {
     PanelLeftClose,
     Shield,
 } from 'lucide-react';
-import { useAuth } from '@/lib/shared/auth';
-import { MOCK_GUEST_CHECKINS, MOCK_ROOMS } from '@/lib/hotel/hotel-data';
+import { useAuth } from '@/lib/auth';
 
 interface NavItem {
     id: string;
@@ -61,6 +60,7 @@ const NAV_GROUPS: NavGroup[] = [
     {
         title: 'Account',
         items: [
+            { id: 'profile', name: 'My Profile', href: '/hotel/profile', icon: UserCog },
             { id: 'billing', name: 'Subscription & Billing', href: '/hotel/billing', icon: CreditCard },
             { id: 'help', name: 'Help & Support', href: '/hotel/help', icon: LifeBuoy },
         ],
@@ -117,8 +117,9 @@ export function HotelSidebar({ isOpen = true, onClose, isCollapsed, onToggleColl
         };
     }, [isResizing, setSidebarWidth]);
 
-    const attentionCount = MOCK_GUEST_CHECKINS.filter(g => g.verification === 'failed' || g.verification === 'manual').length;
-    const dirtyRoomCount = MOCK_ROOMS.filter(r => r.status === 'dirty').length;
+    // TODO: Replace with real API data
+    const attentionCount = 0;
+    const dirtyRoomCount = 0;
 
     const filteredNavGroups = NAV_GROUPS.map((group) => ({
         ...group,
